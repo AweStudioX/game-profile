@@ -45,17 +45,30 @@ function imageUrl(value) {
   } catch { return null; }
 }
 
+// Brand paths from Simple Icons (CC0); other adapters use the controller mark.
+const brandPaths = {
+  steam: 'M11.979 0A12 12 0 0 0 .022 11.037l6.432 2.658a3.39 3.39 0 0 1 2.1-.584l2.861-4.142A4.524 4.524 0 1 1 15.939 13.438h-.105l-4.076 2.911a3.39 3.39 0 0 1-6.717 1.159L.436 15.27A12 12 0 1 0 11.979 0ZM7.54 18.21l-1.473-.61a2.55 2.55 0 1 0 1.068-3.485l1.523.63a1.875 1.875 0 0 1-1.118 3.465Zm11.415-9.303a3.015 3.015 0 1 1-6.03 0 3.015 3.015 0 0 1 6.03 0Zm-5.273-.005a2.265 2.265 0 1 0 4.53 0 2.265 2.265 0 0 0-4.53 0Z',
+  psn: 'M8.984 2.596v17.547l3.915 1.261V6.688c0-.69.304-1.151.794-.991.636.18.76.814.76 1.505v5.875c2.441 1.193 4.362-.002 4.362-3.152 0-3.237-1.126-4.675-4.438-5.827-1.307-.448-3.728-1.186-5.39-1.502zm4.656 16.241l6.296-2.275c.715-.258.826-.625.246-.818-.586-.192-1.637-.139-2.357.123l-4.205 1.5V14.98l.24-.085s1.201-.42 2.913-.615c1.696-.18 3.785.03 5.437.661 1.848.601 2.04 1.472 1.576 2.072-.465.6-1.622 1.036-1.622 1.036l-8.544 3.107V18.86zM1.807 18.6c-1.9-.545-2.214-1.668-1.352-2.32.801-.586 2.16-1.052 2.16-1.052l5.615-2.013v2.313L4.205 17c-.705.271-.825.632-.239.826.586.195 1.637.15 2.343-.12L8.247 17v2.074c-.12.03-.256.044-.39.073-1.939.331-3.996.196-6.038-.479z',
+  nintendo: 'M14.176 24h3.674c3.376 0 6.15-2.774 6.15-6.15V6.15C24 2.775 21.226 0 17.85 0H14.1c-.074 0-.15.074-.15.15v23.7c-.001.076.075.15.226.15zm4.574-13.199c1.351 0 2.399 1.125 2.399 2.398 0 1.352-1.125 2.4-2.399 2.4-1.35 0-2.4-1.049-2.4-2.4-.075-1.349 1.05-2.398 2.4-2.398zM11.4 0H6.15C2.775 0 0 2.775 0 6.15v11.7C0 21.226 2.775 24 6.15 24h5.25c.074 0 .15-.074.15-.149V.15c.001-.076-.075-.15-.15-.15zM9.676 22.051H6.15c-2.326 0-4.201-1.875-4.201-4.201V6.15c0-2.326 1.875-4.201 4.201-4.201H9.6l.076 20.102zM3.75 7.199c0 1.275.975 2.25 2.25 2.25s2.25-.975 2.25-2.25c0-1.273-.975-2.25-2.25-2.25s-2.25.977-2.25 2.25z',
+};
+
 function platformTag(id, text = label(id)) {
   const tag = node('span', undefined, 'platform-tag');
+  const brand = /^ps[345]$/.test(id) ? 'psn' : /^(nintendo|switch)/i.test(id) ? 'nintendo' : id;
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   const path = document.createElementNS(svg.namespaceURI, 'path');
   svg.setAttribute('viewBox', '0 0 24 24');
   svg.setAttribute('aria-hidden', 'true');
-  path.setAttribute('d', 'M7 7h10a4 4 0 0 1 4 3.5l1 5a2.5 2.5 0 0 1-4.3 2.2L15 15H9l-2.7 2.7A2.5 2.5 0 0 1 2 15.5l1-5A4 4 0 0 1 7 7Zm0 2v4m-2-2h4m6 0h.01m3 1h.01');
-  path.setAttribute('fill', 'none');
-  path.setAttribute('stroke', 'currentColor');
-  path.setAttribute('stroke-width', '1.6');
-  path.setAttribute('stroke-linecap', 'round');
+  if (Object.hasOwn(brandPaths, brand)) {
+    path.setAttribute('d', brandPaths[brand]);
+    path.setAttribute('fill', 'currentColor');
+  } else {
+    path.setAttribute('d', 'M7 7h10a4 4 0 0 1 4 3.5l1 5a2.5 2.5 0 0 1-4.3 2.2L15 15H9l-2.7 2.7A2.5 2.5 0 0 1 2 15.5l1-5A4 4 0 0 1 7 7Zm0 2v4m-2-2h4m6 0h.01m3 1h.01');
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', 'currentColor');
+    path.setAttribute('stroke-width', '1.6');
+    path.setAttribute('stroke-linecap', 'round');
+  }
   svg.append(path);
   tag.append(svg, text);
   return tag;
