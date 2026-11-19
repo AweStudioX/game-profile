@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Game Profile</title>
+  <link rel="stylesheet" href="/dashboard/style.css">
+  <script type="module" src="/dashboard/app.mjs"></script>
+</head>
+<body>
+  <a class="skip" href="#library">跳到游戏库</a>
+  <header class="bar">
+    <div class="frame bar-inner"><a class="wordmark" href="/">GAME<span>.</span> PROFILE</a><a class="private" href="/setup.html">配置说明</a></div>
+  </header>
+  <main class="frame">
+    <section class="intro home-intro" aria-labelledby="title">
+      <p class="eyebrow">PERSONAL GAME LOG</p>
+      <h1 id="title">游戏日志<span>.</span></h1>
+      <p class="deck">跨平台游戏库、游玩时长与成就。</p>
+      <p id="profile-note" class="profile-note" role="status" hidden></p>
+    </section>
+    <div id="overview">
+    <dl class="stats" aria-label="游戏概览">
+      <div><dt>累计已知时长</dt><dd id="hours">—</dd></div>
+      <div><dt>游戏数</dt><dd id="game-count">—</dd></div>
+      <div><dt>已游玩</dt><dd id="played-count">—</dd></div>
+      <div><dt>有数据的平台</dt><dd id="source-count">—</dd></div>
+    </dl>
+    <div class="panels overview-panels">
+      <section class="panel" aria-labelledby="live-title">
+        <div class="panel-head"><h2 id="live-title">正在游玩</h2><span id="activity-status" class="badge">读取中</span></div>
+        <div id="activity" aria-live="polite"><p class="muted">正在读取当前活动…</p></div>
+      </section>
+      <section class="panel" aria-labelledby="source-title">
+        <div class="panel-head"><h2 id="source-title">游戏库同步</h2></div>
+        <ul id="sources" class="sources" aria-live="polite"></ul>
+      </section>
+    </div>
+    </div>
+    <section id="library" class="library" aria-labelledby="library-title">
+      <div class="panel-head library-head"><h2 id="library-title">游戏库</h2><p id="results" class="muted" role="status"></p></div>
+      <div class="toolbar" id="toolbar" hidden>
+        <div id="filters" class="filters" role="group" aria-label="按来源筛选"></div>
+        <div class="tools">
+          <label><span class="sr-only">搜索游戏</span><input type="search" id="search" placeholder="搜索游戏"></label>
+          <label><span class="sr-only">排序方式</span><select id="sort"><option value="time">游玩时长</option><option value="recent">最近游玩</option><option value="title">游戏名称</option></select></label>
+        </div>
+      </div>
+      <p id="library-status" class="muted" role="status">正在读取游戏库…</p>
+      <ul id="games" class="games"></ul>
+      <button id="more" class="more" type="button" hidden>显示更多</button>
+    </section>
+  </main>
+  <footer class="frame footer"><span>GAME PROFILE</span><a href="/setup.html">部署与隐私</a></footer>
+  <dialog id="detail" aria-labelledby="detail-title">
+    <div class="dialog-header"><div><p class="eyebrow">GAME RECORD</p><h2 id="detail-title"></h2></div><form method="dialog"><button type="submit" autofocus>关闭</button></form></div>
+    <div id="detail-body"></div>
+  </dialog>
+</body>
+</html>

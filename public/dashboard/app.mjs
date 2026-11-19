@@ -1,0 +1,440 @@
+import { filterGames, label, libraryModel } from './model.mjs';
+
+const $ = id => document.getElementById(id);
+const number = new Intl.NumberFormat('zh-CN');
+const hours = new Intl.NumberFormat('zh-CN', { maximumFractionDigits: 1 });
+const date = new Intl.DateTimeFormat('zh-CN', { dateStyle: 'medium', timeStyle: 'short' });
+const ready = new Set(['ready', 'stale']);
+const statuses = {
+  ready: '已同步', stale: '已过期', disabled: '未接入', 'not-configured': '未配置',
+  unavailable: '不可用', private: '隐私受限', 'reconnect-required': '需要重连', partial: '部分可用',
+};
+const pageSize = 24;
+let model;
+let activeProvider = '';
+let shown = pageSize;
+let modalRequest;
+
+function node(tag, value, className) {
+  const element = document.createElement(tag);
+  if (value !== undefined) element.textContent = value;
+  if (className) element.className = className;
+  return element;
+}
+
+function playtime(seconds) {
+  if (!Number.isFinite(seconds)) return '时长未知';
+  if (seconds === 0) return '0 小时';
+  return seconds < 3600 ? `${Math.max(1, Math.round(seconds / 60))} 分钟` : `${hours.format(seconds / 3600)} 小时`;
+}
+
+function sourceLabel(status) {
+  return Object.hasOwn(statuses, status) ? statuses[status] : '状态未知';
+}
+
+async function data(path, signal) {
+  const response = await fetch(`/api/profile?resource=${encodeURIComponent(path)}`, { signal, cache: 'no-store' });
+  if (!response.ok && !(path === 'library' && response.status === 503)) throw new Error(`HTTP ${response.status}`);
+  return response.json();
+}
+
+function imageUrl(value) {
+  try {
+    const url = new URL(value);
+    return url.protocol === 'https:' && !url.username && !url.password ? url.href : null;
+  } catch { return null; }
+}
+
+function platformTag(id, text = label(id)) {
+  const tag = node('span', undefined, 'platform-tag');
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  const path = document.createElementNS(svg.namespaceURI, 'path');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('aria-hidden', 'true');
+  path.setAttribute('d', 'M7 7h10a4 4 0 0 1 4 3.5l1 5a2.5 2.5 0 0 1-4.3 2.2L15 15H9l-2.7 2.7A2.5 2.5 0 0 1 2 15.5l1-5A4 4 0 0 1 7 7Zm0 2v4m-2-2h4m6 0h.01m3 1h.01');
+  path.setAttribute('fill', 'none');
+  path.setAttribute('stroke', 'currentColor');
+  path.setAttribute('stroke-width', '1.6');
+  path.setAttribute('stroke-linecap', 'round');
+  svg.append(path);
+  tag.append(svg, text);
+  return tag;
+}
+
+function recordDate(value, prefix) {
+  const timestamp = Date.parse(value);
+  if (!Number.isFinite(timestamp)) return null;
+  const time = node('time', `${prefix} ${date.format(timestamp)}`);
+  time.dateTime = new Date(timestamp).toISOString();
+  return time;
+}
+
+const grades = { bronze: '铜杯', silver: '银杯', gold: '金杯', platinum: '白金杯' };
+const percent = value => `${hours.format(value)}%`;
+
+function unlockRow(unlock) {
+  const state = unlock.unlocked === true ? '已解锁' : unlock.unlocked === false ? '未解锁' : '状态未知';
+  const row = node('li', undefined, 'unlock');
+  const thumbnail = node('span', undefined, 'unlock-icon');
+  thumbnail.setAttribute('aria-hidden', 'true');
+  const symbol = platformTag(unlock.source, '');
+  thumbnail.append(symbol);
+  const url = imageUrl(unlock.imageUrl);
+  if (url) {
+    const image = node('img');
+    image.alt = '';
+    image.loading = 'lazy';
+    image.decoding = 'async';
+    image.addEventListener('error', () => image.remove(), { once: true });
+    image.src = url;
+    thumbnail.append(image);
+  }
+  const body = node('div', undefined, 'unlock-body');
+  const title = node('div', undefined, 'unlock-title');
+  title.append(node('strong', unlock.name), node('span', state, 'badge'));
+  if (unlock.unlocked === true) title.lastChild.dataset.tone = 'active';
+  body.append(title);
+  if (unlock.description) body.append(node('p', unlock.description, 'muted'));
+  const metadata = node('div', undefined, 'record-meta');
+  if (Object.hasOwn(grades, unlock.grade)) metadata.append(node('span', grades[unlock.grade]));
+  const earnedAt = recordDate(unlock.unlockedAt, '解锁于');
+  if (earnedAt) metadata.append(earnedAt);
+  if (Number.isFinite(unlock.rarityPercent)) metadata.append(node('span', `全球解锁率 ${percent(unlock.rarityPercent)}`));
+  if (metadata.childElementCount) body.append(metadata);
+  row.append(thumbnail, body);
+  return row;
+}
+
+function renderSources(sources) {
+  const ids = new Set(['steam', 'psn', 'nintendo', ...Object.keys(sources).filter(id => sources[id]?.status !== 'disabled')]);
+  const rows = Array.from(ids, id => {
+    const source = sources[id];
+    const row = node('li');
+    const info = node('div');
+    info.append(platformTag(id));
+    const updated = Date.parse(source?.lastSuccessAt);
+    if (Number.isFinite(updated)) {
+      const time = node('time', date.format(updated));
+      time.dateTime = source.lastSuccessAt;
+      info.append(time);
+    }
+    const status = source?.status ?? (id === 'nintendo' ? 'disabled' : null);
+    const badge = node('span', sourceLabel(status), 'badge');
+    if (status === 'ready') badge.dataset.tone = 'active';
+    row.append(info, badge);
+    return row;
+  });
+  $('sources').replaceChildren(...rows);
+}
+
+function renderActivity(payload) {
+  const sessions = Array.isArray(payload.sessions) ? payload.sessions : [];
+  const live = payload.state === 'playing' && sessions.length > 0;
+  $('activity-status').textContent = live ? '游玩中' : payload.state === 'offline' ? '未检测到游玩' : '状态未知';
+  $('activity-status').dataset.tone = live ? 'active' : '';
+  const activity = live ? sessions.map(session => {
+    const item = node('div', undefined, 'session');
+    item.append(node('strong', session.game?.name ?? '未命名游戏'));
+    const origins = [session.primarySource, session.platform].filter(id => id && id !== 'unknown');
+    if (origins.length) {
+      const meta = node('small', undefined, 'record-meta');
+      meta.append(...origins.map(id => platformTag(id)));
+      item.append(meta);
+    }
+    return item;
+  }) : [node('p', payload.state === 'offline' ? '已检查的平台未报告正在游玩的游戏。' : '暂无可用的活动快照。', 'muted')];
+
+  const sources = node('ul', undefined, 'activity-sources');
+  for (const [provider, source] of Object.entries(payload.sources ?? {})) {
+    if (source.status === 'disabled') continue;
+    const row = node('li');
+    row.append(platformTag(provider));
+    const timestamp = Date.parse(source.lastSuccessAt);
+    if (Number.isFinite(timestamp)) {
+      const time = node('time', date.format(timestamp));
+      time.dateTime = source.lastSuccessAt;
+      row.append(time);
+    }
+    if (source.status !== 'ready') row.append(node('span', sourceLabel(source.status)));
+    sources.append(row);
+  }
+  if (sources.childElementCount) {
+    sources.setAttribute('aria-label', '活动快照来源与时间');
+    activity.push(sources);
+  }
+  $('activity').replaceChildren(...activity);
+}
+
+function renderUnlockSet(set, game, showSetName) {
+  const panel = node('div', undefined, 'unlock-set');
+  const summary = node('div', undefined, 'unlock-summary');
+  const edition = game.editions.find(item => item.id === set.editionId);
+  const platform = set.platform?.toLowerCase();
+  const context = [
+    showSetName ? set.name : null,
+    edition?.id !== 'standard' ? edition?.name : null,
+    platform && platform !== 'unknown' ? label(platform) : null,
+  ].filter(Boolean);
+  if (context.length) summary.append(node('span', context.join(' · '), 'muted'));
+  const { earned, available, known, completionPercent } = set.summary ?? {};
+  if (Number.isFinite(earned) && Number.isFinite(available) && known > 0) {
+    summary.append(node('span', `${number.format(earned)} / ${number.format(available)}${known < available ? ' · 部分' : ''}`, 'unlock-count'));
+  }
+  panel.append(summary);
+  if (Number.isFinite(completionPercent)) {
+    const meter = node('progress');
+    meter.max = 100;
+    meter.value = completionPercent;
+    meter.setAttribute('aria-label', `完成率 ${percent(completionPercent)}`);
+    panel.append(meter);
+  }
+  const unlocks = [...(set.unlocks ?? [])].sort((a, b) =>
+    Number(b.unlocked === true) - Number(a.unlocked === true)
+    || (b.unlockedAt ?? '').localeCompare(a.unlockedAt ?? ''));
+  if (!unlocks.length) {
+    panel.append(node('p', '没有可显示的成就记录。', 'muted'));
+    return panel;
+  }
+  const list = node('ul', undefined, 'unlock-list');
+  list.append(...unlocks.map(unlockRow));
+  panel.append(list);
+  return panel;
+}
+
+function renderProgress(progress, game) {
+  const heading = node('h3', '成就与奖杯');
+  const groups = new Map(game.providers.map(provider => [provider, []]));
+  for (const set of progress?.sets ?? []) {
+    if (!groups.has(set.source)) groups.set(set.source, []);
+    groups.get(set.source).push(set);
+  }
+  if (!groups.size) return [heading, node('p', '暂无可用成就数据。', 'muted')];
+
+  const renderProvider = (provider, sets) => {
+    if (sets.length) return sets.map(set => renderUnlockSet(set, game, sets.length > 1));
+    const sources = (progress?.sources ?? []).filter(item => item.source === provider);
+    const text = sources.some(item => item.status === 'pending') ? '尚未同步。'
+      : sources.some(item => item.status === 'private') ? '此平台的成就记录未公开。'
+        : sources.length && sources.every(item => item.status === 'unsupported') ? '此平台没有可同步的成就记录。'
+          : '此平台的成就记录暂不可用。';
+    return [node('p', text, 'muted')];
+  };
+  const entries = [...groups];
+  if (entries.length === 1) {
+    const [[provider, sets]] = entries;
+    heading.replaceChildren(platformTag(provider, `${label(provider)} ${provider === 'psn' ? '奖杯' : '成就'}`));
+    return [heading, ...renderProvider(provider, sets)];
+  }
+
+  const switcher = node('div', undefined, 'unlock-switcher');
+  switcher.setAttribute('role', 'tablist');
+  switcher.setAttribute('aria-label', '成就平台');
+  const panels = entries.map((_, index) => {
+    const panel = node('section', undefined, 'unlock-source');
+    panel.id = `unlock-platform-${index}`;
+    panel.setAttribute('role', 'tabpanel');
+    panel.setAttribute('aria-labelledby', `unlock-tab-${index}`);
+    panel.tabIndex = 0;
+    return panel;
+  });
+  const tabs = entries.map(([provider], index) => {
+    const button = node('button', undefined, 'unlock-tab');
+    button.type = 'button';
+    button.id = `unlock-tab-${index}`;
+    button.setAttribute('role', 'tab');
+    button.setAttribute('aria-controls', panels[index].id);
+    button.append(platformTag(provider));
+    button.addEventListener('click', () => selectPlatform(index));
+    return button;
+  });
+
+  let current = -1;
+  function selectPlatform(next) {
+    if (next === current) return;
+    current = next;
+    for (const [index, tab] of tabs.entries()) {
+      const selected = index === next;
+      tab.setAttribute('aria-selected', String(selected));
+      tab.tabIndex = selected ? 0 : -1;
+      panels[index].hidden = !selected;
+    }
+    if (!panels[next].hasChildNodes()) panels[next].append(...renderProvider(...entries[next]));
+  }
+  switcher.addEventListener('keydown', event => {
+    let next;
+    if (event.key === 'ArrowRight') next = (current + 1) % tabs.length;
+    else if (event.key === 'ArrowLeft') next = (current + tabs.length - 1) % tabs.length;
+    else if (event.key === 'Home') next = 0;
+    else if (event.key === 'End') next = tabs.length - 1;
+    else return;
+    event.preventDefault();
+    selectPlatform(next);
+    tabs[next].focus();
+  });
+  switcher.append(...tabs);
+  selectPlatform(Math.max(0, entries.findIndex(([, sets]) => sets.length)));
+  return [heading, switcher, ...panels];
+}
+
+async function showGame(game) {
+  modalRequest?.abort();
+  const request = modalRequest = new AbortController();
+  $('detail-title').textContent = game.name;
+  const copies = node('ul', undefined, 'record-list');
+  for (const copy of game.copies) {
+    const row = node('li');
+    const title = node('div', undefined, 'record-meta');
+    const providers = new Set(copy.observations?.map(item => item.provider).filter(Boolean));
+    title.append(...[...providers].map(id => platformTag(id)));
+    if (copy.platform && copy.platform !== 'unknown') title.append(node('span', label(copy.platform)));
+    if (copy.edition && copy.edition !== 'Standard') title.append(node('span', copy.edition));
+    title.append(node('strong', playtime(copy.playtime?.seconds)));
+    row.append(title);
+    const metadata = node('div', undefined, 'record-meta muted');
+    const observation = copy.observations?.find(item => item.provider === copy.playtime?.selectedFrom)?.data
+      ?? (copy.observations?.length === 1 ? copy.observations[0].data : null);
+    const first = recordDate(observation?.firstPlayedAt, '首次游玩');
+    const last = recordDate(observation?.lastPlayedAt, '最近游玩');
+    if (first) metadata.append(first);
+    if (last) metadata.append(last);
+    if (Number.isSafeInteger(observation?.playCount)) metadata.append(node('span', `游玩 ${number.format(observation.playCount)} 次`));
+    if (metadata.childElementCount) row.append(metadata);
+    copies.append(row);
+  }
+  const progress = node('section', undefined, 'progress-section');
+  progress.append(node('p', '正在读取成就…', 'muted'));
+  $('detail-body').replaceChildren(node('p', `累计 ${playtime(game.seconds)}`), copies, progress);
+  if (!$('detail').open) $('detail').showModal();
+  try {
+    const result = await data(`games/${encodeURIComponent(game.id)}`, request.signal);
+    if (!request.signal.aborted) progress.replaceChildren(...renderProgress(result.progress, game));
+  } catch {
+    if (!request.signal.aborted) progress.replaceChildren(node('p', '成就详情暂不可用。', 'muted'));
+  }
+}
+
+function gameCard(game, index) {
+  const row = node('li');
+  const button = node('button', undefined, 'game');
+  button.type = 'button';
+  const cover = node('span', 'NO COVER', 'cover');
+  cover.setAttribute('aria-hidden', 'true');
+  const portrait = imageUrl(game.artwork?.portraitUrl);
+  const url = portrait || imageUrl(game.artwork?.landscapeUrl) || imageUrl(game.artwork?.squareUrl);
+  if (url) {
+    const image = node('img', undefined, portrait ? '' : 'wide');
+    image.alt = '';
+    image.loading = index < 6 ? 'eager' : 'lazy';
+    image.decoding = 'async';
+    image.addEventListener('error', () => image.remove(), { once: true });
+    image.src = url;
+    cover.append(image);
+  }
+  const body = node('span', undefined, 'game-body');
+  if (game.providers.length) {
+    const platforms = node('span', undefined, 'game-provider record-meta');
+    platforms.append(...game.providers.map(id => platformTag(id)));
+    body.append(platforms);
+  }
+  body.append(node('strong', game.name, 'game-name'));
+  body.append(node('span', [playtime(game.seconds), ...game.platforms.map(label)].join(' · '), 'game-meta'));
+  if (game.lastPlayed !== null) {
+    const time = node('time', date.format(game.lastPlayed), 'game-meta');
+    time.dateTime = new Date(game.lastPlayed).toISOString();
+    body.append(time);
+  }
+  button.append(cover, body);
+  button.addEventListener('click', () => showGame(game));
+  row.append(button);
+  return row;
+}
+
+function renderFilters() {
+  const buttons = [['', model.games.length], ...Object.entries(model.providerCounts).sort(([a], [b]) => label(a).localeCompare(label(b)))];
+  $('filters').replaceChildren(...buttons.map(([id, count]) => {
+    const button = node('button');
+    const text = `${id ? label(id) : '全部'} ${number.format(count)}`;
+    button.append(id ? platformTag(id, text) : text);
+    button.type = 'button';
+    button.dataset.provider = id;
+    button.setAttribute('aria-pressed', String(id === activeProvider));
+    return button;
+  }));
+}
+
+function renderLibrary(append = false) {
+  const matches = filterGames(model.games, { provider: activeProvider, search: $('search').value, sort: $('sort').value });
+  const grid = $('games');
+  const start = append ? grid.childElementCount : 0;
+  const cards = matches.slice(start, shown).map((game, index) => gameCard(game, start + index));
+  if (append) grid.append(...cards); else grid.replaceChildren(...cards);
+  $('results').textContent = `${number.format(matches.length)} 款游戏`;
+  $('library-status').textContent = matches.length ? '' : model.games.length ? '没有符合筛选条件的游戏。' : '游戏库没有游戏。';
+  $('more').hidden = matches.length <= shown;
+  if (append) cards[0]?.firstElementChild.focus();
+}
+
+function showLibrary(payload) {
+  model = libraryModel(payload);
+  renderSources(model.sources);
+  if (!Array.isArray(payload.games) || payload.status === 'unavailable') {
+    $('library-status').textContent = '游戏库暂不可用，请稍后刷新。';
+    return;
+  }
+  if (model.knownSeconds !== null) $('hours').replaceChildren(node('span', hours.format(model.knownSeconds / 3600)), node('small', model.incomplete ? ' 小时 · 部分' : ' 小时'));
+  $('game-count').textContent = number.format(model.games.length);
+  $('played-count').textContent = number.format(model.games.filter(game => game.seconds > 0).length);
+  $('source-count').textContent = number.format(Object.values(model.sources).filter(source => ready.has(source?.status)).length);
+  $('toolbar').hidden = false;
+  renderFilters();
+  renderLibrary();
+}
+
+$('filters').addEventListener('click', event => {
+  const button = event.target.closest('button[data-provider]');
+  if (!button) return;
+  activeProvider = button.dataset.provider;
+  for (const filter of $('filters').children) filter.setAttribute('aria-pressed', String(filter === button));
+  shown = pageSize;
+  renderLibrary();
+});
+for (const [control, event] of [['search', 'input'], ['sort', 'change']]) {
+  $(control).addEventListener(event, () => { shown = pageSize; renderLibrary(); });
+}
+$('more').addEventListener('click', () => { shown += pageSize; renderLibrary(true); });
+$('detail').addEventListener('close', () => modalRequest?.abort());
+
+async function init() {
+  const { mode } = await data('setup');
+  const note = $('profile-note');
+  if (mode === 'demo') {
+    note.textContent = '演示模式 · 以下为虚构记录';
+    note.hidden = false;
+  }
+  if (mode === 'incomplete') {
+    note.textContent = 'Steam 配置尚未完成。请查看配置说明。';
+    note.hidden = false;
+    $('overview').hidden = true;
+    $('library').hidden = true;
+    return;
+  }
+  const [library, activity] = await Promise.allSettled([data('library'), data('now-playing')]);
+  if (library.status === 'rejected' && library.reason.message === 'HTTP 401') {
+    note.replaceChildren(node('span', '这是私人游戏档案。 '));
+    const link = node('a', '登录查看');
+    link.href = '/api/profile?resource=login';
+    note.append(link);
+    note.hidden = false;
+    $('overview').hidden = true;
+    $('library').hidden = true;
+    return;
+  }
+  if (library.status === 'fulfilled') showLibrary(library.value);
+  else $('library-status').textContent = '未能读取游戏库，请刷新页面重试。';
+  renderActivity(activity.status === 'fulfilled' ? activity.value : { state: 'unknown' });
+}
+
+init().catch(() => {
+  $('library-status').textContent = '未能连接档案服务，请刷新页面重试。';
+  renderActivity({ state: 'unknown' });
+});

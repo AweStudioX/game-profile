@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>配置说明 · Game Profile</title>
+  <link rel="stylesheet" href="/dashboard/style.css">
+</head>
+<body>
+  <header class="bar"><div class="frame bar-inner"><a class="wordmark" href="/">GAME<span>.</span> PROFILE</a><a class="private" href="/">返回看板</a></div></header>
+  <main class="frame">
+    <section class="intro home-intro">
+      <p class="eyebrow">SELF-HOSTED PROFILE</p>
+      <h1>配置档案<span>.</span></h1>
+      <p class="deck">无需改代码。真实记录只对通过验证的访客可见。</p>
+    </section>
+    <section class="panel setup-guide" aria-labelledby="steam-setup">
+      <h2 id="steam-setup">在 Vercel 连接 Steam</h2>
+      <ol>
+        <li>在 <a href="https://vercel.com/new">Vercel 导入项目</a>中选择你的 fork。不配置任何值即可运行演示。</li>
+        <li>在项目 <a href="https://vercel.com/dashboard">Settings → Environment Variables</a> 中添加以下三个值（建议只添加到 Production）：
+          <dl>
+            <dt><code>STEAM_ID</code></dt><dd>你的 17 位 SteamID64。<a href="https://store.steampowered.com/account/">Steam 账号详情</a>可查看。</dd>
+            <dt><code>STEAM_WEB_API_KEY</code></dt><dd>从 <a href="https://steamcommunity.com/dev/apikey">Steam 官方页面</a>申请。保存为 Secret，不要发给他人。</dd>
+            <dt><code>PROFILE_PASSWORD</code></dt><dd>自设一段至少 16 位、无空格的高强度可打印 ASCII 密码；保存为 Secret。这不是 Steam 密码。</dd>
+          </dl>
+        </li>
+        <li>重新部署，并检查 Steam 隐私设置中的「游戏详情」对 API 可见。打开部署站点，点「登录查看」，用户名为 <code>owner</code>。</li>
+      </ol>
+      <p class="muted">此页面不会接收 API Key。真实模式只连接 Steam；PlayStation 和 Nintendo 数据仅在演示模式中出现。</p>
+    </section>
+    <section class="panel setup-guide" aria-labelledby="privacy-info">
+      <h2 id="privacy-info">数据与隐私</h2>
+      <p class="muted">配置的 SteamID 用于请求该账号的游戏库、活动和成就。数据临时保存在 Vercel 函数内存，不写入数据库；处理位置取决于部署者选择的函数区域。封面和成就图标由 Steam CDN 提供。本站与 Valve 无隶属关系，数据按原样提供，不保证完整或持续可用。</p>
+    </section>
+  </main>
+</body>
+</html>
