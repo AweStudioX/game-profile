@@ -6,10 +6,9 @@ A private, single-owner game dashboard. Deploy on Vercel without a database, a b
 
 ## Quick start
 
-- **[Deploy the demo](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FAweStudioX%2Fgame-profile&project-name=game-profile&repository-name=game-profile)** — Try fictional data without entering any credentials.
-- **[Deploy your Steam profile](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FAweStudioX%2Fgame-profile&project-name=game-profile&repository-name=game-profile&env=STEAM_ID,STEAM_WEB_API_KEY,PROFILE_PASSWORD&envDescription=Enter%20your%20SteamID64%2C%20Steam%20Web%20API%20key%2C%20and%20a%20separate%20dashboard%20password.&envLink=https%3A%2F%2Fgithub.com%2FAweStudioX%2Fgame-profile%23connect-steam)** — Vercel asks for all three [Steam setup variables](#connect-steam) before deploying.
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FAweStudioX%2Fgame-profile&project-name=game-profile&repository-name=game-profile&env=STEAM_ID,STEAM_WEB_API_KEY,PROFILE_PASSWORD&envDescription=Enter%20your%20SteamID64%2C%20Steam%20Web%20API%20key%2C%20and%20a%20separate%20dashboard%20password.&envLink=https%3A%2F%2Fgithub.com%2FAweStudioX%2Fgame-profile%23connect-steam)
 
-You can also fork this repository and [import your fork](https://vercel.com/new). Keep the repository root and the defaults in `vercel.json`. On Vercel Hobby, choose your personal GitHub account rather than a GitHub organization as the destination.
+Vercel asks for all three [Steam setup variables](#connect-steam) before deploying. On Vercel Hobby, choose your personal GitHub account rather than a GitHub organization as the destination.
 
 ## Features
 
@@ -19,7 +18,7 @@ You can also fork this repository and [import your fork](https://vercel.com/new)
 
 ## Connect Steam
 
-Get the three values below before clicking **Deploy your Steam profile**. In Vercel, choose your GitHub destination and enter the values in the **Environment Variables** step before clicking **Deploy**. The form’s help link returns to this checklist.
+Get the three values below before clicking **Deploy with Vercel**. In Vercel, choose your GitHub destination and enter the values in the **Environment Variables** step before clicking **Deploy**. The form’s help link returns to this checklist.
 
 | Variable | Where to get it |
 | --- | --- |
