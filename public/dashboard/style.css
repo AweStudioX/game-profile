@@ -121,3 +121,18 @@ dialog{color:var(--text);background:var(--surface);width:min(100% - 24px,590px);
 .unlock-body{min-width:0;overflow-wrap:anywhere}
 .unlock-title{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 9px}
 .unlock-body p,.unlock-body .record-meta{font-size:.79rem;color:var(--muted)}
+
+.bar-actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:4px 12px}
+.theme-toggle{min-height:44px;padding:4px 9px;border:1px solid var(--border);border-radius:8px;background:var(--surface);font-size:.75rem;white-space:nowrap}
+.theme-toggle[aria-pressed="true"]{background:var(--dim-accent);color:var(--accent)}
+
+:root[data-theme="pixel"]{--bg:#101820;--surface:#192632;--raised:#213442;--border:#46586a;--text:#eff9f5;--muted:#b7c9d3;--accent:#9ef5c5;--dim-accent:#254436;--radius:0px;--pixel-shadow:#080e15}
+[data-theme="pixel"] .bar{border-bottom:3px solid var(--border)}
+[data-theme="pixel"] .home-intro h1{letter-spacing:-.02em;text-shadow:3px 3px var(--pixel-shadow)}
+[data-theme="pixel"] :is(.stats,.panel,.game,dialog){border-width:2px;box-shadow:3px 3px 0 var(--pixel-shadow)}
+[data-theme="pixel"] :is(.game,.badge,.unlock-icon,.unlock-set progress,button,input,select){border-radius:0}
+[data-theme="pixel"] .cover,[data-theme="pixel"] .cover img.wide{background:var(--raised)}
+[data-theme="pixel"] .badge[data-tone="active"]{border-color:var(--accent)}
+[data-theme="pixel"] .unlock-set progress{height:6px}
+[data-theme="pixel"] .unlock-set progress::-webkit-progress-value{border-radius:0;background:repeating-linear-gradient(90deg,var(--accent) 0 6px,var(--surface) 6px 8px)}
+[data-theme="pixel"] .unlock-set progress::-moz-progress-bar{border-radius:0;background:repeating-linear-gradient(90deg,var(--accent) 0 6px,var(--surface) 6px 8px)}
