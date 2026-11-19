@@ -13,6 +13,7 @@ Vercel Hobby 用户请选择**个人 GitHub 账号**，不要选组织。在部�
 ## 功能
 
 - 浏览和搜索游戏库，查看游玩时长、最近活动及成就。
+- 顶栏可切换经典和像素主题，偏好按浏览器保存。像素主题的展示文字使用站内托管的[缝合像素字体](https://github.com/TakWolf/fusion-pixel-font)子集；正文和游戏封面不变。
 - 同款游戏的多平台记录匹配后只显示一张卡片，成就进度仍按平台独立统计。
 - Steam 成就和 PlayStation 奖杯分开显示；Nintendo 提供游玩记录。
 - 游戏库默认每天自动同步一次（北京时间 10:00 开始），可在站内改成每小时一次。使用 [Vercel Schedules（Beta）](https://vercel.com/docs/schedules/limits)，无需开着网页。
