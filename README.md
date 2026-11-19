@@ -2,31 +2,35 @@
 
 **English** · [简体中文](README.zh-CN.md)
 
-A private, single-owner game dashboard. Deploy on Vercel without a database, a background worker, or code changes. Try it with fictional data, or connect your own Steam account.
+A private, single-owner dashboard for Steam, PlayStation, and Nintendo Switch. Deploy on Vercel, then connect your accounts from the dashboard without editing code.
 
 ## Quick start
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FAweStudioX%2Fgame-profile&project-name=game-profile&repository-name=game-profile&env=STEAM_ID,STEAM_WEB_API_KEY,PROFILE_PASSWORD&envDescription=Enter%20your%20SteamID64%2C%20Steam%20Web%20API%20key%2C%20and%20a%20separate%20dashboard%20password.&envLink=https%3A%2F%2Fgithub.com%2FAweStudioX%2Fgame-profile%23connect-steam)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FAweStudioX%2Fgame-profile&project-name=game-profile&repository-name=game-profile&env=PROFILE_PASSWORD,PROFILE_ENCRYPTION_KEY&envDescription=Generate%20a%20dashboard%20password%20and%20a%20separate%20encryption%20key.%20See%20the%20setup%20checklist.&envLink=https%3A%2F%2Fgithub.com%2FAweStudioX%2Fgame-profile%23deployment-checklist&products=%5B%7B%22type%22%3A%22integration%22%2C%22integrationSlug%22%3A%22neon%22%2C%22productSlug%22%3A%22neon%22%2C%22protocol%22%3A%22storage%22%7D%5D)
 
-Vercel asks for all three [Steam setup variables](#connect-steam) before deploying. On Vercel Hobby, choose your personal GitHub account rather than a GitHub organization as the destination.
+On Vercel Hobby, select your **personal GitHub account**, not an organization. Create a Neon database in the deployment wizard, then enter the two secrets below. The integration supplies `DATABASE_URL`.
 
 ## Features
 
 - Browse and search a game library with playtime, recent activity, and achievements.
 - See a game once even when multiple platform records match. Progress remains separate per platform.
-- Run with **Steam** as the live source. PlayStation and Nintendo Switch appear only in the bundled demo; live sync is not included.
+- Steam and PlayStation achievements stay separate; Nintendo contributes play history.
+- Schedule daily or hourly library sync with [Vercel Schedules (Beta)](https://vercel.com/docs/schedules/limits). Daily is the default (02:00 UTC). The dashboard does not need to stay open.
 
-## Connect Steam
+## Deployment checklist
 
-Get the three values below before clicking **Deploy with Vercel**. In Vercel, choose your GitHub destination and enter the values in the **Environment Variables** step before clicking **Deploy**. The form’s help link returns to this checklist.
-
-| Variable | Where to get it |
+| Secret | Where to get it |
 | --- | --- |
-| `STEAM_ID` | Sign in to [Steam Account Details](https://store.steampowered.com/account/) and copy the **17-digit Steam ID** shown under your account name. Do not use your nickname or a custom profile URL. |
-| `STEAM_WEB_API_KEY` | Sign in to the [Steam Web API Key page](https://steamcommunity.com/dev/apikey). Copy your registered key or register one for the hostname you intend to use. Paste only the key into Vercel, not the domain name. Save it as **Secret** wherever Vercel offers the option. |
-| `PROFILE_PASSWORD` | Generate a new password in your password manager: 12–120 printable ASCII characters with no spaces (16 or more recommended). Punctuation is allowed. Save it as **Secret** wherever Vercel offers the option. Do not reuse your Steam password. |
+| `PROFILE_PASSWORD` | Generate a unique password in your password manager: 12–120 printable ASCII characters with no spaces (16 or more recommended). The dashboard username is `owner`. |
+| `PROFILE_ENCRYPTION_KEY` | Run `openssl rand -hex 32` or generate an equivalent random key with a password manager. Keep the same key across redeploys; a new key cannot decrypt the existing database. Do not reuse your dashboard password. |
 
-After deployment, open the site, select **登录查看** (Sign in), and use `owner` with `PROFILE_PASSWORD`. If you deployed the demo first, imported a fork, or need to rotate a key, use **Project → Settings → Environment Variables**, then redeploy. Keep credentials scoped to **Production** unless you intend to use them in previews.
+After deployment, open **连接平台** (Connect platforms), sign in, and follow the platform instructions. Steam requires a [SteamID64](https://store.steampowered.com/account/) and a [Web API key](https://steamcommunity.com/dev/apikey). PlayStation uses an NPSSO copied from Sony; Nintendo uses a copied callback link. Never enter a platform password on the dashboard.
+
+## Upgrade an existing fork
+
+1. Bring your fork up to date with the template. If it was created from a template rather than forked, merge the upstream changes into your repository; do not create a new Vercel project.
+2. In the existing Vercel project, create and connect a dedicated Neon database under **Storage**. Verify that it added `DATABASE_URL` for Production. Add `PROFILE_ENCRYPTION_KEY` in **Settings → Environment Variables** and keep your existing `PROFILE_PASSWORD`.
+3. Redeploy Production, then open `/connect.html`. Existing `STEAM_ID` and `STEAM_WEB_API_KEY` still work. Connections saved from the dashboard take precedence. Connect PlayStation and Nintendo again; credentials from other deployments are not copied.
 
 ## Local development
 
@@ -35,24 +39,25 @@ Requires Node.js 24.
 ```sh
 git clone https://github.com/AweStudioX/game-profile.git
 cd game-profile
+npm ci
 npm run dev
 ```
 
-Open <http://127.0.0.1:3000>. For a local Steam profile, copy [`.env.example`](.env.example) to `.env.local`, fill in all three values, and restart the server. Run `npm test` to verify changes.
+Open <http://127.0.0.1:3000> for the bundled demo. For a private profile, copy [`.env.example`](.env.example) to `.env.local` and configure a dedicated local PostgreSQL database and both secrets. Run `npm test` to verify changes.
 
 ## Troubleshooting
 
 | Symptom | What to check |
 | --- | --- |
-| The dashboard still shows demo data | Check the environment scope and redeploy. |
-| The dashboard says setup is incomplete | Set all three variables and check their formats. |
+| The dashboard still shows demo data | Verify the variables are set in Production and redeploy. |
+| The connection page cannot open storage | Check `DATABASE_URL` and `PROFILE_ENCRYPTION_KEY`. If reinstalling, use the original encryption key or a new database. |
 | Steam data is unavailable | Verify the key and SteamID64, and check that Steam's **Game details** privacy setting allows API access. |
 
 ## Privacy
 
 - A real profile's data endpoints require owner sign-in. The page shell and setup guide remain public; personal API responses are not cached by browsers or CDNs.
-- Library and activity snapshots are kept in function memory for up to five minutes and one minute, respectively, per warm instance. There is no database or scheduled sync. Artwork loads directly from Steam's CDN.
-- The deployment operator is responsible for their configuration, data processing region, and compliance with the [Steam Web API Terms](https://steamcommunity.com/dev/apiterms). This project is not affiliated with Valve.
+- Platform credentials and snapshots are encrypted in PostgreSQL. Use a dedicated database per deployment. Artwork loads directly from platform CDNs.
+- PlayStation and Nintendo use unofficial interfaces that can break or require reauthorization. The operator is responsible for compliance with platform terms, including the [Steam Web API Terms](https://steamcommunity.com/dev/apiterms). This project is not affiliated with the platforms.
 
 ## Contributing
 

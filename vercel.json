@@ -3,6 +3,12 @@
   "framework": null,
   "outputDirectory": "public",
   "buildCommand": "",
+  "functions": {
+    "api/sync.mjs": { "experimentalTriggers": [{ "type": "schedule/v1beta" }] }
+  },
+  "schedules": {
+    "profile-hourly": { "schedule": "0 * * * *", "function": "api/sync" }
+  },
   "headers": [
     {
       "source": "/(.*)",

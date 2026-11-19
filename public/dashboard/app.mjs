@@ -105,7 +105,7 @@ function unlockRow(unlock) {
   return row;
 }
 
-function renderSources(sources) {
+function renderSources(sources, isDemo) {
   const ids = new Set(['steam', 'psn', 'nintendo', ...Object.keys(sources).filter(id => sources[id]?.status !== 'disabled')]);
   const rows = Array.from(ids, id => {
     const source = sources[id];
@@ -119,7 +119,9 @@ function renderSources(sources) {
       info.append(time);
     }
     const status = source?.status ?? (id === 'nintendo' ? 'disabled' : null);
-    const badge = node('span', sourceLabel(status), 'badge');
+    const canConnect = !isDemo && ['steam', 'psn', 'nintendo'].includes(id) && (!status || ['disabled', 'not-configured', 'reconnect-required'].includes(status));
+    const badge = node(canConnect ? 'a' : 'span', canConnect ? (status === 'reconnect-required' ? '重新连接' : '去连接') : sourceLabel(status), 'badge');
+    if (canConnect) badge.href = `/connect.html#${id}-title`;
     if (status === 'ready') badge.dataset.tone = 'active';
     row.append(info, badge);
     return row;
@@ -374,11 +376,14 @@ function renderLibrary(append = false) {
   if (append) cards[0]?.firstElementChild.focus();
 }
 
-function showLibrary(payload) {
+function showLibrary(payload, isDemo) {
   model = libraryModel(payload);
-  renderSources(model.sources);
+  renderSources(model.sources, isDemo);
   if (!Array.isArray(payload.games) || payload.status === 'unavailable') {
-    $('library-status').textContent = '游戏库暂不可用，请稍后刷新。';
+    const link = node('a', '检查平台连接');
+    link.href = '/connect.html';
+    const hasConnection = Object.values(model.sources).some(source => !['disabled', 'not-configured'].includes(source.status));
+    $('library-status').replaceChildren(hasConnection ? '游戏库暂不可用。 ' : '还没有连接游戏账号。 ', link);
     return;
   }
   if (model.knownSeconds !== null) $('hours').replaceChildren(node('span', hours.format(model.knownSeconds / 3600)), node('small', model.incomplete ? ' 小时 · 部分' : ' 小时'));
@@ -412,7 +417,7 @@ async function init() {
     note.hidden = false;
   }
   if (mode === 'incomplete') {
-    note.replaceChildren(node('strong', 'Steam 配置尚未完成'));
+    note.replaceChildren(node('strong', '部署配置尚未完成'));
     const rules = {
       STEAM_ID: '请填写 17 位纯数字的 SteamID64。',
       STEAM_WEB_API_KEY: '请填写 32 位十六进制字符，只粘贴 Key。',
@@ -428,7 +433,7 @@ async function init() {
     }
     if (list.childElementCount) note.append(list);
     const help = node('a', '查看配置指南');
-    help.href = '/setup.html#steam-setup';
+    help.href = '/setup.html#platform-storage';
     const next = node('p');
     next.append('在 Vercel → Settings → Environment Variables 修正后，重新部署。 ', help);
     note.append(next);
@@ -448,7 +453,7 @@ async function init() {
     $('library').hidden = true;
     return;
   }
-  if (library.status === 'fulfilled') showLibrary(library.value);
+  if (library.status === 'fulfilled') showLibrary(library.value, mode === 'demo');
   else $('library-status').textContent = '未能读取游戏库，请刷新页面重试。';
   renderActivity(activity.status === 'fulfilled' ? activity.value : { state: 'unknown' });
 }

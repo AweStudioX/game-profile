@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>连接平台 · Game Profile</title>
+  <link rel="stylesheet" href="/dashboard/style.css">
+  <script type="module" src="/dashboard/connect.mjs"></script>
+</head>
+<body>
+  <header class="bar"><div class="frame bar-inner"><a class="wordmark" href="/">GAME<span>.</span> PROFILE</a><a class="private" href="/">返回游戏库</a></div></header>
+  <main class="frame">
+    <section class="intro home-intro">
+      <p class="eyebrow">ACCOUNT CONNECTIONS</p>
+      <h1>连接平台<span>.</span></h1>
+      <p class="deck">只连接你自己的账号，不要在这里输入平台密码。</p>
+      <p id="connect-status" class="profile-note" role="status">正在读取连接状态…</p>
+    </section>
+    <section class="panel setup-guide" id="sync-settings" aria-labelledby="profile-title" hidden>
+      <h2 id="profile-title">自动同步</h2>
+      <p class="muted">只更新游戏库和游玩记录，无需开着网页。每日同步从 UTC 02:00 开始（北京时间 10:00）。</p>
+      <form id="schedule-form" class="connect-form" method="post" action="/api/profile?resource=platform-action">
+        <label>同步频率<select name="cadence"><option value="daily">每天一次</option><option value="hourly">每小时一次</option></select></label>
+        <button type="submit">保存频率</button>
+      </form>
+      <p id="sync-last" class="muted"></p>
+      <p id="profile-result" role="status" class="profile-note"></p>
+    </section>
+    <div class="panels connect-panels" id="owner-platforms" hidden>
+      <section class="panel" aria-labelledby="steam-title">
+        <div class="panel-head"><h2 id="steam-title">Steam</h2><span class="badge" id="steam-status"></span></div>
+        <p class="muted">从 <a href="https://store.steampowered.com/account/" target="_blank" rel="noreferrer">账户明细</a>复制 17 位 SteamID64，从 <a href="https://steamcommunity.com/dev/apikey" target="_blank" rel="noreferrer">Steam 官方页面</a>取得 Web API Key。游戏详情需允许 API 读取。</p>
+        <form id="steam-form" class="connect-form" method="post" action="/api/profile?resource=platform-action" autocomplete="off">
+          <label>SteamID64<input name="steamId" inputmode="numeric" pattern="[0-9]{17}" maxlength="17" required autocomplete="off"></label>
+          <label>Steam Web API Key<input name="apiKey" type="password" pattern="[a-fA-F0-9]{32}" maxlength="32" required spellcheck="false" autocomplete="off"></label>
+          <button type="submit">保存 Steam 连接</button>
+        </form>
+        <div class="connect-actions" id="steam-actions" hidden>
+          <button type="button" data-provider="steam" data-action="refresh">立即同步</button>
+        </div>
+        <p id="steam-result" role="status" class="profile-note"></p>
+      </section>
+      <section class="panel" aria-labelledby="psn-title">
+        <div class="panel-head"><h2 id="psn-title">PlayStation</h2><span class="badge" id="psn-status"></span></div>
+        <ol>
+          <li><a href="https://www.playstation.com/" target="_blank" rel="noreferrer">登录 PlayStation 官网</a>。</li>
+          <li>在同一浏览器打开 <a href="https://ca.account.sony.com/api/v1/ssocookie" target="_blank" rel="noreferrer">Sony 授权结果页</a>，复制 NPSSO 或整段 JSON。</li>
+          <li>识别后核对 Online ID，再确认绑定。</li>
+        </ol>
+        <form id="psn-form" class="connect-form" method="post" action="/api/profile?resource=platform-action" autocomplete="off">
+          <label>NPSSO 或 Sony JSON<input name="npsso" type="password" maxlength="1024" required spellcheck="false" autocomplete="off"></label>
+          <button type="submit">识别 PlayStation 账号</button>
+        </form>
+        <div id="psn-review" class="connect-form" hidden>
+          <p>Online ID：<strong id="psn-owner"></strong></p>
+          <button id="psn-confirm" type="button">确认绑定</button>
+        </div>
+        <div class="connect-actions" id="psn-actions" hidden>
+          <button type="button" data-provider="psn" data-action="refresh">立即同步</button>
+          <button type="button" data-provider="psn" data-action="disconnect">断开连接</button>
+        </div>
+        <p id="psn-result" role="status" class="profile-note"></p>
+      </section>
+      <section class="panel" aria-labelledby="nintendo-title">
+        <div class="panel-head"><h2 id="nintendo-title">Nintendo Switch</h2><span class="badge" id="nintendo-status"></span></div>
+        <ol>
+          <li>生成专用链接后，用它打开 Nintendo 官网并登录。</li>
+          <li>在 Nintendo 账号选择页，右键「选择此人」，复制链接地址，不要直接点按钮。</li>
+          <li>将完整的 <code>npf…://auth#…</code> 链接粘贴到下方。过期时重新生成专用链接。</li>
+        </ol>
+        <div class="connect-actions">
+          <button id="nintendo-start" type="button">生成登录链接</button>
+          <a id="nintendo-auth" target="_blank" rel="noreferrer" hidden>打开 Nintendo 官网</a>
+        </div>
+        <form id="nintendo-form" class="connect-form" method="post" action="/api/profile?resource=platform-action" autocomplete="off" hidden>
+          <label>登录后的回调链接<input name="callback" type="password" maxlength="8192" required spellcheck="false" autocomplete="off"></label>
+          <button type="submit">提交回调链接</button>
+        </form>
+        <div class="connect-actions" id="nintendo-actions" hidden>
+          <button type="button" data-provider="nintendo" data-action="refresh">立即同步</button>
+          <button type="button" data-provider="nintendo" data-action="disconnect">断开连接</button>
+        </div>
+        <p id="nintendo-result" role="status" class="profile-note"></p>
+      </section>
+    </div>
+    <p class="connect-note muted">PlayStation 和 Nintendo 为可选的非官方接入，接口可能变动，也可能受账号所在地区的服务条款限制。Nintendo 仅同步游玩记录，不提供成就或实时活动。不要分享授权结果或回调链接。</p>
+  </main>
+</body>
+</html>

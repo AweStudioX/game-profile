@@ -74,7 +74,7 @@ dialog{color:var(--text);background:var(--surface);width:min(100% - 24px,590px);
 .connect-panels li+li{margin-top:6px}
 .connect-form{display:grid;gap:14px;margin-top:16px}
 .connect-form label{display:grid;gap:5px}
-.connect-form input,.connect-form button,.connect-actions button{min-height:44px;padding:8px 12px;border:1px solid var(--border);border-radius:10px;background:var(--raised)}
+.connect-form input,.connect-form select,.connect-form button,.connect-actions button{min-height:44px;padding:8px 12px;border:1px solid var(--border);border-radius:10px;background:var(--raised);color:inherit}
 .connect-form button,.connect-actions button{justify-self:start}
 .connect-form button:disabled,.connect-actions button:disabled{opacity:.65;cursor:wait}
 .connect-actions{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
