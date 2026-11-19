@@ -19,15 +19,15 @@ You can also fork this repository and [import your fork](https://vercel.com/new)
 
 ## Connect Steam
 
-The Steam deploy link requests all three variables during setup. If you deployed the demo first or imported a fork, add them under **Project → Settings → Environment Variables**. Keep real credentials scoped to **Production** unless you also intend to use them in previews.
+Get the three values below before clicking **Deploy your Steam profile**. In Vercel, choose your GitHub destination and enter the values in the **Environment Variables** step before clicking **Deploy**. The form’s help link returns to this checklist.
 
-| Variable | Value |
+| Variable | Where to get it |
 | --- | --- |
-| `STEAM_ID` | Your 17-digit SteamID64 from [Steam Account Details](https://store.steampowered.com/account/). |
-| `STEAM_WEB_API_KEY` | [Your own Steam Web API key](https://steamcommunity.com/dev/apikey). Save as **Secret**. |
-| `PROFILE_PASSWORD` | A randomly generated password, 16–120 printable ASCII characters with no spaces. Save as **Secret**. Do not reuse your Steam password. |
+| `STEAM_ID` | Sign in to [Steam Account Details](https://store.steampowered.com/account/) and copy the **17-digit Steam ID** shown under your account name. Do not use your nickname or a custom profile URL. |
+| `STEAM_WEB_API_KEY` | Sign in to the [Steam Web API Key page](https://steamcommunity.com/dev/apikey). Copy your registered key or register one for the hostname you intend to use. Paste only the key into Vercel, not the domain name. Save it as **Secret** wherever Vercel offers the option. |
+| `PROFILE_PASSWORD` | Generate a new password in your password manager: 16–120 printable ASCII characters, no spaces. This is the password for the game dashboard, not one issued by Steam or Vercel. Save it as **Secret** wherever Vercel offers the option. |
 
-Redeploy after adding or changing the variables. On the dashboard, select **登录查看** (Sign in) and use `owner` with `PROFILE_PASSWORD`. No Steam credentials are entered into the dashboard.
+After deployment, open the site, select **登录查看** (Sign in), and use `owner` with `PROFILE_PASSWORD`. If you deployed the demo first, imported a fork, or need to rotate a key, use **Project → Settings → Environment Variables**, then redeploy. Keep credentials scoped to **Production** unless you intend to use them in previews.
 
 ## Local development
 

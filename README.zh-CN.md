@@ -19,15 +19,15 @@
 
 ## 连接 Steam
 
-从 Steam 部署入口进入，Vercel 会在初始化时要求填写下列三项。如果先部署了 Demo 或手动导入了 fork，可到 **Project → Settings → Environment Variables** 补填。除非也想在预览环境使用真实数据，否则只配置到 **Production**。
+点「部署我的 Steam 档案」前，请先备好下表三项。进入 Vercel 后选择 GitHub 仓库归属，在 **Environment Variables** 步骤填齐，再点 **Deploy**。表单里的帮助链接也会带你回到这份清单。
 
-| 配置项 | 填写内容 |
+| 配置项 | 去哪里找 |
 | --- | --- |
-| `STEAM_ID` | 17 位 SteamID64，可在 [Steam 账户明细](https://store.steampowered.com/account/)查看。 |
-| `STEAM_WEB_API_KEY` | [自行申请的 Steam Web API Key](https://steamcommunity.com/dev/apikey)，保存为 **Secret**。 |
-| `PROFILE_PASSWORD` | 随机生成的看板密码，16–120 位可打印 ASCII 字符，不含空格。保存为 **Secret**，不要复用 Steam 密码。 |
+| `STEAM_ID` | 登录 [Steam 账户明细](https://store.steampowered.com/account/)，复制账户名下方的 **17 位 Steam ID**。不要填昵称或自定义主页链接。 |
+| `STEAM_WEB_API_KEY` | 登录 [Steam Web API Key 页面](https://steamcommunity.com/dev/apikey)，复制已有 Key，或用计划部署的站点域名申请。Vercel 这里只填 Key，不填域名；如果界面提供 **Secret** 选项，就用它保存。 |
+| `PROFILE_PASSWORD` | 在密码管理器里新生成一个 16–120 位、不含空格的可打印 ASCII 密码。这是看板密码，不是 Steam 密码，也不需要向 Vercel 申请；如果界面提供 **Secret** 选项，就用它保存。 |
 
-新增或修改变量后，重新部署。打开看板，点击 **登录查看**，用 `owner` 和 `PROFILE_PASSWORD` 登录。无需在看板里输入 Steam 凭证。
+部署完成后，打开站点并点击 **登录查看**，用户名填 `owner`，密码填你刚设的 `PROFILE_PASSWORD`。如果先部署了 Demo、手动导入了 fork，或之后要换 Key，到 **Project → Settings → Environment Variables** 填写，再重新部署。除非也想在预览环境使用真实数据，否则只配置到 **Production**。
 
 ## 本地开发
 
