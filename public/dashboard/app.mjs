@@ -405,14 +405,33 @@ $('more').addEventListener('click', () => { shown += pageSize; renderLibrary(tru
 $('detail').addEventListener('close', () => modalRequest?.abort());
 
 async function init() {
-  const { mode } = await data('setup');
+  const { mode, issues } = await data('setup');
   const note = $('profile-note');
   if (mode === 'demo') {
     note.textContent = '演示模式 · 以下为虚构记录';
     note.hidden = false;
   }
   if (mode === 'incomplete') {
-    note.textContent = 'Steam 配置尚未完成。请查看配置说明。';
+    note.replaceChildren(node('strong', 'Steam 配置尚未完成'));
+    const rules = {
+      STEAM_ID: '请填写 17 位纯数字的 SteamID64。',
+      STEAM_WEB_API_KEY: '请填写 32 位十六进制字符，只粘贴 Key。',
+      PROFILE_PASSWORD: '请填写 12–120 位可打印 ASCII 字符，不含空格、中文或 emoji。',
+    };
+    const list = node('ul');
+    for (const [name, rule] of Object.entries(rules)) {
+      const issue = issues?.[name];
+      if (issue !== 'missing' && issue !== 'invalid') continue;
+      const row = node('li');
+      row.append(node('code', name), issue === 'missing' ? '：未配置。' : '：格式不正确。', rule);
+      list.append(row);
+    }
+    if (list.childElementCount) note.append(list);
+    const help = node('a', '查看配置指南');
+    help.href = '/setup.html#steam-setup';
+    const next = node('p');
+    next.append('在 Vercel → Settings → Environment Variables 修正后，重新部署。 ', help);
+    note.append(next);
     note.hidden = false;
     $('overview').hidden = true;
     $('library').hidden = true;

@@ -24,7 +24,7 @@ Vercel 会在首次部署前要求填齐[三项配置](#连接-steam)。Vercel H
 | --- | --- |
 | `STEAM_ID` | 登录 [Steam 账户明细](https://store.steampowered.com/account/)，复制账户名下方的 **17 位 Steam ID**。不要填昵称或自定义主页链接。 |
 | `STEAM_WEB_API_KEY` | 登录 [Steam Web API Key 页面](https://steamcommunity.com/dev/apikey)，复制已有 Key，或用计划部署的站点域名申请。Vercel 这里只填 Key，不填域名；如果界面提供 **Secret** 选项，就用它保存。 |
-| `PROFILE_PASSWORD` | 在密码管理器里新生成一个 16–120 位、不含空格的可打印 ASCII 密码。这是看板密码，不是 Steam 密码，也不需要向 Vercel 申请；如果界面提供 **Secret** 选项，就用它保存。 |
+| `PROFILE_PASSWORD` | 用密码管理器生成 12–120 位不含空格的可打印 ASCII 密码，推荐至少 16 位。支持常见符号。如果 Vercel 提供 **Secret** 选项，用它保存；不要复用 Steam 密码。 |
 
 部署完成后，打开站点并点击 **登录查看**，用户名填 `owner`，密码填你刚设的 `PROFILE_PASSWORD`。如果先部署了 Demo、手动导入了 fork，或之后要换 Key，到 **Project → Settings → Environment Variables** 填写，再重新部署。除非也想在预览环境使用真实数据，否则只配置到 **Production**。
 

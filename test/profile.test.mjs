@@ -19,10 +19,25 @@ test('clean deployment runs an anonymous demo with canonical cross-platform prog
   assert.deepEqual(detail.progress.sets.map(set => set.source), ['psn', 'steam']);
 });
 
-test('partial deployment fails closed without contacting Steam', async () => {
-  const handle = createProfile({ env: { STEAM_WEB_API_KEY: key }, fetchImpl: () => assert.fail('incomplete config must not contact Steam') });
-  assert.deepEqual(await (await get(handle, 'setup')).json(), { mode: 'incomplete' });
+test('partial deployment identifies missing and malformed settings without exposing values', async () => {
+  const handle = createProfile({
+    env: { STEAM_ID: id, PROFILE_PASSWORD: 'secret with spaces' },
+    fetchImpl: () => assert.fail('incomplete config must not contact Steam'),
+  });
+  assert.deepEqual(await (await get(handle, 'setup')).json(), {
+    mode: 'incomplete',
+    issues: { STEAM_WEB_API_KEY: 'missing', PROFILE_PASSWORD: 'invalid' },
+  });
   assert.equal((await get(handle, 'library')).status, 503);
+});
+
+test('accepts a 14-character password with punctuation without weakening the login check', async () => {
+  const value = 'Dev$pass42!Ab?';
+  const handle = createProfile({ env: { ...env, PROFILE_PASSWORD: value } });
+  const credentials = candidate => ({ Authorization: `Basic ${Buffer.from(`owner:${candidate}`).toString('base64')}` });
+  assert.deepEqual(await (await get(handle, 'setup')).json(), { mode: 'private' });
+  assert.equal((await get(handle, 'login', credentials(`${value}x`))).status, 401);
+  assert.equal((await get(handle, 'login', credentials(value))).status, 303);
 });
 
 test('real profile is private and uses configured Steam credentials only server-side', async () => {
