@@ -6,10 +6,10 @@
 
 ## 快速开始
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FAweStudioX%2Fgame-profile&project-name=game-profile&repository-name=game-profile)
+- **[部署 Demo](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FAweStudioX%2Fgame-profile&project-name=game-profile&repository-name=game-profile)** — 不用填写凭证，直接体验虚构数据。
+- **[部署我的 Steam 档案](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FAweStudioX%2Fgame-profile&project-name=game-profile&repository-name=game-profile&env=STEAM_ID,STEAM_WEB_API_KEY,PROFILE_PASSWORD&envDescription=%E8%AF%B7%E5%A1%AB%E5%86%99%20SteamID64%E3%80%81Steam%20Web%20API%20Key%20%E5%92%8C%E7%8B%AC%E7%AB%8B%E7%9A%84%E7%9C%8B%E6%9D%BF%E5%AF%86%E7%A0%81%E3%80%82&envLink=https%3A%2F%2Fgithub.com%2FAweStudioX%2Fgame-profile%2Fblob%2Fmain%2FREADME.zh-CN.md%23%E8%BF%9E%E6%8E%A5-steam)** — Vercel 会在首次部署前要求填齐[三项配置](#连接-steam)。
 
-1. 点击 **Deploy with Vercel**，或 fork 后[导入自己的仓库](https://vercel.com/new)。使用仓库根目录，保留 `vercel.json` 的默认配置。
-2. 不填环境变量即可体验虚构数据。要查看自己的记录，见[连接 Steam](#连接-steam)。
+也可以先 fork，再[导入自己的仓库](https://vercel.com/new)。使用仓库根目录，保留 `vercel.json` 的默认配置。Vercel Hobby 用户应将新仓库建在个人 GitHub 名下，不要选 GitHub 组织。
 
 ## 功能
 
@@ -19,7 +19,7 @@
 
 ## 连接 Steam
 
-在 Vercel 部署表单或 **Project → Settings → Environment Variables** 中填齐下列三项。除非也想在预览环境使用真实数据，否则只配置到 **Production**。
+从 Steam 部署入口进入，Vercel 会在初始化时要求填写下列三项。如果先部署了 Demo 或手动导入了 fork，可到 **Project → Settings → Environment Variables** 补填。除非也想在预览环境使用真实数据，否则只配置到 **Production**。
 
 | 配置项 | 填写内容 |
 | --- | --- |
