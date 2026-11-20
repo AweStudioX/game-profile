@@ -5,10 +5,6 @@ const number = new Intl.NumberFormat('zh-CN');
 const hours = new Intl.NumberFormat('zh-CN', { maximumFractionDigits: 1 });
 const date = new Intl.DateTimeFormat('zh-CN', { dateStyle: 'medium', timeStyle: 'short' });
 const ready = new Set(['ready', 'stale']);
-const statuses = {
-  ready: '已同步', stale: '已过期', disabled: '未接入', 'not-configured': '未配置',
-  unavailable: '不可用', private: '隐私受限', 'reconnect-required': '需要重连', partial: '部分可用',
-};
 const pageSize = 24;
 let model;
 let activeProvider = '';
@@ -26,10 +22,6 @@ function playtime(seconds) {
   if (!Number.isFinite(seconds)) return '时长未知';
   if (seconds === 0) return '0 小时';
   return seconds < 3600 ? `${Math.max(1, Math.round(seconds / 60))} 分钟` : `${hours.format(seconds / 3600)} 小时`;
-}
-
-function sourceLabel(status) {
-  return Object.hasOwn(statuses, status) ? statuses[status] : '状态未知';
 }
 
 async function data(path, signal) {
@@ -118,66 +110,30 @@ function unlockRow(unlock) {
   return row;
 }
 
-function renderSources(sources, isDemo) {
-  const ids = new Set(['steam', 'psn', 'nintendo', ...Object.keys(sources).filter(id => sources[id]?.status !== 'disabled')]);
-  const rows = Array.from(ids, id => {
-    const source = sources[id];
+function renderReconnectNotices(sources) {
+  const list = $('reconnect-notices');
+  const notices = Object.entries(sources).filter(([, source]) => source?.status === 'reconnect-required');
+  list.replaceChildren(...notices.map(([id]) => {
     const row = node('li');
-    const info = node('div');
-    info.append(platformTag(id));
-    const updated = Date.parse(source?.lastSuccessAt);
-    if (Number.isFinite(updated)) {
-      const time = node('time', date.format(updated));
-      time.dateTime = source.lastSuccessAt;
-      info.append(time);
-    }
-    const status = source?.status ?? (id === 'nintendo' ? 'disabled' : null);
-    const canConnect = !isDemo && ['steam', 'psn', 'nintendo'].includes(id) && (!status || ['disabled', 'not-configured', 'reconnect-required'].includes(status));
-    const badge = node(canConnect ? 'a' : 'span', canConnect ? (status === 'reconnect-required' ? '重新连接' : '去连接') : sourceLabel(status), 'badge');
-    if (canConnect) badge.href = `/connect.html#${id}-title`;
-    if (status === 'ready') badge.dataset.tone = 'active';
-    row.append(info, badge);
+    const link = node('a', '重新连接');
+    link.href = ['steam', 'psn', 'nintendo'].includes(id) ? `/connect.html#${id}-title` : '/connect.html';
+    row.append(platformTag(id), '需要重新授权。', link);
     return row;
-  });
-  $('sources').replaceChildren(...rows);
+  }));
+  list.hidden = notices.length === 0;
 }
 
 function renderActivity(payload) {
-  const sessions = Array.isArray(payload.sessions) ? payload.sessions : [];
-  const live = payload.state === 'playing' && sessions.length > 0;
-  $('activity-status').textContent = live ? '游玩中' : payload.state === 'offline' ? '未检测到游玩' : '状态未知';
-  $('activity-status').dataset.tone = live ? 'active' : '';
-  const activity = live ? sessions.map(session => {
-    const item = node('div', undefined, 'session');
-    item.append(node('strong', session.game?.name ?? '未命名游戏'));
-    const origins = [session.primarySource, session.platform].filter(id => id && id !== 'unknown');
-    if (origins.length) {
-      const meta = node('small', undefined, 'record-meta');
-      meta.append(...origins.map(id => platformTag(id)));
-      item.append(meta);
-    }
+  const activity = $('activity');
+  const sessions = payload.state === 'playing' && Array.isArray(payload.sessions) ? payload.sessions : [];
+  activity.hidden = sessions.length === 0;
+  activity.replaceChildren(...sessions.map(session => {
+    const item = node('div', undefined, 'catalog-session');
+    item.append(node('span', '正在游玩', 'catalog-live'), node('strong', session.game?.name ?? '未命名游戏'));
+    const origins = new Set([session.primarySource, session.platform].filter(id => id && id !== 'unknown'));
+    for (const id of origins) item.append(platformTag(id));
     return item;
-  }) : [node('p', payload.state === 'offline' ? '已检查的平台未报告正在游玩的游戏。' : '暂无可用的活动快照。', 'muted')];
-
-  const sources = node('ul', undefined, 'activity-sources');
-  for (const [provider, source] of Object.entries(payload.sources ?? {})) {
-    if (source.status === 'disabled') continue;
-    const row = node('li');
-    row.append(platformTag(provider));
-    const timestamp = Date.parse(source.lastSuccessAt);
-    if (Number.isFinite(timestamp)) {
-      const time = node('time', date.format(timestamp));
-      time.dateTime = source.lastSuccessAt;
-      row.append(time);
-    }
-    if (source.status !== 'ready') row.append(node('span', sourceLabel(source.status)));
-    sources.append(row);
-  }
-  if (sources.childElementCount) {
-    sources.setAttribute('aria-label', '活动快照来源与时间');
-    activity.push(sources);
-  }
-  $('activity').replaceChildren(...activity);
+  }));
 }
 
 function renderUnlockSet(set, game, showSetName) {
@@ -346,12 +302,12 @@ function gameCard(game, index) {
     cover.append(image);
   }
   const body = node('span', undefined, 'game-body');
+  body.append(node('strong', game.name, 'game-name'));
   if (game.providers.length) {
     const platforms = node('span', undefined, 'game-provider record-meta');
     platforms.append(...game.providers.map(id => platformTag(id)));
     body.append(platforms);
   }
-  body.append(node('strong', game.name, 'game-name'));
   body.append(node('span', [playtime(game.seconds), ...game.platforms.map(label)].join(' · '), 'game-meta'));
   if (game.lastPlayed !== null) {
     const time = node('time', date.format(game.lastPlayed), 'game-meta');
@@ -389,9 +345,9 @@ function renderLibrary(append = false) {
   if (append) cards[0]?.firstElementChild.focus();
 }
 
-function showLibrary(payload, isDemo) {
+function showLibrary(payload) {
   model = libraryModel(payload);
-  renderSources(model.sources, isDemo);
+  renderReconnectNotices(model.sources);
   if (!Array.isArray(payload.games) || payload.status === 'unavailable') {
     const link = node('a', '检查平台连接');
     link.href = '/connect.html';
@@ -403,21 +359,7 @@ function showLibrary(payload, isDemo) {
   $('game-count').textContent = number.format(model.games.length);
   $('played-count').textContent = number.format(model.games.filter(game => game.seconds > 0).length);
   $('source-count').textContent = number.format(Object.values(model.sources).filter(source => ready.has(source?.status)).length);
-  const counts = Object.entries(model.providerCounts).sort(([, a], [, b]) => b - a);
-  $('archive-counts').replaceChildren(...counts.map(([provider, count]) => {
-    const row = node('div');
-    const term = node('dt');
-    term.append(platformTag(provider));
-    const value = node('dd');
-    const meter = node('meter');
-    meter.max = counts[0][1];
-    meter.value = count;
-    meter.setAttribute('aria-hidden', 'true');
-    value.append(meter, node('span', number.format(count)));
-    row.append(term, value);
-    return row;
-  }));
-  $('archive-counts').parentElement.hidden = counts.length === 0;
+  $('hours').closest('dl').hidden = false;
   $('toolbar').hidden = false;
   renderFilters();
   renderLibrary();
@@ -513,12 +455,11 @@ async function init() {
     $('library').hidden = true;
     return;
   }
-  if (library.status === 'fulfilled') showLibrary(library.value, mode === 'demo');
+  if (library.status === 'fulfilled') showLibrary(library.value);
   else $('library-status').textContent = '未能读取游戏库，请刷新页面重试。';
-  renderActivity(activity.status === 'fulfilled' ? activity.value : { state: 'unknown' });
+  if (activity.status === 'fulfilled') renderActivity(activity.value);
 }
 
 init().catch(() => {
   $('library-status').textContent = '未能连接档案服务，请刷新页面重试。';
-  renderActivity({ state: 'unknown' });
 });

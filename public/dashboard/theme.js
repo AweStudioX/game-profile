@@ -1,29 +1,68 @@
 (() => {
   const key = 'game-profile-theme';
   const root = document.documentElement;
-  const themes = ['classic', 'pixel', 'neon'];
+  const themes = { classic: '经典', pixel: '像素', neon: '霓虹都市' };
   const savedTheme = () => {
     try {
       const value = localStorage.getItem(key);
-      return themes.includes(value) ? value : 'classic';
+      return Object.hasOwn(themes, value) ? value : 'classic';
     } catch { return 'classic'; }
   };
   root.dataset.theme = savedTheme();
   document.addEventListener('DOMContentLoaded', () => {
-    const picker = document.querySelector('.theme-toggle');
-    const apply = theme => {
+    const picker = document.querySelector('.theme-picker');
+    const trigger = document.createElement('button');
+    trigger.className = 'theme-toggle';
+    trigger.type = 'button';
+    trigger.setAttribute('aria-controls', 'theme-options');
+    const menu = document.createElement('div');
+    menu.id = 'theme-options';
+    menu.className = 'theme-options';
+    menu.setAttribute('role', 'group');
+    menu.setAttribute('aria-label', '外观主题');
+    const options = Object.entries(themes).map(([theme, name]) => {
+      const option = document.createElement('button');
+      option.type = 'button';
+      option.textContent = name;
+      option.addEventListener('click', () => {
+        apply(theme);
+        try { localStorage.setItem(key, theme); } catch { /* The current page still switches themes. */ }
+        setOpen(false);
+        trigger.focus();
+      });
+      return [theme, option];
+    });
+    function apply(theme) {
       root.dataset.theme = theme;
-      picker.value = theme;
-    };
+      trigger.textContent = `主题：${themes[theme]}`;
+      for (const [value, option] of options) option.setAttribute('aria-pressed', String(theme === value));
+    }
+    function setOpen(open) {
+      trigger.setAttribute('aria-expanded', String(open));
+      menu.hidden = !open;
+    }
+    menu.append(...options.map(([, option]) => option));
+    picker.append(trigger, menu);
     apply(root.dataset.theme);
-    picker.hidden = false;
-    picker.addEventListener('change', () => {
-      const theme = picker.value;
-      apply(theme);
-      try { localStorage.setItem(key, theme); } catch { /* The current page still switches themes. */ }
+    setOpen(false);
+    trigger.addEventListener('click', () => setOpen(menu.hidden));
+    picker.addEventListener('keydown', event => {
+      if (event.key !== 'Escape' || menu.hidden) return;
+      event.preventDefault();
+      setOpen(false);
+      trigger.focus();
+    });
+    picker.addEventListener('focusout', event => {
+      if (event.relatedTarget && !picker.contains(event.relatedTarget)) setOpen(false);
+    });
+    document.addEventListener('click', event => {
+      if (!menu.hidden && !picker.contains(event.target)) setOpen(false);
     });
     window.addEventListener('pageshow', event => {
-      if (event.persisted) apply(savedTheme());
+      if (event.persisted) {
+        apply(savedTheme());
+        setOpen(false);
+      }
     });
     window.addEventListener('storage', event => {
       if (event.key === key || event.key === null) apply(savedTheme());

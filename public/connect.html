@@ -10,7 +10,7 @@
   <script type="module" src="/dashboard/connect.mjs"></script>
 </head>
 <body>
-  <header class="bar"><div class="frame bar-inner"><a class="wordmark" href="/">GAME<span>.</span> PROFILE</a><nav class="bar-actions" aria-label="站点"><select class="theme-toggle" aria-label="外观主题" hidden><option value="classic">经典</option><option value="pixel">像素</option><option value="neon">霓虹都市</option></select><a class="private" href="/">返回游戏库</a></nav></div></header>
+  <header class="bar"><div class="frame bar-inner"><a class="wordmark" href="/">GAME<span>.</span> PROFILE</a><nav class="bar-actions" aria-label="站点"><div class="theme-picker"></div><a class="private" href="/">返回游戏库</a></nav></div></header>
   <main class="frame">
     <section class="intro home-intro">
       <p class="eyebrow">ACCOUNT CONNECTIONS</p>
@@ -30,7 +30,8 @@
     </section>
     <div class="panels connect-panels" id="owner-platforms" hidden>
       <section class="panel" aria-labelledby="steam-title">
-        <div class="panel-head"><h2 id="steam-title">Steam</h2><span class="badge" id="steam-status"></span></div>
+        <div class="panel-head"><h2 id="steam-title">Steam</h2><span class="connection-state" id="steam-status"></span></div>
+        <p class="connection-time" hidden>最近成功同步：<time id="steam-synced"></time></p>
         <p class="muted">从 <a href="https://store.steampowered.com/account/" target="_blank" rel="noreferrer">账户明细</a>复制 17 位 SteamID64，从 <a href="https://steamcommunity.com/dev/apikey" target="_blank" rel="noreferrer">Steam 官方页面</a>取得 Web API Key。游戏详情需允许 API 读取。</p>
         <form id="steam-form" class="connect-form" method="post" action="/api/profile?resource=platform-action" autocomplete="off">
           <label>SteamID64<input name="steamId" inputmode="numeric" pattern="[0-9]{17}" maxlength="17" required autocomplete="off"></label>
@@ -43,7 +44,8 @@
         <p id="steam-result" role="status" class="profile-note"></p>
       </section>
       <section class="panel" aria-labelledby="psn-title">
-        <div class="panel-head"><h2 id="psn-title">PlayStation</h2><span class="badge" id="psn-status"></span></div>
+        <div class="panel-head"><h2 id="psn-title">PlayStation</h2><span class="connection-state" id="psn-status"></span></div>
+        <p class="connection-time" hidden>最近成功同步：<time id="psn-synced"></time></p>
         <ol>
           <li><a href="https://www.playstation.com/" target="_blank" rel="noreferrer">登录 PlayStation 官网</a>。</li>
           <li>在同一浏览器打开 <a href="https://ca.account.sony.com/api/v1/ssocookie" target="_blank" rel="noreferrer">Sony 授权结果页</a>，复制 NPSSO 或整段 JSON。</li>
@@ -64,7 +66,8 @@
         <p id="psn-result" role="status" class="profile-note"></p>
       </section>
       <section class="panel" aria-labelledby="nintendo-title">
-        <div class="panel-head"><h2 id="nintendo-title">Nintendo Switch</h2><span class="badge" id="nintendo-status"></span></div>
+        <div class="panel-head"><h2 id="nintendo-title">Nintendo Switch</h2><span class="connection-state" id="nintendo-status"></span></div>
+        <p class="connection-time" hidden>最近成功同步：<time id="nintendo-synced"></time></p>
         <ol>
           <li>生成专用链接后，用它打开 Nintendo 官网并登录。</li>
           <li>在 Nintendo 账号选择页，右键「选择此人」，复制链接地址，不要直接点按钮。</li>

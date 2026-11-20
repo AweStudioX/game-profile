@@ -1,5 +1,6 @@
 const $ = id => document.getElementById(id);
 const endpoint = resource => `/api/profile?resource=${resource}`;
+const dateFormat = new Intl.DateTimeFormat('zh-CN', { dateStyle: 'medium', timeStyle: 'short' });
 const statuses = {
   ready: '已同步', stale: '待刷新', connected: '已连接', 'not-configured': '未连接',
   'reconnect-required': '需要重连', private: '隐私受限', unavailable: '暂不可用',
@@ -57,9 +58,16 @@ async function refreshStatus() {
   for (const id of ['steam', 'psn', 'nintendo']) {
     const source = sources[id];
     const status = source?.status ?? 'not-configured';
-    const badge = $(`${id}-status`);
-    badge.textContent = statuses[status] ?? '状态未知';
-    badge.dataset.tone = status === 'ready' ? 'active' : '';
+    const state = $(`${id}-status`);
+    state.textContent = statuses[status] ?? '状态未知';
+    state.dataset.tone = status === 'ready' ? 'active' : '';
+    const synced = $(`${id}-synced`);
+    const timestamp = Date.parse(source?.lastSuccessAt);
+    synced.parentElement.hidden = !Number.isFinite(timestamp);
+    if (!synced.parentElement.hidden) {
+      synced.dateTime = new Date(timestamp).toISOString();
+      synced.textContent = dateFormat.format(timestamp);
+    }
     if (id === 'psn') $('psn-form').hidden = ['connected', 'ready', 'stale'].includes(status);
     $(`${id}-actions`).hidden = status === 'not-configured';
   }

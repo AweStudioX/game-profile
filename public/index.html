@@ -12,37 +12,24 @@
 <body>
   <a class="skip" href="#library">跳到游戏库</a>
   <header class="bar">
-    <div class="frame bar-inner"><a class="wordmark" href="/">GAME<span>.</span> PROFILE</a><nav class="bar-actions" aria-label="站点"><select class="theme-toggle" aria-label="外观主题" hidden><option value="classic">经典</option><option value="pixel">像素</option><option value="neon">霓虹都市</option></select><a class="private" href="/connect.html">连接平台</a></nav></div>
+    <div class="frame bar-inner"><a class="wordmark" href="/">GAME<span>.</span> PROFILE</a><nav class="bar-actions" aria-label="站点"><div class="theme-picker"></div><a class="private" href="/connect.html">连接平台</a></nav></div>
   </header>
   <main class="frame">
-    <section class="intro home-intro" aria-labelledby="title">
+    <section class="intro home-intro catalog-intro" aria-labelledby="title">
       <p class="eyebrow">PERSONAL GAME LOG</p>
       <h1 id="title">游戏日志<span>.</span></h1>
       <p class="deck">跨平台游戏库、游玩时长与成就。</p>
       <div id="profile-note" class="profile-note" role="status" hidden></div>
     </section>
-    <div id="overview">
-    <dl class="stats" aria-label="游戏概览">
-      <div><dt>累计已知时长</dt><dd id="hours">—</dd></div>
-      <div><dt>游戏数</dt><dd id="game-count">—</dd></div>
-      <div><dt>已游玩</dt><dd id="played-count">—</dd></div>
-      <div><dt>有数据的平台</dt><dd id="source-count">—</dd></div>
-    </dl>
-    <section class="archive-sources" aria-labelledby="archive-sources-title" hidden>
-      <h2 id="archive-sources-title">平台记录</h2>
-      <dl id="archive-counts"></dl>
-      <p class="muted">按平台计数，跨平台游戏可重复。</p>
-    </section>
-    <div class="panels overview-panels">
-      <section class="panel" aria-labelledby="live-title">
-        <div class="panel-head"><h2 id="live-title">正在游玩</h2><span id="activity-status" class="badge">读取中</span></div>
-        <div id="activity" aria-live="polite"><p class="muted">正在读取当前活动…</p></div>
-      </section>
-      <section class="panel" aria-labelledby="source-title">
-        <div class="panel-head"><h2 id="source-title">游戏库同步</h2></div>
-        <ul id="sources" class="sources" aria-live="polite"></ul>
-      </section>
-    </div>
+    <div id="overview" class="catalog-overview">
+      <dl class="stats" aria-label="游戏概览" hidden>
+        <div><dt>累计已知时长</dt><dd id="hours">—</dd></div>
+        <div><dt>游戏</dt><dd id="game-count">—</dd></div>
+        <div><dt>已游玩</dt><dd id="played-count">—</dd></div>
+        <div><dt>数据来源</dt><dd id="source-count">—</dd></div>
+      </dl>
+      <div id="activity" class="catalog-activity" role="status" hidden></div>
+      <ul id="reconnect-notices" class="reconnect-notices" aria-label="平台连接提醒" hidden></ul>
     </div>
     <section id="library" class="library" aria-labelledby="library-title">
       <div class="panel-head library-head"><h2 id="library-title">游戏库</h2><p id="results" class="muted" role="status"></p></div>
