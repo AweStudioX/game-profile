@@ -53,6 +53,7 @@ npm run dev
 | 页面仍显示演示数据 | 确认变量已配置到 Production，并重新部署。 |
 | 连接页无法读取存储 | 检查 `DATABASE_URL` 和 `PROFILE_ENCRYPTION_KEY`。重装时使用原加密密钥，或另建数据库。 |
 | 读不到 Steam 数据 | 检查 Key、SteamID64，以及 Steam 隐私设置中的「游戏详情」是否允许 API 读取。 |
+| PlayStation 提示需要重连 | 正常刷新 token 时保留已同步游戏库；刷新中断或授权失效时仍需重新连接，单纯打开连接页不会重新授权。 |
 
 ## 隐私
 

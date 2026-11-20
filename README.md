@@ -53,6 +53,7 @@ Open <http://127.0.0.1:3000> for the bundled demo. For a private profile, copy [
 | The dashboard still shows demo data | Verify the variables are set in Production and redeploy. |
 | The connection page cannot open storage | Check `DATABASE_URL` and `PROFILE_ENCRYPTION_KEY`. If reinstalling, use the original encryption key or a new database. |
 | Steam data is unavailable | Verify the key and SteamID64, and check that Steam's **Game details** privacy setting allows API access. |
+| PlayStation asks to reconnect | Normal token refresh keeps the saved library visible. An interrupted refresh or failed authorization still requires reconnecting; opening the connection page does not renew authorization. |
 
 ## Privacy
 

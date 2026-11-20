@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createPsn } from '../lib/providers/psn.mjs';
+import { createProfile } from '../lib/profile.mjs';
 
 const nowValue = 1_800_000_000_000;
 const npsso = 'N'.repeat(64);
@@ -38,6 +39,7 @@ function memoryStore(initial = {}, rejectSave = () => false) {
   let active = false;
   return {
     async read() { return structuredClone(value); },
+    async readSnapshot() { return { state: structuredClone(value), busy: active }; },
     async locked(action) {
       if (active) throw new Error('test store lock is not reentrant');
       active = true;
@@ -180,6 +182,59 @@ test('a failed durable write after token issuance leaves the rotation marker and
   const countAfterFailure = calls.length;
   assert.deepEqual(await adapter.refresh({ force: true }), { status: 'reconnect-required' });
   assert.equal(calls.length, countAfterFailure);
+});
+
+test('homepage and connection reads preserve the library during a live token rotation', async () => {
+  const started = Promise.withResolvers();
+  const release = Promise.withResolvers();
+  const store = memoryStore({
+    status: 'connected', accountId: summary.accountId, onlineId: 'Owner_123',
+    session: { accessToken: 'old-access', refreshToken: 'old-refresh',
+      accessExpiresAt: nowValue + 1_000, refreshExpiresAt: nowValue + 86_400_000 },
+    library: { status: 'ready', lastSuccessAt: nowValue,
+      payload: { games: [{ providerGameId: title.titleId, name: title.name, platform: 'PS5' }] } },
+  });
+  const adapter = createPsn({ store, now: () => nowValue, fetchImpl: queuedFetch([
+    async () => { started.resolve(); await release.promise; return json(session); },
+    json(summary), json({ onlineId: 'Owner_123', isMe: true }),
+    json({ basicPresence: { primaryPlatformInfo: { onlineStatus: 'offline', platform: 'PS5' } } }),
+  ]) });
+  // A separate instance shares only durable storage, like another Vercel invocation.
+  const reader = createPsn({ store, now: () => nowValue, fetchImpl: () => assert.fail('snapshot reads must not refresh tokens') });
+  const password = 'synthetic-password-1234';
+  const handle = createProfile({ env: { PROFILE_PASSWORD: password }, platforms: {
+    steam: { credentials: async () => null, snapshots: async () => ({ library: { status: 'not-configured' } }) },
+    psn: reader,
+  } });
+  const get = async resource => (await handle(new Request(`https://example.test/api/profile?resource=${resource}`, {
+    headers: { Authorization: `Basic ${Buffer.from(`owner:${password}`).toString('base64')}` },
+  }))).json();
+  const refresh = adapter.refresh({ presenceOnly: true });
+  try {
+    await started.promise;
+    for (const resource of ['library', 'platforms']) {
+      const result = await get(resource);
+      assert.equal(result.sources.psn.status, 'ready');
+      assert.equal(result.sources.psn.lastSuccessAt, new Date(nowValue).toISOString());
+      if (resource === 'library') assert(result.games.some(game => game.name === title.name));
+    }
+    assert.equal((await reader.snapshots()).presence.status, 'unavailable');
+  } finally {
+    release.resolve();
+    await refresh;
+  }
+  assert.equal((await reader.snapshots()).library.status, 'ready');
+});
+
+test('a rotation marker without an active lease still requires reconnection', async () => {
+  const store = memoryStore({ status: 'connected', rotationPending: true,
+    library: { status: 'ready', payload: { games: [title] }, lastSuccessAt: nowValue } });
+  const adapter = createPsn({ store, now: () => nowValue, fetchImpl: () => assert.fail('must not reuse an ambiguous token') });
+  assert.equal((await adapter.snapshots()).library.status, 'reconnect-required');
+  await store.locked(async (state, save) => {
+    await save({ ...state, status: 'reconnect-required' });
+    assert.equal((await adapter.snapshots()).library.status, 'reconnect-required');
+  });
 });
 
 test('detail rejects unowned IDs without upstream work and maps visible trophy definitions with earned data', async () => {
