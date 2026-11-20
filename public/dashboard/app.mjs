@@ -417,50 +417,30 @@ $('filters').addEventListener('click', event => {
   renderLibrary();
 });
 function enhanceSort(select) {
-  const picker = node('details', undefined, 'pixel-sort');
-  const trigger = node('summary', undefined, 'pixel-sort-trigger');
-  const label = node('span', '排序方式：', 'sr-only');
-  const value = node('span');
-  trigger.append(label, value);
-  const panel = node('div', undefined, 'pixel-sort-options');
-  const options = Array.from(select.options, option => {
-    const button = node('button', option.textContent);
-    button.type = 'button';
-    button.addEventListener('click', () => {
-      if (select.value !== option.value) {
-        select.value = option.value;
-        select.dispatchEvent(new Event('change'));
-      }
-      close(true);
+  const picker = node('fieldset', undefined, 'pixel-sort');
+  picker.append(node('legend', '排序方式', 'sr-only'));
+  const shortLabels = { time: '时长', recent: '最近', title: '名称' };
+  const choices = Array.from(select.options, option => {
+    const label = node('label');
+    const input = node('input');
+    input.type = 'radio';
+    input.name = 'library-sort';
+    input.className = 'sr-only';
+    input.value = option.value;
+    input.addEventListener('change', () => {
+      select.value = input.value;
+      select.dispatchEvent(new Event('change'));
     });
-    return button;
+    input.setAttribute('aria-label', option.textContent);
+    label.append(input, node('span', shortLabels[option.value] ?? option.textContent));
+    picker.append(label);
+    return input;
   });
   function update() {
-    value.textContent = select.selectedOptions[0].textContent;
-    for (const [index, button] of options.entries()) {
-      button.setAttribute('aria-pressed', String(index === select.selectedIndex));
-    }
-  }
-  function close(returnFocus = false) {
-    if (!picker.open) return;
-    picker.open = false;
-    if (returnFocus) trigger.focus();
+    for (const input of choices) input.checked = input.value === select.value;
   }
   select.addEventListener('change', update);
   window.addEventListener('pageshow', update);
-  picker.addEventListener('keydown', event => {
-    if (event.key !== 'Escape' || !picker.open) return;
-    event.preventDefault();
-    close(true);
-  });
-  picker.addEventListener('focusout', event => {
-    if (event.relatedTarget && !picker.contains(event.relatedTarget)) close();
-  });
-  document.addEventListener('click', event => {
-    if (!picker.contains(event.target)) close();
-  });
-  panel.append(...options);
-  picker.append(trigger, panel);
   const native = select.closest('label');
   native.after(picker);
   native.classList.add('native-sort');
