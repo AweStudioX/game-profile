@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 740 340">
+<defs>
+ <linearGradient id="sky" x2="0" y2="1" gradientUnits="objectBoundingBox"><stop stop-color="#0d1620"/><stop offset="1" stop-color="#533138"/></linearGradient>
+ <radialGradient id="haze"><stop stop-color="#cd7753" stop-opacity=".55"/><stop offset="1" stop-color="#cd7753" stop-opacity="0"/></radialGradient>
+ <linearGradient id="road" x2="0" y2="1"><stop stop-color="#302735"/><stop offset="1" stop-color="#0b1018"/></linearGradient>
+ <pattern id="grid" width="15" height="15" patternUnits="userSpaceOnUse"><path d="M3 4h7v2H3z" fill="#b19eaa" opacity=".28"/></pattern>
+ <pattern id="blind" width="6" height="6" patternUnits="userSpaceOnUse"><path d="M0 1h6" stroke="#5a4145" stroke-width=".7"/></pattern>
+ <linearGradient id="lit" x2="0" y2="1"><stop stop-color="#ff9c66"/><stop offset="1" stop-color="#ffd4a0" stop-opacity=".05"/></linearGradient>
+ <filter id="glow"><feGaussianBlur stdDeviation="8"/></filter>
+</defs>
+<path d="M0 0H740V340H0z" fill="url(#sky)"/>
+<ellipse cx="551" cy="164" rx="206" ry="155" fill="url(#haze)"/>
+<path d="M99 244V114h85v26h41V80h37v37h31V49h69v36h38v69h36V80h18V55h28v44h35v47h27V22h67v69h34v151Z" fill="#2c2936"/>
+<path d="M224 79h38v155h-38zM292 50h70v189h-70zM437 85h79v150h-79zM544 24h65v211h-65z" fill="url(#grid)"/>
+<path d="M548 23V11m-27 211V77m-155 143V95m-57-45V17" stroke="#9b8593" opacity=".45"/>
+<path d="M83 326l417-120 240 74v60H0z" fill="url(#road)"/>
+<path d="M0 0h212l119 57v186L0 299z" fill="#111923"/>
+<path d="M0 94l216-15 115 32v132L0 299z" fill="#202731"/>
+<path d="M0 154l220-35 111 19v12l-111-12L0 183z" fill="#0e1721"/>
+<path d="M226 155l93 11v73l-93 18z" fill="url(#blind)"/>
+<path d="M365 241v-89l123 47v35zm4-84l121 43v9l-121-35z" fill="#30232b"/>
+<path d="M582 34L740 0v289l-158-54z" fill="#111a23"/>
+<path d="M610 86L740 58v189l-130-28z" fill="#28262d"/>
+<path d="M620 168l120-8v80l-120-23z" fill="url(#blind)"/>
+<path d="M581 133l159-29v54l-159-4z" fill="#27242d" stroke="#5b494b"/>
+<path d="M575 186l165 1v64l-165-35z" fill="#342a2e"/>
+<path d="M591 192l149 1v38l-149-23z" fill="#875145" opacity=".38"/>
+<g filter="url(#glow)" opacity=".8"><path d="M615 128l110-15m-138 75l149 1m-222 43l126 61m-239-102l73 21" stroke="#ff9860" stroke-width="8"/><path d="M530 88v117m-148 68l81-33" stroke="#68bdd1" stroke-width="5"/></g>
+<path d="M589 185l151 1v3l-151-1z" fill="#ffc391"/>
+<path d="M599 195l139 1m-135 6l135 1m-102 10l95 3" stroke="#b07460" opacity=".65"/>
+<path d="M524 79l11 3v111l-11-3z" fill="#182a34" stroke="#679eab"/>
+<path d="M528 88v99m3-96v72M404 198l65 21" stroke="#7fdce0" fill="none"/>
+<path d="M395 180l77 29v13l-77-25z" fill="#36292d" stroke="#a66956"/>
+<path d="M410 190l50 18m-53-13l22 8" stroke="#ffaf76"/>
+<g transform="translate(612 143) skewY(-6)"><text fill="#ffd7ad" font-family="system-ui,sans-serif" font-size="23" font-weight="700" letter-spacing="3">ARCADE</text><path d="M0 7h103" stroke="#d78b64" stroke-width="1"/></g>
+<path d="M480 236l-68 104M541 235l108 105M527 230l66 110M506 234l-16 106" fill="none" stroke="#977d76" opacity=".23"/>
+<path d="M595 228l68 112h65l-93-101z" fill="url(#lit)" opacity=".19"/>
+<path d="M445 250h31m-57 15h32m-34 15h52m69-33h36m-29 19h63m-47 17h92m-95 26h115m-137 11h89m-260-4h51" stroke="#bc7b66" opacity=".38"/>
+<path d="M517 242h17m-7 22h28m-64 26h46m-80 9h43m-53 27h71m75 2h63" stroke="#71aebb" opacity=".27"/>
+</svg>

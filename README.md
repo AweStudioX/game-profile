@@ -13,7 +13,7 @@ On Vercel Hobby, select your **personal GitHub account**, not an organization. C
 ## Features
 
 - Browse and search a game library with playtime, recent activity, and achievements.
-- Switch between Classic and Pixel from the header. Pixel uses a locally hosted [Fusion Pixel Font](https://github.com/TakWolf/fusion-pixel-font) subset for display text; body text and game artwork stay unchanged. The preference is per browser.
+- Choose Classic, Pixel, or Neon City in the header. Neon City includes an illustrated city banner and a breakdown of game counts by platform. The preference is per browser.
 - See a game once even when multiple platform records match. Progress remains separate per platform.
 - Steam and PlayStation achievements stay separate; Nintendo contributes play history.
 - Schedule daily or hourly library sync with [Vercel Schedules (Beta)](https://vercel.com/docs/schedules/limits). Daily is the default (02:00 UTC). The dashboard does not need to stay open.

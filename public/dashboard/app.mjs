@@ -403,6 +403,21 @@ function showLibrary(payload, isDemo) {
   $('game-count').textContent = number.format(model.games.length);
   $('played-count').textContent = number.format(model.games.filter(game => game.seconds > 0).length);
   $('source-count').textContent = number.format(Object.values(model.sources).filter(source => ready.has(source?.status)).length);
+  const counts = Object.entries(model.providerCounts).sort(([, a], [, b]) => b - a);
+  $('archive-counts').replaceChildren(...counts.map(([provider, count]) => {
+    const row = node('div');
+    const term = node('dt');
+    term.append(platformTag(provider));
+    const value = node('dd');
+    const meter = node('meter');
+    meter.max = counts[0][1];
+    meter.value = count;
+    meter.setAttribute('aria-hidden', 'true');
+    value.append(meter, node('span', number.format(count)));
+    row.append(term, value);
+    return row;
+  }));
+  $('archive-counts').parentElement.hidden = counts.length === 0;
   $('toolbar').hidden = false;
   renderFilters();
   renderLibrary();
@@ -417,7 +432,7 @@ $('filters').addEventListener('click', event => {
   renderLibrary();
 });
 function enhanceSort(select) {
-  const picker = node('fieldset', undefined, 'pixel-sort');
+  const picker = node('fieldset', undefined, 'sort-segments');
   picker.append(node('legend', '排序方式', 'sr-only'));
   const shortLabels = { time: '时长', recent: '最近', title: '名称' };
   const choices = Array.from(select.options, option => {

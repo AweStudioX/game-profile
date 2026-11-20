@@ -1,30 +1,32 @@
 (() => {
   const key = 'game-profile-theme';
   const root = document.documentElement;
+  const themes = ['classic', 'pixel', 'neon'];
   const savedTheme = () => {
-    try { return localStorage.getItem(key); } catch { return null; }
+    try {
+      const value = localStorage.getItem(key);
+      return themes.includes(value) ? value : 'classic';
+    } catch { return 'classic'; }
   };
-  root.dataset.theme = savedTheme() === 'pixel' ? 'pixel' : 'classic';
+  root.dataset.theme = savedTheme();
   document.addEventListener('DOMContentLoaded', () => {
-    const button = document.querySelector('.theme-toggle');
+    const picker = document.querySelector('.theme-toggle');
     const apply = theme => {
       root.dataset.theme = theme;
-      const pixel = theme === 'pixel';
-      button.setAttribute('aria-pressed', String(pixel));
-      button.textContent = pixel ? '主题：像素' : '主题：经典';
+      picker.value = theme;
     };
     apply(root.dataset.theme);
-    button.hidden = false;
-    button.addEventListener('click', () => {
-      const theme = root.dataset.theme === 'pixel' ? 'classic' : 'pixel';
+    picker.hidden = false;
+    picker.addEventListener('change', () => {
+      const theme = picker.value;
       apply(theme);
       try { localStorage.setItem(key, theme); } catch { /* The current page still switches themes. */ }
     });
     window.addEventListener('pageshow', event => {
-      if (event.persisted) apply(savedTheme() === 'pixel' ? 'pixel' : 'classic');
+      if (event.persisted) apply(savedTheme());
     });
     window.addEventListener('storage', event => {
-      if (event.key === key || event.key === null) apply(savedTheme() === 'pixel' ? 'pixel' : 'classic');
+      if (event.key === key || event.key === null) apply(savedTheme());
     });
   });
 })();
