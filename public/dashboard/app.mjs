@@ -4,6 +4,7 @@ const $ = id => document.getElementById(id);
 const number = new Intl.NumberFormat('zh-CN');
 const hours = new Intl.NumberFormat('zh-CN', { maximumFractionDigits: 1 });
 const date = new Intl.DateTimeFormat('zh-CN', { dateStyle: 'medium', timeStyle: 'short' });
+const recentDate = new Intl.DateTimeFormat('zh-CN', { dateStyle: 'medium' });
 const ready = new Set(['ready', 'stale']);
 const pageSize = 24;
 let model;
@@ -303,17 +304,27 @@ function gameCard(game, index) {
   }
   const body = node('span', undefined, 'game-body');
   body.append(node('strong', game.name, 'game-name'));
+  const meta = node('span', undefined, 'game-caption');
   if (game.providers.length) {
     const platforms = node('span', undefined, 'game-provider record-meta');
-    platforms.append(...game.providers.map(id => platformTag(id)));
-    body.append(platforms);
+    platforms.append(...game.providers.map(id => {
+      const tag = platformTag(id);
+      tag.lastChild.replaceWith(node('span', label(id), 'game-platform-name'));
+      tag.title = label(id);
+      return tag;
+    }));
+    meta.append(platforms);
   }
-  body.append(node('span', [playtime(game.seconds), ...game.platforms.map(label)].join(' · '), 'game-meta'));
+  const duration = node('span', playtime(game.seconds), 'game-meta');
+  if (game.platforms.length) duration.append(node('span', ` · ${game.platforms.map(label).join(' · ')}`, 'game-devices'));
+  meta.append(duration);
   if (game.lastPlayed !== null) {
-    const time = node('time', date.format(game.lastPlayed), 'game-meta');
+    const time = node('time', undefined, 'game-meta');
     time.dateTime = new Date(game.lastPlayed).toISOString();
-    body.append(time);
+    time.append(node('span', date.format(game.lastPlayed), 'game-date-full'), node('span', recentDate.format(game.lastPlayed), 'game-date-short'));
+    meta.append(time);
   }
+  body.append(meta);
   button.append(cover, body);
   button.addEventListener('click', () => showGame(game));
   row.append(button);
@@ -321,11 +332,14 @@ function gameCard(game, index) {
 }
 
 function renderFilters() {
-  const buttons = [['', model.games.length], ...Object.entries(model.providerCounts).sort(([a], [b]) => label(a).localeCompare(label(b)))];
+  const buttons = [['', null], ...Object.entries(model.providerCounts).sort(([a], [b]) => label(a).localeCompare(label(b)))];
   $('filters').replaceChildren(...buttons.map(([id, count]) => {
     const button = node('button');
-    const text = `${id ? label(id) : '全部'} ${number.format(count)}`;
-    button.append(id ? platformTag(id, text) : text);
+    button.append(id ? platformTag(id) : '全部');
+    if (count !== null) button.append(node('span', ` ${number.format(count)}`, 'filter-count'));
+    const indicator = node('span', undefined, 'filter-indicator');
+    indicator.setAttribute('aria-hidden', 'true');
+    button.append(indicator);
     button.type = 'button';
     button.dataset.provider = id;
     button.setAttribute('aria-pressed', String(id === activeProvider));
@@ -334,12 +348,17 @@ function renderFilters() {
 }
 
 function renderLibrary(append = false) {
-  const matches = filterGames(model.games, { provider: activeProvider, search: $('search').value, sort: $('sort').value });
+  const sort = $('sort').value;
+  const search = $('search').value;
+  const matches = filterGames(model.games, { provider: activeProvider, search, sort });
   const grid = $('games');
+  grid.dataset.sort = sort;
   const start = append ? grid.childElementCount : 0;
   const cards = matches.slice(start, shown).map((game, index) => gameCard(game, start + index));
   if (append) grid.append(...cards); else grid.replaceChildren(...cards);
-  $('results').textContent = `${number.format(matches.length)} 款游戏`;
+  const results = $('results');
+  results.dataset.refined = String(Boolean(activeProvider || search.trim()));
+  results.textContent = `${number.format(matches.length)} 款游戏`;
   $('library-status').textContent = matches.length ? '' : model.games.length ? '没有符合筛选条件的游戏。' : '游戏库没有游戏。';
   $('more').hidden = matches.length <= shown;
   if (append) cards[0]?.firstElementChild.focus();
@@ -367,11 +386,28 @@ function showLibrary(payload) {
 
 $('filters').addEventListener('click', event => {
   const button = event.target.closest('button[data-provider]');
-  if (!button) return;
+  if (!button || button.dataset.provider === activeProvider) return;
+  const motion = matchMedia('(prefers-reduced-motion: no-preference)').matches;
+  const previous = motion && $('filters').querySelector('[aria-pressed="true"] .filter-indicator');
+  const from = previous && previous.getBoundingClientRect();
+  if (previous) for (const animation of previous.getAnimations()) animation.cancel();
   activeProvider = button.dataset.provider;
   for (const filter of $('filters').children) filter.setAttribute('aria-pressed', String(filter === button));
   shown = pageSize;
   renderLibrary();
+  if (!motion) return;
+  const grid = $('games');
+  for (const animation of grid.getAnimations()) animation.cancel();
+  if (grid.childElementCount) {
+    grid.animate([{ opacity: .55 }, { opacity: 1 }], { duration: 200, easing: 'ease-out' });
+  }
+  const indicator = button.querySelector('.filter-indicator');
+  const to = indicator.getBoundingClientRect();
+  if (!from?.width || !to.width) return;
+  const frames = from.top === to.top
+    ? [{ transform: `translateX(${from.left - to.left}px) scaleX(${from.width / to.width})` }, { transform: 'none' }]
+    : [{ opacity: 0 }, { opacity: 1 }];
+  indicator.animate(frames, { duration: 220, easing: 'cubic-bezier(.2,.7,.25,1)' });
 });
 function enhanceSort(select) {
   const picker = node('fieldset', undefined, 'sort-segments');
