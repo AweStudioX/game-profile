@@ -12,7 +12,7 @@ On Vercel Hobby, select your **personal GitHub account**, not an organization. C
 
 ## Features
 
-- Browse and search the cover-first game library. Live play appears above the library when detected; per-platform sync status and timestamps are on the connections page.
+- Browse and search the cover-first game library. The overview preserves playing, idle, and unknown activity states, activity sources and timestamps, and per-platform sync status, timestamps, and game counts.
 - Choose Classic, Pixel, or Neon City in the header. Neon City includes an illustrated city banner. The preference is per browser.
 - See a game once even when multiple platform records match. Progress remains separate per platform.
 - Steam and PlayStation achievements stay separate; Nintendo contributes play history.

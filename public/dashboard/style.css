@@ -37,14 +37,17 @@ h1{font-family:ui-monospace,monospace;font-size:clamp(3.2rem,11vw,8.4rem);font-w
 .stats dd{order:-1;margin:0;font-size:1.125rem;font-weight:650;line-height:1.4;font-variant-numeric:tabular-nums}
 .stats{padding-block:12px 16px;border-block-start:1px solid var(--border)}
 .catalog-overview:has(> :not([hidden])){padding-block:0 16px}
-.catalog-session,.reconnect-notices li{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px}
-.catalog-activity,.reconnect-notices{color:var(--muted);font-size:.875rem}
+.catalog-session{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px}
+.catalog-activity,.sources{color:var(--muted);font-size:.875rem}
 .catalog-overview > :not([hidden]) ~ :not([hidden]){margin-block-start:12px}
-.catalog-session + .catalog-session,.reconnect-notices li+li{margin-block-start:4px}
-.catalog-live,.reconnect-notices a{color:var(--accent)}
+.catalog-session + .catalog-session{margin-block-start:4px}
+.catalog-live{color:var(--accent)}
 .catalog-live::before{content:"";display:inline-block;width:6px;height:6px;margin-inline-end:7px;border-radius:50%;background:currentColor;vertical-align:.15em}
 .catalog-session strong{color:var(--text);overflow-wrap:anywhere}
-.reconnect-notices{padding:0;margin:0;list-style:none}
+.sources,.activity-sources{padding:0;margin:8px 0 0;list-style:none}
+.sources li+li,.activity-sources li+li{margin-block-start:6px}
+.catalog-overview h2{font-size:1rem;margin-block-end:8px}
+.catalog-overview section > .muted{font-size:.8125rem}
 .panels{display:grid;grid-template-columns:1.35fr 1fr;gap:16px}
 .panel{padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);min-width:0}
 .panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px}

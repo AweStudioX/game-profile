@@ -6,6 +6,11 @@ const hours = new Intl.NumberFormat('zh-CN', { maximumFractionDigits: 1 });
 const date = new Intl.DateTimeFormat('zh-CN', { dateStyle: 'medium', timeStyle: 'short' });
 const recentDate = new Intl.DateTimeFormat('zh-CN', { dateStyle: 'medium' });
 const ready = new Set(['ready', 'stale']);
+const statuses = {
+  ready: '已同步', stale: '已过期', disabled: '未接入', 'not-configured': '未配置',
+  unavailable: '不可用', private: '隐私受限', 'reconnect-required': '需要重连', partial: '部分可用',
+};
+const sourceLabel = status => statuses[status] ?? '状态未知';
 const pageSize = 24;
 let model;
 let activeProvider = '';
@@ -111,23 +116,33 @@ function unlockRow(unlock) {
   return row;
 }
 
-function renderReconnectNotices(sources) {
-  const list = $('reconnect-notices');
-  const notices = Object.entries(sources).filter(([, source]) => source?.status === 'reconnect-required');
-  list.replaceChildren(...notices.map(([id]) => {
-    const row = node('li');
-    const link = node('a', '重新连接');
-    link.href = ['steam', 'psn', 'nintendo'].includes(id) ? `/connect.html#${id}-title` : '/connect.html';
-    row.append(platformTag(id), '需要重新授权。', link);
+function renderSources(sources, isDemo) {
+  const ids = new Set(['steam', 'psn', 'nintendo', ...Object.keys(sources).filter(id => sources[id]?.status !== 'disabled')]);
+  $('sources').replaceChildren(...Array.from(ids, id => {
+    const source = sources[id];
+    const row = node('li', undefined, 'record-meta');
+    row.append(platformTag(id));
+    const status = source?.status ?? (id === 'nintendo' ? 'disabled' : null);
+    const canConnect = !isDemo && ['steam', 'psn', 'nintendo'].includes(id)
+      && (!status || ['disabled', 'not-configured', 'reconnect-required'].includes(status));
+    const badge = node(canConnect ? 'a' : 'span', canConnect ? (status === 'reconnect-required' ? '重新连接' : '去连接') : sourceLabel(status), 'badge');
+    if (canConnect) badge.href = `/connect.html#${id}-title`;
+    if (status === 'ready') badge.dataset.tone = 'active';
+    row.append(badge);
+    const updated = recordDate(source?.lastSuccessAt, '同步于');
+    if (updated) row.append(updated);
+    const count = model.providerCounts[id];
+    if (count !== undefined) row.append(node('span', `${number.format(count)} 个游戏`));
     return row;
   }));
-  list.hidden = notices.length === 0;
 }
 
 function renderActivity(payload) {
   const activity = $('activity');
   const sessions = payload.state === 'playing' && Array.isArray(payload.sessions) ? payload.sessions : [];
-  activity.hidden = sessions.length === 0;
+  const live = sessions.length > 0;
+  $('activity-status').textContent = live ? '游玩中' : payload.state === 'offline' ? '未检测到游玩' : '状态未知';
+  $('activity-status').dataset.tone = live ? 'active' : '';
   activity.replaceChildren(...sessions.map(session => {
     const item = node('div', undefined, 'catalog-session');
     item.append(node('span', '正在游玩', 'catalog-live'), node('strong', session.game?.name ?? '未命名游戏'));
@@ -135,6 +150,20 @@ function renderActivity(payload) {
     for (const id of origins) item.append(platformTag(id));
     return item;
   }));
+  if (!live) activity.append(node('p', payload.state === 'offline'
+    ? '已检查的平台未报告正在游玩的游戏。' : '暂无可用的活动快照。', 'muted'));
+  const sources = node('ul', undefined, 'activity-sources');
+  sources.setAttribute('aria-label', '活动快照来源与时间');
+  for (const [provider, source] of Object.entries(payload.sources ?? {})) {
+    if (source.status === 'disabled') continue;
+    const row = node('li', undefined, 'record-meta');
+    row.append(platformTag(provider));
+    const updated = recordDate(source.lastSuccessAt, '观测于');
+    if (updated) row.append(updated);
+    if (source.status !== 'ready') row.append(node('span', sourceLabel(source.status)));
+    sources.append(row);
+  }
+  if (sources.childElementCount) activity.append(sources);
 }
 
 function renderUnlockSet(set, game, showSetName) {
@@ -364,9 +393,9 @@ function renderLibrary(append = false) {
   if (append) cards[0]?.firstElementChild.focus();
 }
 
-function showLibrary(payload) {
+function showLibrary(payload, isDemo) {
   model = libraryModel(payload);
-  renderReconnectNotices(model.sources);
+  renderSources(model.sources, isDemo);
   if (!Array.isArray(payload.games) || payload.status === 'unavailable') {
     const link = node('a', '检查平台连接');
     link.href = '/connect.html';
@@ -491,11 +520,16 @@ async function init() {
     $('library').hidden = true;
     return;
   }
-  if (library.status === 'fulfilled') showLibrary(library.value);
-  else $('library-status').textContent = '未能读取游戏库，请刷新页面重试。';
-  if (activity.status === 'fulfilled') renderActivity(activity.value);
+  if (library.status === 'fulfilled') showLibrary(library.value, mode === 'demo');
+  else {
+    $('library-status').textContent = '未能读取游戏库，请刷新页面重试。';
+    $('sources').replaceChildren(node('li', '无法读取平台同步状态。'));
+  }
+  renderActivity(activity.status === 'fulfilled' ? activity.value : { state: 'unknown' });
 }
 
 init().catch(() => {
   $('library-status').textContent = '未能连接档案服务，请刷新页面重试。';
+  renderActivity({ state: 'unknown' });
+  $('sources').replaceChildren(node('li', '无法读取平台同步状态。'));
 });
