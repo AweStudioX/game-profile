@@ -1,4 +1,5 @@
 import { filterGames, label, libraryModel } from './model.mjs';
+import { mountParticleTitle, moveSegment } from './dissolve.mjs';
 
 const $ = id => document.getElementById(id);
 const number = new Intl.NumberFormat('zh-CN');
@@ -23,6 +24,7 @@ function node(tag, value, className) {
   if (className) element.className = className;
   return element;
 }
+mountParticleTitle($('title'));
 
 function playtime(seconds) {
   if (!Number.isFinite(seconds)) return '时长未知';
@@ -558,70 +560,36 @@ function showLibrary(payload, isDemo) {
   renderLibrary();
 }
 
-const flights = new WeakMap();
-function moveSegment(track, previous, next) {
-  const old = flights.get(track);
-  old?.stop();
-  if (document.documentElement.dataset.theme !== 'classic' || !previous || previous === next) return;
-  const box = track.getBoundingClientRect();
-  if (!box.width) return;
-  const a = previous.getBoundingClientRect(), b = next.getBoundingClientRect();
-  const canvas = node('canvas', undefined, 'segment-flight');
-  canvas.setAttribute('aria-hidden', 'true');
-  const ratio = Math.min(devicePixelRatio, 2);
-  canvas.width = Math.ceil(box.width * ratio); canvas.height = Math.ceil(box.height * ratio);
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return;
-  track.append(canvas);
-  ctx.scale(ratio, ratio);
-  ctx.fillStyle = getComputedStyle(canvas).color;
-  const cols = 24, rows = 10;
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const direction = b.x >= a.x ? 1 : -1;
-  const points = [];
-  for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
-    const u = (x + .5) / cols, v = (y + .5) / rows;
-    const edge = Math.max(0, Math.abs(u - .5) * b.width - (b.width - b.height) / 2);
-    if (Math.hypot(edge, (v - .5) * b.height) > b.height / 2) continue;
-    const id = y * cols + x, last = old?.points[id];
-    const sx = last?.x ?? a.x - box.x + u * a.width, sy = last?.y ?? a.y - box.y + v * a.height;
-    points[id] = {sx, sy, x:sx, y:sy, tx:b.x - box.x + u*b.width, ty:b.y - box.y + v*b.height,
-      delay:.24 * (direction > 0 ? 1-u : u), arc:3 + (id * 17 % 9)};
-  }
-  const start = performance.now();
-  let frame;
-  function stop() { cancelAnimationFrame(frame); canvas.remove(); flights.delete(track); }
-  flights.set(track, {points, stop});
-  function draw(now) {
-    const t = Math.min(1, (now-start)/(reduced ? 120 : 400));
-    ctx.clearRect(0,0,box.width,box.height);
-    if (reduced) {
-      ctx.beginPath(); ctx.roundRect(a.x-box.x+(b.x-a.x)*t,a.y-box.y+(b.y-a.y)*t,a.width+(b.width-a.width)*t,b.height,b.height/2); ctx.fill();
-    } else for (const p of points) {
-      if (!p) continue;
-      let k = Math.min(1,Math.max(0,(t-p.delay)/.76)); k *= k*(3-2*k);
-      const wave = Math.sin(Math.PI*k);
-      p.x = p.sx+(p.tx-p.sx)*k; p.y = p.sy+(p.ty-p.sy)*k-p.arc*wave;
-      const w = ((a.width+(b.width-a.width)*k)/cols+1)*(1-.66*wave), h = (b.height/rows+1)*(1-.66*wave);
-      ctx.fillRect(p.x-w/2,p.y-h/2,w,h);
-    }
-    if (t < 1) frame = requestAnimationFrame(draw); else stop();
-  }
-  draw(start);
-}
-
 function enableSegmentDrag(track, selector) {
-  let down = false, dragged = false;
-  track.addEventListener('pointerdown', e => {down = e.isPrimary && e.button === 0 && document.documentElement.dataset.theme === 'classic'; dragged = false;});
-  track.addEventListener('pointermove', e => {
-    if (!down || !e.buttons) return;
-    const item = document.elementFromPoint(e.clientX,e.clientY)?.closest(selector);
-    if (!item || !track.contains(item) || item.matches('[aria-pressed="true"],:has(input:checked)')) return;
-    dragged = true;
-    (item.querySelector('input') ?? item).click();
+  let pointer = null, dragged = false;
+  track.addEventListener('pointerdown', event => {
+    dragged = false;
+    pointer = event.isPrimary && event.button === 0 && document.documentElement.dataset.theme === 'classic'
+      ? {id:event.pointerId,x:event.clientX,y:event.clientY} : null;
   });
-  track.addEventListener('click', e => {if (dragged && e.detail && e.isTrusted) {e.preventDefault(); e.stopImmediatePropagation();}}, true);
-  for (const type of ['pointerup','pointercancel']) window.addEventListener(type, () => {down = false;});
+  track.addEventListener('pointermove', event => {
+    if (!pointer || pointer.id !== event.pointerId) return;
+    if (!dragged) {
+      const dx = Math.abs(event.clientX-pointer.x), dy = Math.abs(event.clientY-pointer.y);
+      if (dy > 12 && dy > dx) { pointer = null; return; }
+      if (dx < 6) return;
+      dragged = true;
+      track.setPointerCapture(event.pointerId);
+    }
+    const item = document.elementFromPoint(event.clientX,event.clientY)?.closest(selector);
+    if (!item || !track.contains(item) || item.matches('[aria-pressed="true"],:has(input:checked)')) return;
+    const control = item.querySelector('input') ?? item;
+    control.click();
+    control.focus({preventScroll:true});
+  });
+  track.addEventListener('click', event => {
+    if (dragged && event.detail && event.isTrusted) { event.preventDefault(); event.stopImmediatePropagation(); }
+  }, true);
+  for (const type of ['pointerup','pointercancel']) window.addEventListener(type, event => {
+    if (pointer?.id !== event.pointerId) return;
+    if (track.hasPointerCapture(event.pointerId)) track.releasePointerCapture(event.pointerId);
+    pointer = null;
+  });
 }
 enableSegmentDrag($('filters'), 'button');
 $('filters').addEventListener('click', event => {
@@ -633,7 +601,7 @@ $('filters').addEventListener('click', event => {
   const previous = indicator.parentElement;
   button.append(indicator);
   activeProvider = button.dataset.provider;
-  for (const filter of $('filters').children) filter.setAttribute('aria-pressed', String(filter === button));
+  for (const filter of $('filters').querySelectorAll('button')) filter.setAttribute('aria-pressed', String(filter === button));
   shown = pageSize;
   renderLibrary();
   if (!motion && !classic) return;
