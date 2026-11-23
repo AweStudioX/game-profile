@@ -8,6 +8,7 @@
   <script src="/dashboard/theme.js"></script>
   <link rel="stylesheet" href="/dashboard/style.css">
   <script type="module" src="/dashboard/app.mjs"></script>
+  <script type="module" src="/dashboard/footer.mjs"></script>
 </head>
 <body>
   <a class="skip" href="#library">跳到游戏库</a>
@@ -62,11 +63,26 @@
     </section>
   </main>
   <footer class="frame footer">
-    <div class="footer-mark">
-      <svg class="footer-pad" aria-hidden="true" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M15 5h10v10h10v10H25v10H15V25H5V15h10Z"/><circle cx="20" cy="20" r="2" fill="currentColor" stroke="none"/></svg>
-      <div><p class="footer-title" lang="en">KEEP PLAYING<span>.</span></p><span class="footer-caption">GAME PROFILE</span></div>
+    <p id="sticker-help" class="sr-only">可拖动贴纸。键盘方向键移动，回车归位，Escape 取消当前拖动。</p>
+    <div class="footer-collage" data-footer-collage role="group" aria-label="游戏贴纸" aria-describedby="sticker-help">
+      <button class="footer-sticker" type="button" aria-label="DualSense 手柄贴纸"><img src="/dashboard/stickers/01.webp" alt="" width="512" height="512" loading="lazy" decoding="async" draggable="false"></button>
+      <button class="footer-sticker" type="button" aria-label="Xbox Series X 贴纸"><img src="/dashboard/stickers/02.webp" alt="" width="512" height="512" loading="lazy" decoding="async" draggable="false"></button>
+      <button class="footer-sticker" type="button" aria-label="Nintendo Switch 贴纸"><img src="/dashboard/stickers/03.webp" alt="" width="512" height="512" loading="lazy" decoding="async" draggable="false"></button>
+      <button class="footer-sticker" type="button" aria-label="PlayStation 5 Pro 贴纸"><img src="/dashboard/stickers/04.webp" alt="" width="512" height="512" loading="lazy" decoding="async" draggable="false"></button>
+      <button class="footer-sticker" type="button" aria-label="Game Boy 贴纸"><img src="/dashboard/stickers/05.webp" alt="" width="512" height="512" loading="lazy" decoding="async" draggable="false"></button>
+      <button class="footer-sticker" type="button" aria-label="光盘贴纸"><img src="/dashboard/stickers/06.webp" alt="" width="512" height="512" loading="lazy" decoding="async" draggable="false"></button>
+      <button class="footer-sticker" type="button" aria-label="游戏卡带贴纸"><img src="/dashboard/stickers/07.webp" alt="" width="512" height="512" loading="lazy" decoding="async" draggable="false"></button>
+      <button class="footer-sticker" type="button" aria-label="PlayStation 4 贴纸"><img src="/dashboard/stickers/08.webp" alt="" width="512" height="512" loading="lazy" decoding="async" draggable="false"></button>
     </div>
-    <a class="footer-return" href="#top"><span>回到顶部</span><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></a>
+    <div class="footer-meta">
+      <div class="footer-mark">
+        <div><p class="footer-title" lang="en">KEEP PLAYING<span>.</span></p><span class="footer-caption">GAME PROFILE</span></div>
+      </div>
+      <div class="footer-end">
+        <a class="footer-return" href="#top"><span>回到顶部</span><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></a>
+        <a class="footer-credit" href="/dashboard/stickers/credits.json">素材来源</a>
+      </div>
+    </div>
   </footer>
   <dialog id="detail" aria-labelledby="detail-title">
     <div class="dialog-header"><div><p class="eyebrow">GAME RECORD</p><h2 id="detail-title"></h2></div><form method="dialog"><button type="submit" autofocus>关闭</button></form></div>

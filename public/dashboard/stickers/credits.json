@@ -1,0 +1,74 @@
+[
+  {
+    "file": "01.webp",
+    "subject": "PlayStation DualSense controller",
+    "source": "https://commons.wikimedia.org/wiki/File:Playstation_DualSense_Controller.png",
+    "author": "Alex Cochrane",
+    "license": "CC BY-SA 4.0",
+    "licenseURL": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "modifications": "Removed connected white background, cropped and resized, added a thick white die-cut border and gray paper edge, converted to WebP. This derivative is distributed under CC BY-SA 4.0."
+  },
+  {
+    "file": "02.webp",
+    "subject": "Xbox Series X with controller",
+    "source": "https://commons.wikimedia.org/wiki/File:Xbox_Series_X_2_(transparent_background).png",
+    "author": "Der. Bellemer",
+    "license": "CC BY 4.0",
+    "licenseURL": "https://creativecommons.org/licenses/by/4.0/",
+    "modifications": "Trimmed transparent margins, resized, added a thick white die-cut border and gray paper edge, converted to WebP."
+  },
+  {
+    "file": "03.webp",
+    "subject": "Nintendo Switch with Joy-Cons",
+    "source": "https://commons.wikimedia.org/wiki/File:Nintendo-Switch-wJoyCons-BlRd-Standing-FL.png",
+    "author": "Evan-Amos, modified by Gunnar.offel",
+    "license": "Public domain",
+    "licenseURL": "https://commons.wikimedia.org/wiki/Commons:Copyright_tags#Public_domain",
+    "modifications": "Trimmed transparent margins, resized, added a thick white die-cut border and gray paper edge, converted to WebP."
+  },
+  {
+    "file": "04.webp",
+    "subject": "PlayStation 5 Pro",
+    "source": "https://commons.wikimedia.org/wiki/File:PlayStation_5_Pro_no_disc_drive.jpg",
+    "author": "BeatEmUps",
+    "license": "CC BY 3.0",
+    "licenseURL": "https://creativecommons.org/licenses/by/3.0/",
+    "modifications": "Manually masked the console silhouette to remove showroom background and display plinth, cropped and resized, added a thick white die-cut border and gray paper edge, converted to WebP."
+  },
+  {
+    "file": "05.webp",
+    "subject": "Original Game Boy",
+    "source": "https://commons.wikimedia.org/wiki/File:Game-Boy-Original.png",
+    "author": "Evan-Amos",
+    "license": "Public domain",
+    "licenseURL": "https://commons.wikimedia.org/wiki/Commons:Copyright_tags#Public_domain",
+    "modifications": "Trimmed transparent margins, resized, added a thick white die-cut border and gray paper edge, converted to WebP."
+  },
+  {
+    "file": "06.webp",
+    "subject": "Compact disc",
+    "source": "https://commons.wikimedia.org/wiki/File:Audio_Compact_Disc.png",
+    "author": "Liamz2r",
+    "license": "Public domain",
+    "licenseURL": "https://commons.wikimedia.org/wiki/Commons:Copyright_tags#Public_domain",
+    "modifications": "Trimmed transparent margins, resized, added a thick white die-cut border and gray paper edge, converted to WebP."
+  },
+  {
+    "file": "07.webp",
+    "subject": "Game Boy cartridge",
+    "source": "https://commons.wikimedia.org/wiki/File:Nintendo-Game-Boy-Cartridge.jpg",
+    "author": "Evan-Amos",
+    "license": "Public domain",
+    "licenseURL": "https://commons.wikimedia.org/wiki/Commons:Copyright_tags#Public_domain",
+    "modifications": "Removed connected white studio background while preserving interior whites, cropped and resized, added a thick white die-cut border and gray paper edge, converted to WebP."
+  },
+  {
+    "file": "08.webp",
+    "subject": "PlayStation 4 console",
+    "source": "https://commons.wikimedia.org/wiki/File:Sony-PlayStation-4-PS4-Console-FL.png",
+    "author": "Evan-Amos, modified by Gunnar.offel",
+    "license": "Public domain",
+    "licenseURL": "https://commons.wikimedia.org/wiki/Commons:Copyright_tags#Public_domain",
+    "modifications": "Trimmed transparent margins, resized, added a thick white die-cut border and gray paper edge, converted to WebP."
+  }
+]
