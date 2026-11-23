@@ -366,9 +366,11 @@ function renderFilters() {
     const button = node('button');
     button.append(id ? platformTag(id) : '全部');
     if (count !== null) button.append(node('span', ` ${number.format(count)}`, 'filter-count'));
-    const indicator = node('span', undefined, 'filter-indicator');
-    indicator.setAttribute('aria-hidden', 'true');
-    button.append(indicator);
+    if (id === activeProvider) {
+      const indicator = node('span', undefined, 'filter-indicator');
+      indicator.setAttribute('aria-hidden', 'true');
+      button.append(indicator);
+    }
     button.type = 'button';
     button.dataset.provider = id;
     button.setAttribute('aria-pressed', String(id === activeProvider));
@@ -434,27 +436,29 @@ function showLibrary(payload, isDemo) {
 $('filters').addEventListener('click', event => {
   const button = event.target.closest('button[data-provider]');
   if (!button || button.dataset.provider === activeProvider) return;
+  const indicator = $('filters').querySelector('.filter-indicator');
   const motion = matchMedia('(prefers-reduced-motion: no-preference)').matches;
-  const previous = motion && $('filters').querySelector('[aria-pressed="true"] .filter-indicator');
-  const from = previous && previous.getBoundingClientRect();
-  if (previous) for (const animation of previous.getAnimations()) animation.cancel();
+  const classic = document.documentElement.dataset.theme === 'classic';
+  const from = classic && motion && indicator.getBoundingClientRect();
+  for (const animation of indicator.getAnimations()) animation.cancel();
+  button.append(indicator);
   activeProvider = button.dataset.provider;
   for (const filter of $('filters').children) filter.setAttribute('aria-pressed', String(filter === button));
   shown = pageSize;
   renderLibrary();
   if (!motion) return;
-  const grid = $('games');
-  for (const animation of grid.getAnimations()) animation.cancel();
-  if (grid.childElementCount) {
-    grid.animate([{ opacity: .55 }, { opacity: 1 }], { duration: 200, easing: 'ease-out' });
+  if (!classic) {
+    const grid = $('games');
+    for (const animation of grid.getAnimations()) animation.cancel();
+    if (grid.childElementCount) grid.animate([{ opacity: .55 }, { opacity: 1 }], { duration: 200, easing: 'ease-out' });
+    return;
   }
-  const indicator = button.querySelector('.filter-indicator');
   const to = indicator.getBoundingClientRect();
-  if (!from?.width || !to.width) return;
-  const frames = from.top === to.top
-    ? [{ transform: `translateX(${from.left - to.left}px) scaleX(${from.width / to.width})` }, { transform: 'none' }]
-    : [{ opacity: 0 }, { opacity: 1 }];
-  indicator.animate(frames, { duration: 220, easing: 'cubic-bezier(.2,.7,.25,1)' });
+  if (!from.width || !to.width) return;
+  if (Math.abs(from.top - to.top) < 1) {
+    indicator.animate([{ transform: `translateX(${from.left - to.left}px) scaleX(${from.width / to.width})` }, { transform: 'none' }],
+      { duration: 180, easing: 'cubic-bezier(.2,.7,.25,1)' });
+  }
 });
 function enhanceSort(select) {
   const picker = node('fieldset', undefined, 'sort-segments');
