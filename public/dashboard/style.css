@@ -182,6 +182,7 @@ button:hover:not([aria-pressed="true"]){border-color:var(--muted)}
   [data-theme="classic"] .game .cover{transition:transform 180ms var(--ease-settle)}
   [data-theme="classic"] .game:active .cover{transform:scale(.975)}
   [data-theme="classic"] .theme-options:not([hidden]){animation:surface-enter 180ms var(--ease-settle)}
+  .flight-cover:popover-open{display:block;position:fixed;inset:auto;margin:0;padding:0;pointer-events:none;overflow:hidden;border:0;backface-visibility:hidden;box-shadow:0 14px 28px #0003}
   [data-theme="classic"] #detail{
     opacity:0;transform:translateY(12px) scale(.985);
     transition:opacity 160ms ease-out,transform 200ms var(--ease-settle),overlay 200ms allow-discrete,display 200ms allow-discrete
@@ -191,7 +192,7 @@ button:hover:not([aria-pressed="true"]){border-color:var(--muted)}
   [data-theme="classic"] #detail::backdrop{opacity:0;transition:opacity 180ms ease-out,overlay 200ms allow-discrete,display 200ms allow-discrete}
   [data-theme="classic"] #detail[open]::backdrop{opacity:1}
   @starting-style{
-    [data-theme="classic"] #detail[open]{opacity:0;transform:translateY(14px) scale(.98)}
+    [data-theme="classic"] #detail[open]{opacity:1;transform:none}
     [data-theme="classic"] #detail[open]::backdrop{opacity:0}
   }
   [data-theme="classic"] .progress-section[data-ready] > :not([hidden]){animation:surface-enter 180ms var(--ease-settle)}

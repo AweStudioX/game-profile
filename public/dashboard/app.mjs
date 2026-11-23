@@ -294,7 +294,38 @@ function settleHeight(section, before) {
   ], {duration:210, easing:'cubic-bezier(.2,.75,.25,1)'});
 }
 
-async function showGame(game) {
+function flipToDetail(cover, start, signal) {
+  const dialog = $('detail');
+  const end = dialog.getBoundingClientRect();
+  const dx = start.x + start.width / 2 - end.x - end.width / 2;
+  const dy = start.y + start.height / 2 - end.y - end.height / 2;
+  const hinge = `translate(${dx * .28}px, ${dy * .28 - 16}px) perspective(1100px)`;
+  const front = cover.cloneNode(true);
+  front.setAttribute('aria-hidden', 'true');
+  front.setAttribute('popover', 'manual');
+  front.classList.add('flight-cover');
+  Object.assign(front.style, {left:`${start.x}px`, top:`${start.y}px`, width:`${start.width}px`, height:`${start.height}px`});
+  dialog.append(front);
+  front.showPopover();
+  cover.style.visibility = 'hidden';
+  const lift = front.animate([
+    {transform:'none'},
+    {transform:`translate(${-dx * .23}px, ${-dy * .23 - 14}px) perspective(1100px) rotateY(18deg) scale(1.08)`, offset:.36},
+    {transform:`translate(${-dx * .72}px, ${-dy * .72 - 16}px) perspective(1100px) rotateY(90deg) scale(1.2)`}
+  ], {duration:210, easing:'ease-in', fill:'forwards'});
+  const unfold = dialog.animate([
+    {transform:`${hinge} rotateY(-90deg) scale(${start.width * 1.2 / end.width},${start.height * 1.2 / end.height})`},
+    {transform:'none'}
+  ], {delay:210, duration:235, easing:'cubic-bezier(.16,1,.3,1)', fill:'backwards'});
+  function clear() {
+    lift.cancel(); unfold.cancel(); front.remove(); cover.style.removeProperty('visibility');
+    signal.removeEventListener('abort', clear);
+  }
+  signal.addEventListener('abort', clear, {once:true});
+  return unfold.finished.then(clear, clear);
+}
+
+async function showGame(game, cover) {
   modalRequest?.abort();
   const request = modalRequest = new AbortController();
   $('detail-title').textContent = game.name;
@@ -322,7 +353,10 @@ async function showGame(game) {
   const progress = node('section', undefined, 'progress-section');
   progress.append(node('p', '正在读取成就…', 'muted loading-lines'));
   $('detail-body').replaceChildren(node('p', `累计 ${playtime(game.seconds)}`), copies, progress);
+  const flip = document.documentElement.dataset.theme === 'classic' && !matchMedia('(prefers-reduced-motion: reduce)').matches && 'showPopover' in HTMLElement.prototype;
+  const start = flip && cover.getBoundingClientRect();
   if (!$('detail').open) $('detail').showModal();
+  const flight = start && flipToDetail(cover, start, request.signal);
   function finishProgress(children) {
     if (request.signal.aborted) return;
     const before = progress.offsetHeight;
@@ -332,8 +366,10 @@ async function showGame(game) {
   }
   try {
     const result = await data(`games/${encodeURIComponent(game.id)}`, request.signal);
+    await flight;
     if (!request.signal.aborted) finishProgress(renderProgress(result.progress, game));
   } catch {
+    await flight;
     finishProgress([node('p', '成就详情暂不可用。', 'muted')]);
   }
 }
@@ -387,7 +423,7 @@ function gameCard(game, index) {
   }
   body.append(meta);
   button.append(cover, body);
-  button.addEventListener('click', () => showGame(game));
+  button.addEventListener('click', () => showGame(game, cover));
   row.append(button);
   return row;
 }
