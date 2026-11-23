@@ -393,6 +393,24 @@ function renderLibrary(append = false) {
   if (append) cards[0]?.firstElementChild.focus();
 }
 
+function ticker(formatted) {
+  const value = node('span', formatted, 'ticker');
+  if (document.documentElement.dataset.theme !== 'classic' || matchMedia('(prefers-reduced-motion: reduce)').matches) return value;
+  const roll = node('span', undefined, 'ticker-roll');
+  roll.setAttribute('aria-hidden', 'true');
+  for (const [index, char] of Array.from(formatted).entries()) {
+    if (!/[0-9]/.test(char)) { roll.append(char); continue; }
+    const slot = node('span', undefined, 'ticker-window');
+    const strip = node('span', '0123456789'.slice(0, Number(char) + 1).split('').join('\n'), 'ticker-strip');
+    strip.style.setProperty('--delay', `${(formatted.length - index - 1) * 20}ms`);
+    if (index === 0) strip.addEventListener('animationend', () => roll.remove(), { once: true });
+    slot.append(strip);
+    roll.append(slot);
+  }
+  value.append(roll);
+  return value;
+}
+
 function showLibrary(payload, isDemo) {
   model = libraryModel(payload);
   renderSources(model.sources, isDemo);
@@ -403,8 +421,8 @@ function showLibrary(payload, isDemo) {
     $('library-status').replaceChildren(hasConnection ? '游戏库暂不可用。 ' : '还没有连接游戏账号。 ', link);
     return;
   }
-  if (model.knownSeconds !== null) $('hours').replaceChildren(node('span', hours.format(model.knownSeconds / 3600)), node('small', model.incomplete ? ' 小时 · 部分' : ' 小时'));
-  $('game-count').textContent = number.format(model.games.length);
+  if (model.knownSeconds !== null) $('hours').replaceChildren(ticker(hours.format(model.knownSeconds / 3600)), node('small', model.incomplete ? ' 小时 · 部分' : ' 小时'));
+  $('game-count').replaceChildren(ticker(number.format(model.games.length)));
   $('played-count').textContent = number.format(model.games.filter(game => game.seconds > 0).length);
   $('source-count').textContent = number.format(Object.values(model.sources).filter(source => ready.has(source?.status)).length);
   $('hours').closest('dl').hidden = false;
