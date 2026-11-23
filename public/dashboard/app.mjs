@@ -558,32 +558,92 @@ function showLibrary(payload, isDemo) {
   renderLibrary();
 }
 
+const flights = new WeakMap();
+function moveSegment(track, previous, next) {
+  const old = flights.get(track);
+  old?.stop();
+  if (document.documentElement.dataset.theme !== 'classic' || !previous || previous === next) return;
+  const box = track.getBoundingClientRect();
+  if (!box.width) return;
+  const a = previous.getBoundingClientRect(), b = next.getBoundingClientRect();
+  const canvas = node('canvas', undefined, 'segment-flight');
+  canvas.setAttribute('aria-hidden', 'true');
+  const ratio = Math.min(devicePixelRatio, 2);
+  canvas.width = Math.ceil(box.width * ratio); canvas.height = Math.ceil(box.height * ratio);
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  track.append(canvas);
+  ctx.scale(ratio, ratio);
+  ctx.fillStyle = getComputedStyle(canvas).color;
+  const cols = 24, rows = 10;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const direction = b.x >= a.x ? 1 : -1;
+  const points = [];
+  for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
+    const u = (x + .5) / cols, v = (y + .5) / rows;
+    const edge = Math.max(0, Math.abs(u - .5) * b.width - (b.width - b.height) / 2);
+    if (Math.hypot(edge, (v - .5) * b.height) > b.height / 2) continue;
+    const id = y * cols + x, last = old?.points[id];
+    const sx = last?.x ?? a.x - box.x + u * a.width, sy = last?.y ?? a.y - box.y + v * a.height;
+    points[id] = {sx, sy, x:sx, y:sy, tx:b.x - box.x + u*b.width, ty:b.y - box.y + v*b.height,
+      delay:.24 * (direction > 0 ? 1-u : u), arc:3 + (id * 17 % 9)};
+  }
+  const start = performance.now();
+  let frame;
+  function stop() { cancelAnimationFrame(frame); canvas.remove(); flights.delete(track); }
+  flights.set(track, {points, stop});
+  function draw(now) {
+    const t = Math.min(1, (now-start)/(reduced ? 120 : 400));
+    ctx.clearRect(0,0,box.width,box.height);
+    if (reduced) {
+      ctx.beginPath(); ctx.roundRect(a.x-box.x+(b.x-a.x)*t,a.y-box.y+(b.y-a.y)*t,a.width+(b.width-a.width)*t,b.height,b.height/2); ctx.fill();
+    } else for (const p of points) {
+      if (!p) continue;
+      let k = Math.min(1,Math.max(0,(t-p.delay)/.76)); k *= k*(3-2*k);
+      const wave = Math.sin(Math.PI*k);
+      p.x = p.sx+(p.tx-p.sx)*k; p.y = p.sy+(p.ty-p.sy)*k-p.arc*wave;
+      const w = ((a.width+(b.width-a.width)*k)/cols+1)*(1-.66*wave), h = (b.height/rows+1)*(1-.66*wave);
+      ctx.fillRect(p.x-w/2,p.y-h/2,w,h);
+    }
+    if (t < 1) frame = requestAnimationFrame(draw); else stop();
+  }
+  draw(start);
+}
+
+function enableSegmentDrag(track, selector) {
+  let down = false, dragged = false;
+  track.addEventListener('pointerdown', e => {down = e.isPrimary && e.button === 0 && document.documentElement.dataset.theme === 'classic'; dragged = false;});
+  track.addEventListener('pointermove', e => {
+    if (!down || !e.buttons) return;
+    const item = document.elementFromPoint(e.clientX,e.clientY)?.closest(selector);
+    if (!item || !track.contains(item) || item.matches('[aria-pressed="true"],:has(input:checked)')) return;
+    dragged = true;
+    (item.querySelector('input') ?? item).click();
+  });
+  track.addEventListener('click', e => {if (dragged && e.detail && e.isTrusted) {e.preventDefault(); e.stopImmediatePropagation();}}, true);
+  for (const type of ['pointerup','pointercancel']) window.addEventListener(type, () => {down = false;});
+}
+enableSegmentDrag($('filters'), 'button');
 $('filters').addEventListener('click', event => {
   const button = event.target.closest('button[data-provider]');
   if (!button || button.dataset.provider === activeProvider) return;
   const indicator = $('filters').querySelector('.filter-indicator');
   const motion = matchMedia('(prefers-reduced-motion: no-preference)').matches;
   const classic = document.documentElement.dataset.theme === 'classic';
-  const from = classic && motion && indicator.getBoundingClientRect();
-  for (const animation of indicator.getAnimations()) animation.cancel();
+  const previous = indicator.parentElement;
   button.append(indicator);
   activeProvider = button.dataset.provider;
   for (const filter of $('filters').children) filter.setAttribute('aria-pressed', String(filter === button));
   shown = pageSize;
   renderLibrary();
-  if (!motion) return;
+  if (!motion && !classic) return;
   if (!classic) {
     const grid = $('games');
     for (const animation of grid.getAnimations()) animation.cancel();
     if (grid.childElementCount) grid.animate([{ opacity: .55 }, { opacity: 1 }], { duration: 200, easing: 'ease-out' });
     return;
   }
-  const to = indicator.getBoundingClientRect();
-  if (!from.width || !to.width) return;
-  if (Math.abs(from.top - to.top) < 1) {
-    indicator.animate([{ transform: `translateX(${from.left - to.left}px) scaleX(${from.width / to.width})` }, { transform: 'none' }],
-      { duration: 180, easing: 'cubic-bezier(.2,.7,.25,1)' });
-  }
+  moveSegment($('filters'), previous, button);
 });
 function enhanceSort(select) {
   const picker = node('fieldset', undefined, 'sort-segments');
@@ -596,7 +656,9 @@ function enhanceSort(select) {
     input.name = 'library-sort';
     input.className = 'sr-only';
     input.value = option.value;
+    const previousLabel = () => choices.find(choice => choice.value === select.value)?.parentElement;
     input.addEventListener('change', () => {
+      moveSegment(picker, previousLabel(), label);
       select.value = input.value;
       select.dispatchEvent(new Event('change'));
     });
@@ -613,6 +675,7 @@ function enhanceSort(select) {
   const native = select.closest('label');
   native.after(picker);
   native.classList.add('native-sort');
+  enableSegmentDrag(picker, 'label');
   update();
 }
 

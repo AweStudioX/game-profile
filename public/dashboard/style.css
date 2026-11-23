@@ -152,6 +152,12 @@ button:hover:not([aria-pressed="true"]){border-color:var(--muted)}
   & .catalog-live::before{flex:none;margin:0}
   & .library-head{align-items:baseline;margin-bottom:12px}
   & .filters{display:flex;isolation:isolate;gap:2px;max-width:100%;padding:4px;background:var(--surface);border-radius:24px}
+  & #title{width:fit-content;--dot-pitch:.0625em;mask-image:radial-gradient(circle,#000 0 .020em,transparent .028em);mask-size:var(--dot-pitch) var(--dot-pitch)}
+  @media(prefers-reduced-motion:no-preference){
+    & #title{animation:title-dots-settle 680ms cubic-bezier(.2,.7,.25,1) both}
+  }
+  @keyframes title-dots-settle{from{mask-size:.11em .11em;mask-position:0 .2em;opacity:.35}to{mask-size:var(--dot-pitch) var(--dot-pitch);mask-position:0 0;opacity:1}}
+  @media(forced-colors:active){& #title{mask-image:none;animation:none}}
   & .filters button{position:relative;display:flex;align-items:center;justify-content:center;gap:4px;min-width:44px;padding-inline:10px;border:0;border-radius:999px}
   & .filters button:focus-visible{outline-offset:-2px}
   & .filter-count{font-size:.8125rem;font-variant-numeric:tabular-nums}
@@ -164,10 +170,15 @@ button:hover:not([aria-pressed="true"]){border-color:var(--muted)}
   & .tools input[type="search"]{width:100%;height:44px;padding-inline:38px 8px;border:0;border-radius:11px;background:transparent}
   & .tools input[type="search"]:focus-visible{outline-offset:-2px}
   & .sort-segments{position:relative;isolation:isolate;border:0;border-radius:0;background:transparent;padding:0;margin-inline-start:4px}
-  & .sort-segments::before{content:"";position:absolute;z-index:-1;inset:0 auto 0 0;width:calc(100% / 3);border-radius:12px;background:var(--text);pointer-events:none}
+  & .filters{position:relative}
+  & :is(.sort-segments,.filters){touch-action:pan-y;user-select:none}
+  & .segment-flight{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;color:var(--pill)}
+  & .filters:has(.segment-flight) .filter-indicator,& .sort-segments:has(.segment-flight)::before{visibility:hidden}
+  & .sort-segments::before{content:"";position:absolute;z-index:-1;inset:0 auto 0 0;width:calc(100% / 3);border-radius:999px;background:var(--pill);box-shadow:0 1px 4px #0002;pointer-events:none}
   & .sort-segments:has(label:nth-of-type(2) input:checked)::before{transform:translateX(100%)}
   & .sort-segments:has(label:nth-of-type(3) input:checked)::before{transform:translateX(200%)}
-  & .sort-segments input:checked+span{background:transparent;color:var(--bg)}
+  & .sort-segments input:checked+span{background:transparent;color:var(--text)}
+  & :is(.filters button,.sort-segments span){transition:color 180ms ease}
   & .sort-segments span{font-weight:600}
   & .sort-segments input:focus-visible+span{border-radius:12px;outline:2px solid currentColor;outline-offset:-4px}
   & .game-body{gap:5px;padding-block-start:10px}
