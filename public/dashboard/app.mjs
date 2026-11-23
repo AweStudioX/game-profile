@@ -309,15 +309,21 @@ function flipToDetail(cover, start, signal) {
   front.showPopover();
   cover.style.visibility = 'hidden';
   const lift = front.animate([
-    {transform:'none'},
-    {transform:`translate(${-dx * .23}px, ${-dy * .23 - 14}px) perspective(1100px) rotateY(18deg) scale(1.08)`, offset:.36},
-    {transform:`translate(${-dx * .72}px, ${-dy * .72 - 16}px) perspective(1100px) rotateY(90deg) scale(1.2)`}
-  ], {duration:210, easing:'ease-in', fill:'forwards'});
+    {transform:'translate(0,0) perspective(1100px) rotateY(0deg) scale(1)', filter:'brightness(1)'},
+    {transform:`translate(${-dx * .23}px, ${-dy * .23 - 14}px) perspective(1100px) rotateY(18deg) scale(1.08)`, filter:'brightness(1)', offset:.36},
+    {transform:`translate(${-dx * .72}px, ${-dy * .72 - 16}px) perspective(1100px) rotateY(90deg) scale(1.2)`, filter:'brightness(.80)'}
+  ], {duration:210, easing:'cubic-bezier(.38,0,.58,1)', fill:'forwards'});
   const unfold = dialog.animate([
-    {transform:`${hinge} rotateY(-90deg) scale(${start.width * 1.2 / end.width},${start.height * 1.2 / end.height})`},
-    {transform:'none'}
-  ], {delay:210, duration:235, easing:'cubic-bezier(.16,1,.3,1)', fill:'backwards'});
+    {transform:`${hinge} rotateY(-90deg) scale(${start.width * 1.2 / end.width},${start.height * 1.2 / end.height})`, filter:'brightness(.80)'},
+    {transform:'translate(0,0) perspective(1100px) rotateY(0deg) scale(1,1)', filter:'brightness(1)'}
+  ], {delay:210, duration:235, easing:'cubic-bezier(.3,.45,.22,1)', fill:'backwards'});
+  // Reveal ink only after its surface is wide enough to read.
+  const ink = [dialog.querySelector('.dialog-header'), $('detail-body')].map((part, i) =>
+    part.animate([{opacity:0}, {opacity:1}], {
+      delay:248 + i * 28, duration:145, easing:'ease-out', fill:'backwards'
+    }));
   function clear() {
+    for (const animation of ink) animation.cancel();
     lift.cancel(); unfold.cancel(); front.remove(); cover.style.removeProperty('visibility');
     signal.removeEventListener('abort', clear);
   }
