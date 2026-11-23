@@ -33,7 +33,10 @@ test('daily runs only at the configured UTC hour; hourly persists across instanc
   await tick(4, restarted);
   await tick(3, restarted);
   assert.deepEqual(calls, ['steam', 'psn', 'nintendo', 'steam', 'psn', 'nintendo']);
-  assert.deepEqual(await restarted.status(), { cadence: 'hourly', lastScheduledAt: '2026-11-19T04:00:00.000Z' });
+  assert.deepEqual(await restarted.status(), {
+    cadence: 'hourly', lastScheduledAt: '2026-11-19T04:00:00.000Z',
+    identityVisibility: { steam: false, psn: false, nintendo: false },
+  });
 });
 
 test('owner can configure Steam with only a dashboard password and persisted storage', async () => {

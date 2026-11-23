@@ -20,13 +20,93 @@ const errors = {
   'account-mismatch': '账号和当前绑定不同，请使用原账号，或先断开连接。',
   'disconnect-before-reconnecting': '账号仍处于连接状态。如需切换，请先断开连接。',
   'credential-integrity-failed': '无法读取已保存的会话，请确认部署使用原来的加密密钥。',
+  'invalid-visibility': '展示设置无效，请刷新后重试。',
 };
 let confirmationId;
+const identityPlatforms = [['steam', 'Steam'], ['psn', 'PlayStation'], ['nintendo', 'Nintendo Switch']];
+const noIdentities = { identities: {}, visibility: { steam: false, psn: false, nintendo: false } };
+let identityState = noIdentities;
+let visibilitySaving = false;
+
+function identityPreview(identity) {
+  if (!identity) return '未获取到资料，请同步对应平台。';
+  const name = identity.displayName || identity.id;
+  if (!name) return '未获取到资料，请同步对应平台。';
+  return identity.displayName && identity.id && identity.id !== identity.displayName
+    ? `${name} · ${identity.id}` : name;
+}
+
+function renderIdentitySettings() {
+  const list = $('identity-options');
+  list.replaceChildren(...identityPlatforms.map(([id, name]) => {
+    const identity = identityState.identities[id] ?? null;
+    const item = document.createElement('li');
+    item.className = 'identity-option';
+    const label = document.createElement('label');
+    label.className = 'identity-option-label';
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.dataset.platform = id;
+    input.disabled = visibilitySaving;
+    input.checked = identityState.visibility[id] === true;
+    const copy = document.createElement('span');
+    copy.className = 'identity-option-copy';
+    const title = document.createElement('span');
+    title.className = 'identity-option-name';
+    title.textContent = `${name} 玩家身份`;
+    const preview = document.createElement('span');
+    preview.className = 'identity-option-preview';
+    preview.textContent = identityPreview(identity);
+    copy.append(title, preview);
+    label.append(input, copy);
+    item.append(label);
+    return item;
+  }));
+  $('identity-settings').hidden = false;
+}
+
+async function saveVisibility(input) {
+  if (visibilitySaving) return;
+  visibilitySaving = true;
+  const platform = input.dataset.platform;
+  const visible = input.checked;
+  const restoreFocus = document.activeElement === input;
+  const result = $('identity-result');
+  const inputs = [...$('identity-options').querySelectorAll('input[data-platform]')];
+  for (const item of inputs) item.disabled = true;
+  result.textContent = '正在保存…';
+  try {
+    const response = await fetch(endpoint('platform-action'), {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ provider: 'profile', action: 'visibility', platform, visible }),
+    });
+    if (response.status === 401) throw new Error('signed-out');
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error);
+    if (data.status !== 'saved') throw new Error('unexpected-result');
+    if (data.identityVisibility && typeof data.identityVisibility === 'object') {
+      identityState.visibility = { ...identityState.visibility, ...data.identityVisibility };
+    }
+    try { await refreshStatus(); } catch { /* The confirmed save stands; retry on next load. */ }
+    result.textContent = '已保存，公开看板已更新。';
+  } catch (error) {
+    input.checked = identityState.visibility[platform] === true;
+    result.textContent = error.message === 'signed-out' ? '请重新登录看板。'
+      : Object.hasOwn(errors, error.message) ? errors[error.message] : '未能保存展示设置，请稍后重试。';
+  } finally {
+    for (const item of $('identity-options').querySelectorAll('input[data-platform]')) item.disabled = false;
+    visibilitySaving = false;
+    if (restoreFocus) $('identity-options').querySelector(`input[data-platform="${platform}"]`)?.focus();
+  }
+}
 
 async function refreshStatus() {
   const response = await fetch(endpoint('platforms'), { cache: 'no-store' });
   const note = $('connect-status');
   if (response.status === 401) {
+    $('identity-settings').hidden = true;
+    $('owner-platforms').hidden = true;
+    $('sync-settings').hidden = true;
     const login = document.createElement('a');
     login.href = endpoint('connect-login');
     login.textContent = '登录后配置平台';
@@ -40,7 +120,7 @@ async function refreshStatus() {
     note.replaceChildren(guide);
     return;
   }
-  const { storage, sources, sync } = await response.json();
+  const { storage, sources, sync, identities, identityVisibility } = await response.json();
   if (storage !== 'configured' || !sync) {
     const guide = document.createElement('a');
     guide.href = '/setup.html#platform-storage';
@@ -50,6 +130,13 @@ async function refreshStatus() {
     return;
   }
   note.textContent = '选择平台完成连接。凭证保存在服务端，不会回显。';
+  identityState = {
+    identities: identities && typeof identities === 'object' ? identities : {},
+    visibility: { ...noIdentities.visibility,
+      ...(sync.identityVisibility && typeof sync.identityVisibility === 'object' ? sync.identityVisibility : {}),
+      ...(identityVisibility && typeof identityVisibility === 'object' ? identityVisibility : {}) },
+  };
+  renderIdentitySettings();
   $('owner-platforms').hidden = false;
   $('sync-settings').hidden = false;
   $('schedule-form').elements.cadence.value = sync.cadence;
@@ -164,5 +251,9 @@ $('owner-platforms').addEventListener('click', event => {
     $('psn-review').hidden = true;
   }
   void perform(provider, action);
+});
+$('identity-options').addEventListener('change', event => {
+  const input = event.target.closest('input[data-platform]');
+  if (input) void saveVisibility(input);
 });
 refreshStatus().catch(() => { $('connect-status').textContent = '无法读取状态，请刷新页面。'; });

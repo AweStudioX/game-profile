@@ -105,6 +105,7 @@ test('refresh publishes bounded service-shaped snapshots and throttles non-force
     json({ basicPresence: { primaryPlatformInfo: { onlineStatus: 'online', platform: 'PS5' }, gameTitleInfoList: [
       { npTitleId: title.titleId, titleName: title.name, format: 'PS5' },
     ] } }),
+    json({ onlineId: 'Owner_123', isMe: true }),
   ];
   const calls = [];
   const { adapter, identified } = await connect({ responses, calls });
@@ -131,6 +132,7 @@ test('transient refresh failure preserves the library and never republishes stal
     json({ titles: [title], totalItemCount: 1, nextOffset: null }),
     json({ trophyTitles: [trophyList], totalItemCount: 1, nextOffset: null }), json(summary),
     json({ basicPresence: { primaryPlatformInfo: { onlineStatus: 'online', platform: 'PS5' }, gameTitleInfoList: [] } }),
+    json({ onlineId: 'Owner_123', isMe: true }),
     new Error('synthetic network secret'),
   ];
   const { adapter, store, identified } = await connect({ responses, now: () => time });
@@ -242,6 +244,7 @@ test('detail rejects unowned IDs without upstream work and maps visible trophy d
     json({ titles: [title], totalItemCount: 1, nextOffset: null }),
     json({ trophyTitles: [trophyList], totalItemCount: 1, nextOffset: null }), json(summary),
     json({ basicPresence: { primaryPlatformInfo: { onlineStatus: 'offline', platform: 'PS5' } } }),
+    json({ onlineId: 'Owner_123', isMe: true }),
     json({ titles: [{ npTitleId: title.titleId, trophyTitles: [{ npCommunicationId: trophyList.npCommunicationId }] }] }),
     json({ trophies: [definition], totalItemCount: 1, nextOffset: null }),
     json({ trophies: [{ trophyId: 1, earned: true, earnedDateTime: '2026-01-01T00:00:00Z', trophyEarnedRate: '2.5' }], totalItemCount: 1, nextOffset: null }),

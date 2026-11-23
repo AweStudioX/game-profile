@@ -40,7 +40,7 @@ test('accepts a 14-character password with punctuation without weakening the log
   assert.equal((await get(handle, 'login', credentials(value))).status, 303);
 });
 
-test('real profile is private and uses configured Steam credentials only server-side', async () => {
+test('real profile is publicly readable while credentials and management stay protected', async () => {
   const calls = [];
   const handle = createProfile({ env, fetchImpl: async (url, options) => {
     const uri = new URL(url);
@@ -52,16 +52,21 @@ test('real profile is private and uses configured Steam credentials only server-
       assert.equal(JSON.parse(uri.searchParams.get('input_json')).steamid, id);
       return Response.json({ response: { game_count: 1, games: [{ appid: 42, name: 'A unique owned title', playtime_forever: 25 }] } });
     }
+    if (uri.pathname.includes('GetPlayerSummaries')) {
+      return Response.json({ response: { players: [{ steamid: id, personastate: 1 }] } });
+    }
     assert.fail(`unexpected upstream request: ${uri.pathname}`);
   } });
   assert.deepEqual(await (await get(handle, 'setup')).json(), { mode: 'private' });
-  for (const resource of ['library', 'now-playing', 'games/steam-42', 'login']) {
-    assert.equal((await get(handle, resource)).status, 401);
+  for (const resource of ['platforms', 'login', 'connect-login']) {
+    const response = await get(handle, resource);
+    assert.equal(response.status, 401);
+    if (resource.endsWith('login')) assert.match(response.headers.get('www-authenticate'), /Basic/);
   }
   assert.equal(calls.length, 0);
   const login = await get(handle, 'login', { Authorization: auth });
   assert.equal(login.headers.get('location'), '/');
-  const [library, detail] = await Promise.all(['library', 'games/steam-42'].map(resource => get(handle, resource, { Authorization: auth })));
+  const [library, detail] = await Promise.all(['library', 'games/steam-42'].map(resource => get(handle, resource)));
   assert.equal(library.status, 200);
   assert.equal(detail.status, 200);
   assert.equal(calls.length, 1);
@@ -69,5 +74,12 @@ test('real profile is private and uses configured Steam credentials only server-
   const output = await library.text();
   assert.match(output, /A unique owned title/);
   for (const secret of [key, id, password]) assert(!output.includes(secret));
+  const presence = await get(handle, 'now-playing');
+  assert.equal(presence.status, 200);
+  const activity = await presence.text();
+  for (const secret of [key, id, password]) assert(!activity.includes(secret));
+  const connectLogin = await get(handle, 'connect-login', { Authorization: auth });
+  assert.equal(connectLogin.status, 303);
+  assert.equal(connectLogin.headers.get('location'), '/connect.html');
   assert.equal((await get(handle, 'games/steam-991', { Authorization: auth })).status, 404);
 });

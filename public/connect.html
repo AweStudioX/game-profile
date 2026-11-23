@@ -10,7 +10,7 @@
   <script type="module" src="/dashboard/connect.mjs"></script>
 </head>
 <body>
-  <header class="bar"><div class="frame bar-inner"><a class="wordmark" href="/">GAME<span>.</span> PROFILE</a><nav class="bar-actions" aria-label="站点"><div class="theme-picker"></div><a class="private" href="/">返回游戏库</a></nav></div></header>
+  <header class="bar"><div class="frame bar-inner"><a class="wordmark" href="/">GAME<span>.</span> PROFILE</a><nav class="bar-actions" aria-label="站点"><div class="theme-picker"></div><div class="bar-links"><a class="login" href="/api/profile?resource=connect-login">登录</a><a class="private" href="/">返回游戏库</a></div></nav></div></header>
   <main class="frame">
     <section class="intro home-intro">
       <p class="eyebrow">ACCOUNT CONNECTIONS</p>
@@ -27,6 +27,12 @@
       </form>
       <p id="sync-last" class="muted"></p>
       <p id="profile-result" role="status" class="profile-note"></p>
+    </section>
+    <section class="panel setup-guide" id="identity-settings" aria-labelledby="identity-settings-title" hidden>
+      <h2 id="identity-settings-title">玩家身份展示</h2>
+      <p class="muted">勾选后，公开看板的「玩家身份」会显示该平台的昵称、账号 ID 和头像。未勾选的平台不会出现在公开看板，默认全部不公开。</p>
+      <ul id="identity-options" class="identity-options"></ul>
+      <p id="identity-result" role="status" class="profile-note"></p>
     </section>
     <div class="panels connect-panels" id="owner-platforms" hidden>
       <section class="panel" aria-labelledby="steam-title">

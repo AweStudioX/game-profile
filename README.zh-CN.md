@@ -2,7 +2,7 @@
 
 [English](README.md) · **简体中文**
 
-一个面向个人的私有游戏看板，支持 Steam、PlayStation 和 Nintendo Switch。部署到 Vercel 后直接在站内绑定账号，不用改代码。
+一个面向个人的公开游戏展示看板，支持 Steam、PlayStation 和 Nintendo Switch，管理操作需要密码登录。部署到 Vercel 后直接在站内绑定账号，不用改代码。
 
 ## 快速开始
 
@@ -16,6 +16,7 @@ Vercel Hobby 用户请选择**个人 GitHub 账号**，不要选组织。在部�
 - 默认「经典」跟随系统明暗，采用 [Dissolve](https://dissolve.rselmi.com/) 风格的平台分段筛选、滚动数字和带按压反馈的「显示更多」按钮。开启「减少动态效果」时不播放动效。顶栏仍可切换像素和霓虹都市，偏好按浏览器保存。
 - 同款游戏的多平台记录匹配后只显示一张卡片，成就进度仍按平台独立统计。
 - Steam 成就和 PlayStation 奖杯分开显示；Nintendo 提供游玩记录。
+- 未登录也能浏览面板。通过顶栏「登录」进入管理页，可按平台选择是否公开玩家昵称、ID 和可用头像；默认不公开身份信息。
 - 游戏库默认每天自动同步一次（北京时间 10:00 开始），可在站内改成每小时一次。使用 [Vercel Schedules（Beta）](https://vercel.com/docs/schedules/limits)，无需开着网页。
 
 ## 部署清单
@@ -44,7 +45,7 @@ npm ci
 npm run dev
 ```
 
-打开 <http://127.0.0.1:3000> 查看虚构演示数据。使用私有模式时，将 [`.env.example`](.env.example) 复制为 `.env.local`，填入独立的本地 PostgreSQL 和两个密钥。用 `npm test` 验证修改。
+打开 <http://127.0.0.1:3000> 查看虚构演示数据。展示真实记录时，将 [`.env.example`](.env.example) 复制为 `.env.local`，填入独立的本地 PostgreSQL 和两个密钥。用 `npm test` 验证修改。
 
 ## 常见问题
 
@@ -57,7 +58,8 @@ npm run dev
 
 ## 隐私
 
-- 真实档案的数据接口需要登录。页面框架和配置指南公开；浏览器和 CDN 不缓存个人数据响应。
+- 真实游戏库、游玩动态和成就可公开查看；平台设置和修改操作需要登录。浏览器和 CDN 不缓存个人数据响应。
+- 玩家身份按平台独立控制，默认关闭。关闭后服务端不返回该平台的昵称、ID 或头像。Steam 展示 SteamID64 和昵称，PlayStation 展示 Online ID，Nintendo 展示账号昵称，不使用内部 ID、邮箱或 Switch 好友码。头像随平台同步更新，缺失时使用平台图标。
 - 平台凭证和同步快照加密写入 PostgreSQL。不同部署请使用独立数据库。封面和成就图标从各平台 CDN 加载。
 - PlayStation 和 Nintendo 使用非官方接口，可能失效或需要重新授权。部署者负责遵守各平台条款，包括 [Steam Web API 条款](https://steamcommunity.com/dev/apiterms)。本项目与各平台无隶属关系。
 

@@ -1,6 +1,11 @@
 const { ProviderError } = require('../../shared/providerError');
 
 const imageHosts = new Set(['image.api.playstation.com', 'image.api.np.km.playstation.net', 'psnobj.prod.dl.playstation.net']);
+const avatarHosts = new Set([
+  'image.api.playstation.com', 'image.api.np.km.playstation.net', 'psnobj.prod.dl.playstation.net',
+  'static-resource.np.community.playstation.net',
+]);
+const avatarRanks = { s: 1, m: 2, l: 3, xl: 4 };
 const grades = ['bronze', 'silver', 'gold', 'platinum'];
 const text = (value, max = 500) => typeof value === 'string' && value.length <= max ? value : null;
 const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -21,6 +26,32 @@ function artwork(value) {
     const url = new URL(value);
     return url.protocol === 'https:' && imageHosts.has(url.hostname) && !url.username && !url.password && !url.port && !url.search && !url.hash ? url.href : null;
   } catch { return null; }
+}
+function safeAvatarUrl(value) {
+  try {
+    const url = new URL(value);
+    return url.protocol === 'https:' && avatarHosts.has(url.hostname) && !url.username && !url.password && !url.port && !url.hash ? url.href : null;
+  } catch { return null; }
+}
+// The profile payload exposes avatars as [{ size, url }]; pick the largest trusted image.
+function avatarImage(rows) {
+  if (!Array.isArray(rows)) return null;
+  let selected = null;
+  let rank = 0;
+  for (let index = 0; index < Math.min(rows.length, 16); index++) {
+    const row = rows[index];
+    if (!object(row)) continue;
+    const url = safeAvatarUrl(row.url);
+    if (!url) continue;
+    const score = avatarRanks[typeof row.size === 'string' ? row.size.toLowerCase() : ''] ?? 0;
+    if (!selected || score > rank) { selected = url; rank = score; }
+  }
+  return selected;
+}
+function identity(profile) {
+  if (!object(profile) || profile.isMe !== true) return null;
+  if (typeof profile.onlineId !== 'string' || !/^[A-Za-z0-9_-]{3,32}$/.test(profile.onlineId)) return null;
+  return { id: profile.onlineId, displayName: profile.onlineId, avatarUrl: avatarImage(profile.avatars) };
 }
 function mediaImages(...values) {
   const seen = new Set();
@@ -168,6 +199,6 @@ function trophies(definitions, player) {
 }
 
 module.exports = {
-  object, text, nonnegative, integer, identifier, accountId, date, artwork, mediaImages, durationMinutes,
+  object, text, nonnegative, integer, identifier, accountId, date, artwork, safeAvatarUrl, avatarImage, identity, mediaImages, durationMinutes,
   library, trophyLists, summary: summarySnapshot, presence, mappedSets, trophies,
 };

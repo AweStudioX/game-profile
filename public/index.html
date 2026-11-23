@@ -12,7 +12,7 @@
 <body>
   <a class="skip" href="#library">跳到游戏库</a>
   <header class="bar">
-    <div class="frame bar-inner"><a class="wordmark" href="/">GAME<span>.</span> PROFILE</a><nav class="bar-actions" aria-label="站点"><div class="theme-picker"></div><a class="private" href="/connect.html">连接平台</a></nav></div>
+    <div class="frame bar-inner"><a class="wordmark" href="/">GAME<span>.</span> PROFILE</a><nav class="bar-actions" aria-label="站点"><div class="theme-picker"></div><div class="bar-links"><a class="login" href="/api/profile?resource=connect-login">登录</a><a class="private" href="/connect.html">连接平台</a></div></nav></div>
   </header>
   <main class="frame">
     <div class="catalog-heading">
@@ -27,6 +27,10 @@
         <div><dt>数据来源</dt><dd id="source-count">—</dd></div>
       </dl>
     </div>
+    <section id="identities" class="identities" aria-labelledby="identities-title" hidden>
+      <div class="panel-head"><h2 id="identities-title">玩家身份</h2><p class="muted">由本人选择公开</p></div>
+      <ul id="identity-list" class="identity-list"></ul>
+    </section>
     <div id="overview" class="catalog-overview">
       <section aria-labelledby="live-title">
         <div class="panel-head"><h2 id="live-title">正在游玩</h2><span id="activity-status" class="badge">读取中</span></div>

@@ -2,7 +2,7 @@
 
 **English** · [简体中文](README.zh-CN.md)
 
-A private, single-owner dashboard for Steam, PlayStation, and Nintendo Switch. Deploy on Vercel, then connect your accounts from the dashboard without editing code.
+A public, single-owner game showcase for Steam, PlayStation, and Nintendo Switch, with password-protected management. Deploy on Vercel, then connect your accounts without editing code.
 
 ## Quick start
 
@@ -16,6 +16,7 @@ On Vercel Hobby, select your **personal GitHub account**, not an organization. C
 - Classic follows the system light/dark setting, with [Dissolve](https://dissolve.rselmi.com/)-inspired segmented filters, rolling totals and a glossy pagination button. Motion respects the reduced-motion preference. Pixel and Neon City remain selectable in the header; the theme preference is per browser.
 - See a game once even when multiple platform records match. Progress remains separate per platform.
 - Steam and PlayStation achievements stay separate; Nintendo contributes play history.
+- Visitors can browse the dashboard without signing in. Use **登录** (Sign in) to manage connections and choose which platforms' player names, IDs, and available avatars are public. Identity cards default to hidden.
 - Schedule daily or hourly library sync with [Vercel Schedules (Beta)](https://vercel.com/docs/schedules/limits). Daily is the default (02:00 UTC). The dashboard does not need to stay open.
 
 ## Deployment checklist
@@ -44,7 +45,7 @@ npm ci
 npm run dev
 ```
 
-Open <http://127.0.0.1:3000> for the bundled demo. For a private profile, copy [`.env.example`](.env.example) to `.env.local` and configure a dedicated local PostgreSQL database and both secrets. Run `npm test` to verify changes.
+Open <http://127.0.0.1:3000> for the bundled demo. For real records, copy [`.env.example`](.env.example) to `.env.local` and configure a dedicated local PostgreSQL database and both secrets. Run `npm test` to verify changes.
 
 ## Troubleshooting
 
@@ -57,7 +58,8 @@ Open <http://127.0.0.1:3000> for the bundled demo. For a private profile, copy [
 
 ## Privacy
 
-- A real profile's data endpoints require owner sign-in. The page shell and setup guide remain public; personal API responses are not cached by browsers or CDNs.
+- Real game libraries, activity, and achievements are publicly readable. Owner sign-in is required for platform settings and changes; personal API responses are not cached by browsers or CDNs.
+- Player identity disclosure is independently controlled per platform and defaults off. Disabled identities are omitted server-side, including avatars. Steam uses SteamID64 and nickname; PlayStation uses Online ID; Nintendo uses the account nickname, not an internal ID, email, or Switch friend code. Available avatars are refreshed with platform sync; missing images use a platform icon.
 - Platform credentials and snapshots are encrypted in PostgreSQL. Use a dedicated database per deployment. Artwork loads directly from platform CDNs.
 - PlayStation and Nintendo use unofficial interfaces that can break or require reauthorization. The operator is responsible for compliance with platform terms, including the [Steam Web API Terms](https://steamcommunity.com/dev/apiterms). This project is not affiliated with the platforms.
 

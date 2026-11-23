@@ -1,5 +1,5 @@
 const { ProviderError } = require('../../shared/providerError');
-const { object, identifier, accountId } = require('./normalize');
+const { object, identifier, accountId, avatarImage } = require('./normalize');
 
 const AUTH = 'https://ca.account.sony.com/api/authz/v3/oauth';
 const API = 'https://m.np.playstation.com/api';
@@ -127,15 +127,16 @@ function createClient({ fetchImpl = global.fetch, now = Date.now, requestMs = 7_
   }
 
   const summary = (saved, ctx) => get('/trophy/v1/users/me/trophySummary', null, saved, ctx, 'summary');
+  const profile = (saved, ctx, id = saved.accountId) => get(`/userProfile/v1/internal/users/${accountId(id)}/profiles`, null, saved, ctx, 'identity');
   async function identify(saved, ctx, expectedAccountId) {
     const rawSummary = await summary(saved, ctx);
     const id = accountId(rawSummary?.accountId);
     if (expectedAccountId && id !== expectedAccountId) throw new ProviderError('account-mismatch', 'identity');
-    const profile = await get(`/userProfile/v1/internal/users/${id}/profiles`, null, saved, ctx, 'identity');
-    if (profile?.isMe !== true || typeof profile.onlineId !== 'string' || !/^[A-Za-z0-9_-]{3,32}$/.test(profile.onlineId)) {
+    const rawProfile = await profile(saved, ctx, id);
+    if (rawProfile?.isMe !== true || typeof rawProfile.onlineId !== 'string' || !/^[A-Za-z0-9_-]{3,32}$/.test(rawProfile.onlineId)) {
       throw new ProviderError('account-mismatch', 'identity');
     }
-    return { accountId: id, onlineId: profile.onlineId };
+    return { accountId: id, onlineId: rawProfile.onlineId, avatarUrl: avatarImage(rawProfile.avatars) };
   }
 
   async function verify(saved, expectedOnlineId, ctx, expectedAccountId) {
@@ -145,7 +146,7 @@ function createClient({ fetchImpl = global.fetch, now = Date.now, requestMs = 7_
   }
 
   return {
-    context, connect, renew, identify, verify, summary,
+    context, connect, renew, identify, verify, summary, profile,
     library: (saved, ctx) => paginate('/gamelist/v2/users/me/titles', { categories: 'ps4_game,ps5_native_game' }, 'titles', saved, ctx, 'library'),
     lists: (saved, ctx) => paginate('/trophy/v1/users/me/trophyTitles', {}, 'trophyTitles', saved, ctx, 'trophy-lists'),
     presence: (saved, ctx) => get(`/userProfile/v1/internal/users/${accountId(saved.accountId)}/basicPresences`, { type: 'primary' }, saved, ctx, 'presence'),

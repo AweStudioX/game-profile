@@ -171,6 +171,48 @@ function renderActivity(payload) {
   if (sources.childElementCount) activity.append(sources);
 }
 
+function identityAvatar(provider, value) {
+  const avatar = node('span', undefined, 'identity-avatar');
+  avatar.setAttribute('aria-hidden', 'true');
+  const fallback = platformTag(provider, '');
+  avatar.append(fallback);
+  const url = imageUrl(value);
+  if (!url) return avatar;
+  const image = node('img');
+  image.alt = '';
+  image.loading = 'lazy';
+  image.decoding = 'async';
+  image.referrerPolicy = 'no-referrer';
+  image.addEventListener('load', () => fallback.remove(), { once: true });
+  image.addEventListener('error', () => image.remove(), { once: true });
+  image.src = url;
+  avatar.append(image);
+  return avatar;
+}
+
+function renderIdentities(payload) {
+  const entries = ['steam', 'psn', 'nintendo']
+    .map(id => [id, payload?.identities?.[id]])
+    .filter(([, identity]) => identity && (identity.displayName || identity.id));
+  if (!entries.length) return;
+  $('identity-list').replaceChildren(...entries.map(([id, identity], index) => {
+    const item = node('li', undefined, 'identity');
+    item.style.setProperty('--i', String(index));
+    item.append(identityAvatar(id, identity.avatarUrl));
+    const copy = node('span', undefined, 'identity-copy');
+    copy.append(node('strong', identity.displayName || identity.id, 'identity-name'));
+    const meta = node('span', undefined, 'identity-meta muted');
+    meta.append(platformTag(id));
+    if (identity.id && identity.displayName && identity.id !== identity.displayName) {
+      meta.append(node('span', identity.id));
+    }
+    copy.append(meta);
+    item.append(copy);
+    return item;
+  }));
+  $('identities').hidden = false;
+}
+
 function renderUnlockSet(set, game, showSetName) {
   const panel = node('div', undefined, 'unlock-set');
   const summary = node('div', undefined, 'unlock-summary');
@@ -688,24 +730,15 @@ async function init() {
   }
   await Promise.all([
     data('now-playing').then(renderActivity, () => renderActivity({ state: 'unknown' })),
+    data('identities').then(renderIdentities, () => {}),
     data('library').then(payload => {
       skeleton.remove();
       showLibrary(payload, mode === 'demo');
       for (const cover of $('games').querySelectorAll('li:nth-child(-n+6) .cover')) {
         if (cover.classList.contains('art-pending')) cover.dataset.reveal = '';
       }
-    }, error => {
+    }, () => {
       skeleton.remove();
-      if (error.message === 'HTTP 401') {
-        note.replaceChildren(node('span', '这是私人游戏档案。 '));
-        const link = node('a', '登录查看');
-        link.href = '/api/profile?resource=login';
-        note.append(link);
-        note.hidden = false;
-        $('overview').hidden = true;
-        $('library').hidden = true;
-        return;
-      }
       $('library-status').textContent = '未能读取游戏库，请刷新页面重试。';
       $('sources').replaceChildren(node('li', '无法读取平台同步状态。'));
     }),

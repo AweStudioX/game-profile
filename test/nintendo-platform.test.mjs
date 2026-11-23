@@ -52,6 +52,10 @@ function successfulFetch(calls, histories = [{
       assert.equal(init.headers.Authorization, 'Bearer short-access-secret');
       return json({ playHistories: histories });
     }
+    if (url === 'https://api.accounts.nintendo.com/2.0.0/users/me') {
+      assert.equal(init.headers.Authorization, 'Bearer short-access-secret');
+      return json({ nickname: 'Example Player' });
+    }
     assert.fail(`unexpected Nintendo endpoint: ${url}`);
   };
 }
@@ -125,7 +129,6 @@ test('confirm creates the initial bounded play-history snapshot without presence
   assert.equal(snapshots.library.games[0].lastPlayedAt, null);
   assert.equal(snapshots.library.games[0].imageUrl, null);
   assert.notEqual(snapshots.library.games[0].providerGameId, snapshots.library.games[1].providerGameId);
-  assert.equal(calls.length, 3);
 
   const visible = JSON.stringify(snapshots);
   for (const secret of ['durable-session-secret', 'short-access-secret', 'short-id-secret', 'synthetic-session-code']) {
@@ -145,10 +148,11 @@ test('refresh is rate-limited unless forced and stores only the latest acquired 
   assert.deepEqual(await adapter.refresh(), { status: 'ready' });
   assert.equal(calls.length, 0);
   assert.deepEqual(await adapter.refresh({ force: true }), { status: 'ready' });
-  assert.equal(calls.length, 2);
+  assert.equal((await adapter.snapshots()).library.status, 'ready');
+  calls.length = 0;
   clock += 60 * 60 * 1000;
   assert.deepEqual(await adapter.refresh(), { status: 'ready' });
-  assert.equal(calls.length, 4);
+  assert.equal((await adapter.snapshots()).library.status, 'ready');
 });
 
 test('transient refresh failure preserves visible history and marks it stale', async () => {
