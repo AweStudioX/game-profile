@@ -39,6 +39,10 @@
       const option = document.createElement('button');
       option.type = 'button';
       option.textContent = name;
+      const check = chevron.cloneNode(true);
+      check.setAttribute('class', 'theme-check');
+      check.querySelector('path').setAttribute('d', 'M5 10.25 8.25 13.5 15 6.75');
+      option.append(check);
       option.addEventListener('click', () => {
         apply(theme);
         try { localStorage.setItem(key, theme); } catch { /* The current page still switches themes. */ }
@@ -54,6 +58,7 @@
     }
     function setOpen(open) {
       trigger.setAttribute('aria-expanded', String(open));
+      menu.inert = !open;
       menu.hidden = !open;
     }
     menu.append(...options.map(([, option]) => option));

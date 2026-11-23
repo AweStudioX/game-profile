@@ -4,6 +4,9 @@ body{background:var(--bg);color:var(--text);margin:0}
 a{color:inherit;text-underline-offset:.3em}
 button,input,select{font:inherit;color:inherit}
 button,select{cursor:pointer}
+:is(.filters,.sort-segments,.theme-picker,.game){-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+.game{touch-action:manipulation}
+.game img{-webkit-user-drag:none}
 button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 [hidden]{display:none!important}
 .frame{width:min(100% - 40px,1200px);margin-inline:auto}
@@ -24,6 +27,7 @@ h1{font-family:ui-monospace,monospace;font-size:clamp(3.2rem,11vw,8.4rem);font-w
 .catalog-intro h1{font-size:clamp(2.125rem,4.2vw,3.25rem);letter-spacing:-.04em}
 .profile-note{margin-top:12px;color:var(--accent);font-size:.86rem}
 .catalog-intro .profile-note{margin-block-start:8px}
+.profile-note[data-demo]{color:var(--muted)}
 .setup-guide{margin-bottom:16px}
 .setup-guide ol{padding-inline-start:1.5em}
 .setup-guide li+li{margin-top:10px}
@@ -64,16 +68,17 @@ h2{font-size:clamp(1.25rem,2.5vw,1.7rem);line-height:1.2;letter-spacing:-.025em}
 .filters button,.tools input,.tools select,.more,dialog button{background:var(--surface);padding:7px 12px;min-height:44px;border:1px solid var(--border);border-radius:min(8px,var(--radius))}
 .filters button{font-size:.875rem;background:transparent;border-color:transparent;color:var(--muted);padding-inline:10px}
 .tools input{width:clamp(140px,19vw,225px)}.tools input::placeholder{color:var(--muted)}
-.filters button:hover{color:var(--text)}
+@media(hover:hover) and (pointer:fine){.filters button:hover{color:var(--text)}}
 .filters button[aria-pressed="true"]{background:var(--dim-accent);color:var(--accent)}
-button:hover:not([aria-pressed="true"]){border-color:var(--muted)}
+@media(hover:hover) and (pointer:fine){button:hover:not([aria-pressed="true"]){border-color:var(--muted)}}
 .games{
   --cover-gap:clamp(12px,1.35vw,16px);
   list-style:none;padding:0;margin:0;display:grid;gap:24px var(--cover-gap);
   grid-template-columns:repeat(auto-fill,minmax(max(min(9.25rem,calc((100% - var(--cover-gap)) / 2)),calc((100% - 5 * var(--cover-gap)) / 6)),1fr))
 }
 .game{display:flex;height:100%;width:100%;flex-direction:column;text-align:left;background:transparent;border:0;padding:0;color:inherit}
-.game:is(:hover,:focus-visible) .game-name{color:var(--accent)}
+.game:focus-visible .game-name{color:var(--accent)}
+@media(hover:hover) and (pointer:fine){.game:hover .game-name{color:var(--accent)}}
 .cover{display:grid;place-items:center;aspect-ratio:2/3;width:100%;position:relative;overflow:hidden;border-radius:min(8px,var(--radius));background:radial-gradient(circle at 30% 25%,#37392c,#171815 78%);color:var(--muted);font:bold 1rem ui-monospace,monospace;letter-spacing:.15em}
 .cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.cover img.wide{object-fit:contain;background:#171815}
 .game-body{display:grid;gap:4px;padding-block:8px 0;width:100%}
@@ -84,7 +89,9 @@ button:hover:not([aria-pressed="true"]){border-color:var(--muted)}
 .filter-indicator{display:none}
 .search-icon{display:none}
 .skeleton-grid,.grain-cover{display:none}
-.sync-date{display:none}
+.sources .sync-date{font-size:.8125rem}
+@media(forced-colors:active){.theme-options button[aria-pressed="true"]{outline:1px solid Highlight;outline-offset:-2px}}
+@media(prefers-reduced-motion:reduce){.theme-options,.theme-chevron{transition:none;animation:none}}
 :root:not([data-theme="pixel"],[data-theme="neon"]){
   color-scheme:light dark;
   --bg:light-dark(#f8f9fa,#101114);--surface:light-dark(#eff1f3,#1c1e22);--raised:light-dark(#e1e4e8,#2c2f34);
@@ -119,13 +126,14 @@ button:hover:not([aria-pressed="true"]){border-color:var(--muted)}
   @container (max-width:32rem){
     & #sources > li{display:grid;grid-template-columns:auto 1fr auto;grid-template-rows:minmax(28px,auto) minmax(22px,auto);gap:3px 8px;justify-items:start;align-items:center}
     & #sources .loading-lines::before{grid-column:1/-1;justify-self:stretch}
-    & #sources :is(.sync-date-inline,.sync-date){grid-column:1/-1;grid-row:2}
+    & #sources .sync-date{grid-column:1/-1;grid-row:2}
     & #sources .source-count{grid-column:3;grid-row:1}
   }
   & #sources .loading-lines::after{display:none}
   & .catalog-session .catalog-live{display:none}
-  & .sync-date summary{cursor:pointer;text-decoration:underline;text-underline-offset:3px}
-  @media (max-width:650px){& .sync-date{display:block} & .sync-date-inline{display:none}}
+  & .theme-options{background:light-dark(#fff,#24262b);border-color:color-mix(in srgb,var(--border) 75%,transparent)}
+  & .theme-options button[aria-pressed="true"]{background:var(--surface);color:var(--text)}
+  & .theme-toggle[aria-expanded="true"]{border-color:var(--border)}
   & .catalog-overview{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:12px}
   & .catalog-overview section{min-width:0;padding:16px 20px;background:var(--surface);border-radius:var(--radius)}
   & .catalog-overview section ~ section{margin-block-start:0}
@@ -197,9 +205,6 @@ button:hover:not([aria-pressed="true"]){border-color:var(--muted)}
 .ticker-roll{display:none}
 @media(prefers-reduced-motion:no-preference){
   [data-theme="classic"] .loading-lines::before,[data-theme="classic"] .loading-lines::after,[data-theme="classic"] .skeleton-grid .cover,[data-theme="classic"] .cover.art-pending{animation:skeleton-wave 1.8s ease-in-out infinite;animation-delay:var(--wave-offset,0ms)}
-  [data-theme="classic"] .game .cover{transition:transform 180ms var(--ease-settle)}
-  [data-theme="classic"] .game:active .cover{transform:scale(.975)}
-  [data-theme="classic"] .theme-options:not([hidden]){animation:surface-enter 180ms var(--ease-settle)}
   .flight-cover:popover-open{display:block;position:fixed;inset:auto;margin:0;padding:0;pointer-events:none;overflow:hidden;border:0;backface-visibility:hidden;box-shadow:0 14px 28px #0003}
   [data-theme="classic"] #detail{
     opacity:0;transform:translateY(12px) scale(.985);
@@ -214,7 +219,12 @@ button:hover:not([aria-pressed="true"]){border-color:var(--muted)}
     [data-theme="classic"] #detail[open]::backdrop{opacity:0}
   }
   [data-theme="classic"] .progress-section[data-ready] > :not([hidden]){animation:surface-enter 180ms var(--ease-settle)}
-  [data-theme="classic"] .theme-options{transform-origin:top right}
+  .theme-options{
+    transform-origin:top right;opacity:0;transform:translateY(-6px) scale(.97);
+    transition:opacity 140ms ease-out,transform 200ms cubic-bezier(.2,.75,.25,1),display 200ms allow-discrete
+  }
+  .theme-options:not([hidden]){opacity:1;transform:none}
+  @starting-style{.theme-options:not([hidden]){opacity:0;transform:translateY(-6px) scale(.97)}}
   :root:not([data-theme="classic"]) :is(.filters button,.sort-segments span){transition:color 140ms ease-out,background-color 140ms ease-out}
   /* Keep the selection fill and inverted text on the same frame. */
   :root[data-theme="classic"] .unlock-tab::after{transition:none}
@@ -326,19 +336,19 @@ dialog{color:var(--text);background:var(--surface);width:min(100% - 24px,590px);
 .theme-toggle[aria-expanded="true"]{border-color:var(--accent)}
 .theme-toggle[aria-expanded="true"]::after{transform:rotate(225deg);margin-block:3px 0}
 .theme-options{
-  position:absolute;z-index:3;inset-block-start:calc(100% + 6px);inset-inline-end:0;min-inline-size:100%;
-  padding:4px;border:1px solid var(--border);border-radius:6px;background:var(--surface)
+  position:absolute;z-index:3;inset-block-start:calc(100% + 8px);inset-inline-end:0;min-inline-size:max(100%,10rem);
+  padding:6px;border:1px solid var(--border);border-radius:18px;background:var(--surface);
+  box-shadow:0 12px 32px #0000001f,0 2px 6px #0000000a
 }
+.theme-options[hidden]{pointer-events:none}
 .theme-options button{
-  position:relative;display:block;width:100%;min-height:44px;padding:0 10px 0 24px;border:0;border-radius:3px;
-  background:transparent;color:var(--text);font-size:.8rem;text-align:start;white-space:nowrap
+  position:relative;display:block;width:100%;min-height:44px;padding:0 38px 0 12px;border:0;border-radius:12px;
+  background:transparent;color:var(--text);font-size:.875rem;text-align:start;white-space:nowrap
 }
-.theme-options button:hover{background:var(--raised)}
-.theme-options button[aria-pressed="true"]{background:var(--dim-accent);color:var(--accent)}
-.theme-options button[aria-pressed="true"]::before{
-  position:absolute;inset-inline-start:10px;inset-block-start:calc(50% - 4px);content:"";
-  width:5px;height:8px;border:solid currentColor;border-width:0 1.5px 1.5px 0;transform:rotate(45deg)
-}
+@media(hover:hover) and (pointer:fine){.theme-options button:hover{background:var(--raised)}}
+.theme-options button[aria-pressed="true"]{background:var(--dim-accent);color:var(--accent);font-weight:600}
+.theme-check{display:none;position:absolute;inset-inline-end:12px;top:calc(50% - 9px);width:18px;height:18px}
+.theme-options button[aria-pressed="true"] .theme-check{display:block}
 .theme-options button:focus-visible{outline-offset:-2px}
 [data-theme="pixel"] .theme-options{border-radius:0}
 
@@ -400,6 +410,6 @@ dialog{color:var(--text);background:var(--surface);width:min(100% - 24px,590px);
 .sort-segments label{position:relative;min-width:0;cursor:pointer}
 .sort-segments input{inset:0 auto auto 0;width:1px;padding:0;border:0}
 .sort-segments span{display:grid;place-items:center;min-height:44px;padding:4px 12px;color:var(--muted);white-space:nowrap;font-size:.86rem}
-.sort-segments label:hover span{color:var(--text)}
+@media(hover:hover) and (pointer:fine){.sort-segments label:hover span{color:var(--text)}}
 .sort-segments input:checked+span{background:var(--accent);color:var(--bg);font-weight:700}
 .sort-segments input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}

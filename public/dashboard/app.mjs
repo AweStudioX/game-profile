@@ -133,10 +133,8 @@ function renderSources(sources, isDemo) {
     row.append(badge);
     const updated = recordDate(source?.lastSuccessAt, '同步于');
     if (updated) {
-      const details = node('details', undefined, 'sync-date');
-      details.append(node('summary', '同步时间'), updated.cloneNode(true));
-      updated.classList.add('sync-date-inline');
-      row.append(updated, details);
+      updated.classList.add('sync-date');
+      row.append(updated);
     }
     const count = model.providerCounts[id];
     if (count !== undefined) row.append(node('span', `${number.format(count)} 个游戏`, 'source-count'));
@@ -658,7 +656,8 @@ async function init() {
   const { mode, issues } = await data('setup');
   const note = $('profile-note');
   if (mode === 'demo') {
-    note.textContent = '演示模式 · 以下为虚构记录';
+    note.textContent = '演示数据 · 非真实记录';
+    note.dataset.demo = '';
     note.hidden = false;
   }
   if (mode === 'incomplete') {
