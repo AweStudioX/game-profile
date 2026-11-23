@@ -15,6 +15,7 @@ On Vercel Hobby, select your **personal GitHub account**, not an organization. C
 - Browse and search the cover-first game library. The overview preserves playing, idle, and unknown activity states, activity sources and timestamps, and per-platform sync status, timestamps, and game counts.
 - Classic follows the system light/dark setting, with [Dissolve](https://dissolve.rselmi.com/)-inspired segmented filters, rolling totals and a glossy pagination button. Motion respects the reduced-motion preference. Pixel and Neon City remain selectable in the header; the theme preference is per browser.
 - Footer stickers use native scroll-driven transform and opacity animations when `ViewTimeline` is available, with a JavaScript fallback for older browsers. Dragged stickers remain independent of the reveal; reduced motion disables it.
+- The footer includes 62 hardware, character, and item stickers in a layered desktop/mobile collage. Artwork credits and rights information are listed in [`credits.json`](public/dashboard/stickers/credits.json).
 - See a game once even when multiple platform records match. Progress remains separate per platform.
 - Steam achievements, PlayStation trophies, and Xbox achievements/Gamerscore stay separate. Nintendo contributes play history; Epic contributes claimed PC base games and reported playtime, not achievements.
 - Visitors can browse the dashboard without signing in. Use **登录** (Sign in) to manage connections and choose which platforms' player names, IDs, and available avatars are public. Identity cards default to hidden.
@@ -89,3 +90,5 @@ Issues and pull requests are welcome. Include reproduction steps with bug report
 ## License
 
 MIT; see [LICENSE](LICENSE). The Steam and Epic client/normalization code and aggregation modules are derived from [AniketRaj314/gaming-stats-api](https://github.com/AniketRaj314/gaming-stats-api). The original copyright and permission notice are retained. Xbox protocol references include [OpenXbox/xbox-webapi-python](https://github.com/OpenXbox/xbox-webapi-python) and [Microsoft's achievement API documentation](https://learn.microsoft.com/en-us/gaming/gdk/docs/reference/live/rest/uri/achievements/uri-achievementsusersxuidachievementsgetv2).
+
+The MIT license applies to project code, not third-party sticker artwork. Each asset retains its original rights and any applicable attribution/share-alike conditions; several character images have no free redistribution license. Owning a game or using artwork non-commercially does not itself grant redistribution rights. Check `public/dashboard/stickers/credits.json` and obtain any required permission before reusing artwork.

@@ -6,7 +6,7 @@
     "author": "Alex Cochrane",
     "license": "CC BY-SA 4.0",
     "licenseURL": "https://creativecommons.org/licenses/by-sa/4.0/",
-    "modifications": "Removed connected white background, cropped and resized, added a thick white die-cut border and gray paper edge, converted to WebP. This derivative is distributed under CC BY-SA 4.0."
+    "modifications": "Removed connected white background while preserving interior whites. Cropped from the unbordered source and added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP. This derivative is distributed under CC BY-SA 4.0."
   },
   {
     "file": "02.webp",
@@ -15,7 +15,7 @@
     "author": "Der. Bellemer",
     "license": "CC BY 4.0",
     "licenseURL": "https://creativecommons.org/licenses/by/4.0/",
-    "modifications": "Trimmed transparent margins, resized, added a thick white die-cut border and gray paper edge, converted to WebP."
+    "modifications": "Cropped from the unbordered transparent source and added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP."
   },
   {
     "file": "03.webp",
@@ -24,7 +24,7 @@
     "author": "Evan-Amos, modified by Gunnar.offel",
     "license": "Public domain",
     "licenseURL": "https://commons.wikimedia.org/wiki/Commons:Copyright_tags#Public_domain",
-    "modifications": "Trimmed transparent margins, resized, added a thick white die-cut border and gray paper edge, converted to WebP."
+    "modifications": "Cropped from the unbordered transparent source and added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP."
   },
   {
     "file": "04.webp",
@@ -33,7 +33,7 @@
     "author": "BeatEmUps",
     "license": "CC BY 3.0",
     "licenseURL": "https://creativecommons.org/licenses/by/3.0/",
-    "modifications": "Manually masked the console silhouette to remove showroom background and display plinth, cropped and resized, added a thick white die-cut border and gray paper edge, converted to WebP."
+    "modifications": "Manually masked the console silhouette to remove showroom background and display plinth. Added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP."
   },
   {
     "file": "05.webp",
@@ -42,7 +42,7 @@
     "author": "Evan-Amos",
     "license": "Public domain",
     "licenseURL": "https://commons.wikimedia.org/wiki/Commons:Copyright_tags#Public_domain",
-    "modifications": "Trimmed transparent margins, resized, added a thick white die-cut border and gray paper edge, converted to WebP."
+    "modifications": "Cropped from the unbordered transparent source and added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP."
   },
   {
     "file": "06.webp",
@@ -51,7 +51,7 @@
     "author": "Liamz2r",
     "license": "Public domain",
     "licenseURL": "https://commons.wikimedia.org/wiki/Commons:Copyright_tags#Public_domain",
-    "modifications": "Trimmed transparent margins, resized, added a thick white die-cut border and gray paper edge, converted to WebP."
+    "modifications": "Cropped from the unbordered transparent source and added an 8 px Euclidean-offset white outline on a 512 px canvas, including the central hole, with supersampled antialiasing. Converted to WebP."
   },
   {
     "file": "07.webp",
@@ -60,7 +60,7 @@
     "author": "Evan-Amos",
     "license": "Public domain",
     "licenseURL": "https://commons.wikimedia.org/wiki/Commons:Copyright_tags#Public_domain",
-    "modifications": "Removed connected white studio background while preserving interior whites, cropped and resized, added a thick white die-cut border and gray paper edge, converted to WebP."
+    "modifications": "Removed connected white studio background while preserving interior whites. Added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP."
   },
   {
     "file": "08.webp",
@@ -69,6 +69,487 @@
     "author": "Evan-Amos, modified by Gunnar.offel",
     "license": "Public domain",
     "licenseURL": "https://commons.wikimedia.org/wiki/Commons:Copyright_tags#Public_domain",
-    "modifications": "Trimmed transparent margins, resized, added a thick white die-cut border and gray paper edge, converted to WebP."
+    "modifications": "Cropped from the unbordered transparent source and added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "09.webp",
+    "subject": "Nintendo Switch 2 console in handheld mode",
+    "source": "https://commons.wikimedia.org/wiki/File:Nintendo_Switch_2_console_in_handheld_mode.png",
+    "author": "AOMAF2024",
+    "license": "CC0 1.0",
+    "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "modifications": "Cropped from the unbordered transparent source and added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "10.webp",
+    "subject": "Arthur Morgan — Red Dead Redemption 2",
+    "source": "https://www.creativeuncut.com/gallery-36/rdr2-arthur-morgan.html",
+    "author": "Rockstar Games",
+    "license": "Copyright Rockstar Games. Promotional artwork; not covered by this project's MIT license.",
+    "modifications": "Isolated Arthur Morgan from the promotional background. Added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "11.webp",
+    "subject": "Link — Super Smash Bros. Ultimate",
+    "source": "https://www.smashbros.com/en_US/fighter/03.html",
+    "author": "Nintendo",
+    "license": "Copyright Nintendo. Promotional artwork; not covered by this project's MIT license.",
+    "awardYear": 2017,
+    "awardGame": "The Legend of Zelda: Breath of the Wild",
+    "modifications": "The Link character represents the 2017 winner; this render is from Super Smash Bros. Ultimate. Cropped from the transparent source and added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "12.webp",
+    "subject": "Mario jumping",
+    "source": "https://www.nintendo.com/us/explore/characters/mario/about/",
+    "author": "Nintendo",
+    "license": "Copyright Nintendo. Promotional artwork; not covered by this project's MIT license.",
+    "modifications": "Cropped from the unbordered transparent source and added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "13.webp",
+    "subject": "Kratos — God of War Ragnarök",
+    "source": "https://blog.playstation.com/2022/10/20/from-concept-art-to-cosplay-creating-kratos-and-atreus-new-looks-for-god-of-war-ragnarok/",
+    "author": "Rafael Grassetti / Santa Monica Studio / Sony Interactive Entertainment",
+    "license": "Copyright Sony Interactive Entertainment. Promotional artwork; not covered by this project's MIT license.",
+    "awardYear": 2018,
+    "awardGame": "God of War",
+    "modifications": "The Kratos character represents the 2018 winner; this concept artwork is from Ragnarok. Isolated the character and axe from the background and added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "14.webp",
+    "subject": "Imperial Legionnaire (armored Imperial knight) — The Elder Scrolls IV: Oblivion",
+    "source": "https://elderscrolls.fandom.com/wiki/File:Imperial_Legionnaire.png",
+    "author": "Unknown (Bethesda Softworks promotional asset, hosted by Elder Scrolls Wiki)",
+    "license": "Copyright Bethesda Softworks / ZeniMax Media. Promotional game image; no license granted. Not covered by this project's MIT license.",
+    "awardYear": 2006,
+    "awardGame": "The Elder Scrolls IV: Oblivion",
+    "modifications": "Foreground segmented with macOS Vision, stray alpha components removed, trimmed with transparent padding. Added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "15.webp",
+    "subject": "Big Daddy (Bouncer) — BioShock",
+    "source": "https://bioshock.fandom.com/wiki/File:Bouncer_Rendered_Model.png",
+    "author": "Unknown (2K Games / Irrational Games promotional render, hosted by BioShock Wiki)",
+    "license": "Copyright 2K Games. Promotional game image; no license granted. Not covered by this project's MIT license.",
+    "awardYear": 2007,
+    "awardGame": "BioShock",
+    "modifications": "Source was already transparent; alpha edge denoised and feathered, trimmed. Added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "16.webp",
+    "subject": "Niko Bellic — Grand Theft Auto IV",
+    "source": "https://www.deviantart.com/lumega/art/Niko-Bellic-%28GTA%29-PNG-Render-1210271335",
+    "author": "Lumega (DeviantArt render)",
+    "license": "Fan-made transparent render; character copyright Rockstar Games. No license granted. Not covered by this project's MIT license.",
+    "awardYear": 2008,
+    "awardGame": "Grand Theft Auto IV",
+    "modifications": "Trimmed only; source was already transparent. Added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "17.webp",
+    "subject": "Nathan Drake — Uncharted 2: Among Thieves",
+    "source": "https://uncharted.fandom.com/wiki/File:UDF_Drake_Uncharted_2_multiplayer_render.jpg",
+    "author": "Naughty Dog / Sony Computer Entertainment (official Uncharted 2 multiplayer render)",
+    "license": "Copyright Sony Interactive Entertainment / Naughty Dog. Promotional game image; no license granted. Not covered by this project's MIT license.",
+    "awardYear": 2009,
+    "awardGame": "Uncharted 2: Among Thieves",
+    "modifications": "Background removed with macOS Vision, trimmed. Clean isolated subject; source render resolution is modest. Added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "18.webp",
+    "subject": "John Marston — Red Dead Redemption",
+    "source": "https://reddead.fandom.com/wiki/File:John_Marston_Promotional_Image.jpg",
+    "author": "Rockstar Games (official promotional artwork)",
+    "license": "Copyright Rockstar Games. Promotional game image; no license granted. Not covered by this project's MIT license.",
+    "awardYear": 2010,
+    "awardGame": "Red Dead Redemption",
+    "modifications": "Cropped to bust from official promo art, foreground segmented with macOS Vision, edge colors repaired, alpha eroded/feathered, trimmed. Added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "19.webp",
+    "subject": "Dragonborn (Dovahkiin, iron helmet) — The Elder Scrolls V: Skyrim",
+    "source": "https://www.stickpng.com/img/games/elder-scrolls-skyrim/elder-scrolls-skyrim-fighter",
+    "author": "Bethesda Softworks (official render; transparent cutout hosted by StickPNG)",
+    "license": "Copyright Bethesda Softworks / ZeniMax Media. StickPNG states free personal use; no commercial license granted. Not covered by this project's MIT license.",
+    "awardYear": 2011,
+    "awardGame": "The Elder Scrolls V: Skyrim",
+    "modifications": "Edge color repaired and alpha eroded/feathered to remove the source's light outline, trimmed. Added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "20.webp",
+    "subject": "Clementine — The Walking Dead: The Game",
+    "source": "https://walkingdead.fandom.com/wiki/File:Clementine.jpg",
+    "author": "Telltale Games (official character art, hosted by Walking Dead Wiki)",
+    "license": "Copyright Telltale Games / Skybound. Promotional game image; no license granted. Not covered by this project's MIT license.",
+    "awardYear": 2012,
+    "awardGame": "The Walking Dead: The Game",
+    "modifications": "Foreground segmented with macOS Vision, alpha edge repaired, trimmed. Added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "21.webp",
+    "subject": "Franklin Clinton — Grand Theft Auto V",
+    "source": "https://gta.fandom.com/wiki/File:Page_Artwork-Franklin-GTAV.png",
+    "author": "Rockstar Games (official GTA V page artwork)",
+    "license": "Copyright Rockstar Games. Promotional game image; no license granted. Not covered by this project's MIT license.",
+    "awardYear": 2013,
+    "awardGame": "Grand Theft Auto V",
+    "modifications": "Foreground segmented with macOS Vision, alpha edge repaired, trimmed. Added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "22.webp",
+    "subject": "The Inquisitor (rogue) — Dragon Age: Inquisition",
+    "source": "https://dragonage.fandom.com/wiki/File:Inquisitor_01_WM.jpg",
+    "author": "BioWare / Electronic Arts (official three-class Inquisitor artwork)",
+    "license": "Copyright Electronic Arts / BioWare. Promotional game image; no license granted. Not covered by this project's MIT license.",
+    "awardYear": 2014,
+    "awardGame": "Dragon Age: Inquisition",
+    "modifications": "Foreground segmented with macOS Vision, edge colors repaired, alpha eroded/feathered, trimmed. Added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "23.webp",
+    "subject": "Geralt of Rivia — The Witcher 3: Wild Hunt",
+    "source": "https://witcher.fandom.com/wiki/File:Tw3_Geralt_of_Rivia_newest_render.png",
+    "author": "CD PROJEKT RED (publisher/developer artwork)",
+    "license": "© CD PROJEKT RED. All rights reserved. Not licensed for redistribution; not covered by this project's MIT license.",
+    "awardYear": 2015,
+    "awardGame": "The Witcher 3: Wild Hunt",
+    "modifications": "Trimmed to subject, transparent padding added, alpha noise under 6/255 cleared, longest side capped at 2000px. Source was already transparent. Added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "24.webp",
+    "subject": "Tracer — Overwatch",
+    "source": "https://www.pidgi.net/wiki/File:Tracer_-_Overwatch.png",
+    "author": "Blizzard Entertainment (official press render, mirrored by PidgiWiki)",
+    "license": "© Blizzard Entertainment. All rights reserved. Not licensed for redistribution; not covered by this project's MIT license.",
+    "awardYear": 2016,
+    "awardGame": "Overwatch",
+    "modifications": "Trimmed to subject, transparent padding added, alpha noise cleared, resized to 2000px on the long side. Source was already transparent. Added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "25.webp",
+    "subject": "Wolf (Sekiro) — Sekiro: Shadows Die Twice",
+    "source": "https://shadowsdietwice.fandom.com/wiki/File:Sekiro-protagonist-artwork.png",
+    "author": "FromSoftware / Activision (official promotional artwork)",
+    "license": "© FromSoftware, Inc. / Activision Publishing, Inc. All rights reserved. Not licensed for redistribution; not covered by this project's MIT license.",
+    "awardYear": 2019,
+    "awardGame": "Sekiro: Shadows Die Twice",
+    "modifications": "Official artwork shipped on a flat grey field; background removed with Apple Vision foreground segmentation (VNGenerateForegroundInstanceMaskRequest), matte eroded 1px and edge colours un-premultiplied against the measured 212-grey field to kill the light rim. Trimmed, padded, alpha noise cleared. Added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "26.webp",
+    "subject": "Ellie — The Last of Us Part II",
+    "source": "https://vsbattles.fandom.com/wiki/File:Ellie_TLOU2.png",
+    "author": "Naughty Dog / Sony Interactive Entertainment (official character render)",
+    "license": "© Sony Interactive Entertainment LLC. All rights reserved. Not licensed for redistribution; not covered by this project's MIT license.",
+    "awardYear": 2020,
+    "awardGame": "The Last of Us Part II",
+    "modifications": "Official The Last of Us Part II Ellie render (adult Ellie with bow, tattoo and backpack), hosted by the VS Battles wiki. Trimmed to subject, transparent padding added, alpha noise under 6/255 cleared, longest side capped at 2000px. Source was already transparent. Added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "27.webp",
+    "subject": "Cody and May — It Takes Two",
+    "source": "https://hazelight.se/games/it-takes-two",
+    "author": "Hazelight Studios / Electronic Arts (official site hero foreground art)",
+    "license": "© Hazelight Studios AB / Electronic Arts Inc. All rights reserved. Not licensed for redistribution; not covered by this project's MIT license.",
+    "awardYear": 2021,
+    "awardGame": "It Takes Two",
+    "modifications": "Official transparent hero foreground containing both characters; trimmed, padded, alpha noise cleared. Added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "28.webp",
+    "subject": "Malenia, Blade of Miquella — Elden Ring",
+    "source": "https://eldenring.fandom.com/wiki/File:Malenia_Concept_Art.jpg",
+    "author": "FromSoftware / Bandai Namco Entertainment (official concept art)",
+    "license": "© Bandai Namco Entertainment Inc. / FromSoftware, Inc. All rights reserved. Not licensed for redistribution; not covered by this project's MIT license.",
+    "awardYear": 2022,
+    "awardGame": "Elden Ring",
+    "modifications": "Isolated Malenia from the official concept-art background and cleaned the matte. Added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "29.webp",
+    "subject": "Astarion — Baldur's Gate 3",
+    "source": "https://www.pidgi.net/wiki/File:Astarion_(alt)_-_Baldur%27s_Gate_III.png",
+    "author": "Larian Studios (official press render, mirrored by PidgiWiki)",
+    "license": "© Larian Studios. All rights reserved. Not licensed for redistribution; not covered by this project's MIT license.",
+    "awardYear": 2023,
+    "awardGame": "Baldur's Gate 3",
+    "modifications": "Render ships with a baked-in white studio glow behind the figure. Glow removed by luminance/saturation keying outside an eroded subject core, then the frame cropped to 78% height (head, both hands and coat) so no glow or hard white edge remains. Trimmed, padded, alpha noise cleared. Added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "30.webp",
+    "subject": "Astro — Astro Bot",
+    "source": "https://playstation-studios.fandom.com/wiki/File:Astro_Bot_PS5_render_character.png",
+    "author": "Team Asobi / Sony Interactive Entertainment (official PS5 character render)",
+    "license": "© Sony Interactive Entertainment LLC. All rights reserved. Not licensed for redistribution; not covered by this project's MIT license.",
+    "awardYear": 2024,
+    "awardGame": "Astro Bot",
+    "modifications": "Official transparent render (Astro with two companion bots); trimmed, padded, alpha noise cleared. Added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "31.webp",
+    "subject": "Maelle — Clair Obscur: Expedition 33",
+    "source": "https://clairobscur.fandom.com/wiki/File:Maelle_Character_Painting.jpeg",
+    "author": "Sandfall Interactive / Kepler Interactive (official character painting)",
+    "license": "© Sandfall Interactive / Kepler Interactive. All rights reserved. Not licensed for redistribution; not covered by this project's MIT license.",
+    "awardYear": 2025,
+    "awardGame": "Clair Obscur: Expedition 33",
+    "modifications": "Official character painting (3840x4900) shipped on a painted background; subject isolated with Apple Vision foreground segmentation, trimmed, padded, alpha noise cleared, longest side capped at 2000px. Added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "32.webp",
+    "subject": "Kirby — Super Smash Bros. Ultimate",
+    "source": "https://www.smashbros.com/en_US/fighter/06.html",
+    "author": "Nintendo and respective character rights holders",
+    "license": "Copyright Nintendo and respective rights holders. All rights reserved. Not covered by this project's MIT license.",
+    "modifications": "Cropped official transparent character art; added an 8 px Euclidean-offset white outline on a 512 px canvas with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "33.webp",
+    "subject": "Pikachu — Super Smash Bros. Ultimate",
+    "source": "https://www.smashbros.com/en_US/fighter/08.html",
+    "author": "Nintendo / Creatures Inc. / GAME FREAK inc.",
+    "license": "Copyright Nintendo and respective rights holders. All rights reserved. Not covered by this project's MIT license.",
+    "modifications": "Cropped official transparent character art; added an 8 px Euclidean-offset white outline on a 512 px canvas with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "34.webp",
+    "subject": "Yoshi — Super Smash Bros. Ultimate",
+    "source": "https://www.smashbros.com/en_US/fighter/05.html",
+    "author": "Nintendo and respective character rights holders",
+    "license": "Copyright Nintendo and respective rights holders. All rights reserved. Not covered by this project's MIT license.",
+    "modifications": "Cropped official transparent character art; added an 8 px Euclidean-offset white outline on a 512 px canvas with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "35.webp",
+    "subject": "Luigi — Super Smash Bros. Ultimate",
+    "source": "https://www.smashbros.com/en_US/fighter/09.html",
+    "author": "Nintendo and respective character rights holders",
+    "license": "Copyright Nintendo and respective rights holders. All rights reserved. Not covered by this project's MIT license.",
+    "modifications": "Cropped official transparent character art; added an 8 px Euclidean-offset white outline on a 512 px canvas with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "36.webp",
+    "subject": "Peach — Super Smash Bros. Ultimate",
+    "source": "https://www.smashbros.com/en_US/fighter/13.html",
+    "author": "Nintendo and respective character rights holders",
+    "license": "Copyright Nintendo and respective rights holders. All rights reserved. Not covered by this project's MIT license.",
+    "modifications": "Cropped official transparent character art; added an 8 px Euclidean-offset white outline on a 512 px canvas with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "37.webp",
+    "subject": "Isabelle — Super Smash Bros. Ultimate",
+    "source": "https://www.smashbros.com/en_US/fighter/68.html",
+    "author": "Nintendo and respective character rights holders",
+    "license": "Copyright Nintendo and respective rights holders. All rights reserved. Not covered by this project's MIT license.",
+    "modifications": "Cropped official transparent character art; added an 8 px Euclidean-offset white outline on a 512 px canvas with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "38.webp",
+    "subject": "Donkey Kong — Super Smash Bros. Ultimate",
+    "source": "https://www.smashbros.com/en_US/fighter/02.html",
+    "author": "Nintendo and respective character rights holders",
+    "license": "Copyright Nintendo and respective rights holders. All rights reserved. Not covered by this project's MIT license.",
+    "modifications": "Cropped official transparent character art; added an 8 px Euclidean-offset white outline on a 512 px canvas with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "39.webp",
+    "subject": "Samus — Super Smash Bros. Ultimate",
+    "source": "https://www.smashbros.com/en_US/fighter/04.html",
+    "author": "Nintendo and respective character rights holders",
+    "license": "Copyright Nintendo and respective rights holders. All rights reserved. Not covered by this project's MIT license.",
+    "modifications": "Cropped official transparent character art; added an 8 px Euclidean-offset white outline on a 512 px canvas with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "40.webp",
+    "subject": "Famicom",
+    "source": "https://commons.wikimedia.org/wiki/File:Nintendo-Famicom-Console-Set-FL.png",
+    "author": "Evan-Amos",
+    "license": "Public domain",
+    "licenseURL": "https://commons.wikimedia.org/wiki/Commons:Copyright_tags#Public_domain",
+    "modifications": "Removed connected near-white studio background where present; cropped the console and controller silhouette. Added an 8 px Euclidean-offset white outline on a 512 px canvas with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "41.webp",
+    "subject": "Super Famicom",
+    "source": "https://commons.wikimedia.org/wiki/File:Nintendo-Super-Famicom-Set-FL.png",
+    "author": "Evan-Amos",
+    "license": "Public domain",
+    "licenseURL": "https://commons.wikimedia.org/wiki/Commons:Copyright_tags#Public_domain",
+    "modifications": "Removed connected near-white studio background where present; cropped the console and controller silhouette. Added an 8 px Euclidean-offset white outline on a 512 px canvas with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "42.webp",
+    "subject": "Nintendo 64",
+    "source": "https://commons.wikimedia.org/wiki/File:Nintendo-64-wController-L.jpg",
+    "author": "Evan-Amos",
+    "license": "Public domain",
+    "licenseURL": "https://commons.wikimedia.org/wiki/Commons:Copyright_tags#Public_domain",
+    "modifications": "Removed connected near-white studio background where present; cropped the console and controller silhouette. Added an 8 px Euclidean-offset white outline on a 512 px canvas with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "43.webp",
+    "subject": "GameCube",
+    "source": "https://commons.wikimedia.org/wiki/File:GameCube-Console-Set.png",
+    "author": "Evan-Amos",
+    "license": "Public domain",
+    "licenseURL": "https://commons.wikimedia.org/wiki/Commons:Copyright_tags#Public_domain",
+    "modifications": "Removed connected near-white studio background where present; cropped the console and controller silhouette. Added an 8 px Euclidean-offset white outline on a 512 px canvas with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "44.webp",
+    "subject": "Wii",
+    "source": "https://commons.wikimedia.org/wiki/File:Wii-Console.png",
+    "author": "Evan-Amos",
+    "license": "Public domain",
+    "licenseURL": "https://commons.wikimedia.org/wiki/Commons:Copyright_tags#Public_domain",
+    "modifications": "Removed connected near-white studio background where present; cropped the console and controller silhouette. Added an 8 px Euclidean-offset white outline on a 512 px canvas with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "45.webp",
+    "subject": "Game Boy Advance SP",
+    "source": "https://commons.wikimedia.org/wiki/File:Game-Boy-Advance-SP-Mk1-Blue.png",
+    "author": "Evan-Amos",
+    "license": "CC BY-SA 3.0",
+    "licenseURL": "https://creativecommons.org/licenses/by-sa/3.0",
+    "modifications": "Removed connected near-white studio background where present; cropped the console and controller silhouette. Added an 8 px Euclidean-offset white outline on a 512 px canvas with supersampled antialiasing. Converted to WebP. This derivative is distributed under CC BY-SA 3.0."
+  },
+  {
+    "file": "46.webp",
+    "subject": "Nintendo DS",
+    "source": "https://commons.wikimedia.org/wiki/File:Nintendo-DS-Fat-Blue.png",
+    "author": "Evan-Amos",
+    "license": "Public domain",
+    "licenseURL": "https://commons.wikimedia.org/wiki/Commons:Copyright_tags#Public_domain",
+    "modifications": "Removed connected near-white studio background where present; cropped the console and controller silhouette. Added an 8 px Euclidean-offset white outline on a 512 px canvas with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "47.webp",
+    "subject": "Nintendo 3DS",
+    "source": "https://commons.wikimedia.org/wiki/File:Nintendo-3DS-AquaOpen.png",
+    "author": "Evan-Amos",
+    "license": "Public domain",
+    "licenseURL": "https://commons.wikimedia.org/wiki/Commons:Copyright_tags#Public_domain",
+    "modifications": "Removed connected near-white studio background where present; cropped the console and controller silhouette. Added an 8 px Euclidean-offset white outline on a 512 px canvas with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "48.webp",
+    "subject": "Helldivers 2 — B-01 Tactical Helldiver",
+    "source": "https://helldivers.wiki.gg/wiki/File:B-01_Tactical_v1_Armor_Render.png",
+    "author": "YourOnlyNavigator / Helldivers Wiki.gg; model © Arrowhead Game Studios / Sony Interactive Entertainment",
+    "license": "Render marked CC BY-NC-SA on its source page; underlying character design remains copyrighted.",
+    "modifications": "Alpha matte cleaned, cropped, resized and given an 8px white outline on a 512px transparent canvas."
+  },
+  {
+    "file": "49.webp",
+    "subject": "Elden Ring — Ranni the Witch",
+    "source": "https://eldenring.fandom.com/wiki/File:ER_Concept_Art_Ranni.jpg",
+    "author": "FromSoftware / Bandai Namco Entertainment",
+    "license": "Copyrighted concept artwork; source wiki marks Fairuse. No free redistribution license.",
+    "modifications": "Foreground segmented, edge colors cleaned, cropped to a bust, resized and given an 8px white outline."
+  },
+  {
+    "file": "50.webp",
+    "subject": "Death Stranding — Sam Porter Bridges",
+    "source": "https://deathstranding.fandom.com/wiki/File:SamRender.jpg",
+    "author": "Kojima Productions / Sony Interactive Entertainment",
+    "license": "Copyrighted promotional artwork; no free license stated on the source page.",
+    "modifications": "Gradient background removed, foreground matte and edge colors cleaned, resized and given an 8px white outline."
+  },
+  {
+    "file": "51.webp",
+    "subject": "New Super Mario Bros. — Question Block",
+    "source": "https://www.pidgi.net/wiki/File:Question_Block_-_New_Super_Mario_Bros.png",
+    "author": "Nintendo",
+    "license": "Copyrighted Nintendo artwork; not free-licensed.",
+    "modifications": "Converted to sRGB, trimmed and resized. White outline compensated for display at 60% of character sticker size."
+  },
+  {
+    "file": "52.webp",
+    "subject": "Super Mario Party — Super Mushroom",
+    "source": "https://www.pidgi.net/wiki/File:Super_Mushroom_-_Super_Mario_Party.png",
+    "author": "Nintendo; official artwork via Nintendo UK",
+    "license": "Copyrighted Nintendo artwork; not free-licensed.",
+    "modifications": "Converted to sRGB, trimmed and resized. White outline compensated for display at 60% of character sticker size."
+  },
+  {
+    "file": "53.webp",
+    "subject": "New Super Mario Bros. 2 — Super Star",
+    "source": "https://www.pidgi.net/wiki/File:Super_Star_-_New_Super_Mario_Bros_2.png",
+    "author": "Nintendo; official artwork via Nintendo UK",
+    "license": "Copyrighted Nintendo artwork; not free-licensed.",
+    "modifications": "Converted to sRGB, trimmed and resized. White outline compensated for display at 60% of character sticker size."
+  },
+  {
+    "file": "54.webp",
+    "subject": "The Legend of Zelda — Heart Container",
+    "source": "https://zeldawiki.wiki/wiki/File:TLoZ_Heart_Container_Artwork.png",
+    "author": "Nintendo",
+    "license": "Copyrighted Nintendo artwork; not free-licensed.",
+    "modifications": "Alpha trimmed and white matte fringe removed. White outline compensated for display at 60% of character sticker size."
+  },
+  {
+    "file": "55.webp",
+    "subject": "Poké Ball",
+    "source": "https://commons.wikimedia.org/wiki/File:Pok%C3%A9_Ball_icon.svg",
+    "author": "Andreuvv; original Poké Ball design by Ken Sugimori / Nintendo",
+    "license": "SVG released into the public domain by Andreuvv; underlying franchise rights remain with their owners.",
+    "modifications": "SVG rasterized and resized. White outline compensated for display at 60% of character sticker size."
+  },
+  {
+    "file": "56.webp",
+    "subject": "Minecraft — Diamond Pickaxe",
+    "source": "https://minecraft.wiki/w/File:Diamond_Pickaxe_JE3_BE3.png",
+    "author": "Mojang Studios",
+    "license": "Copyrighted Minecraft item texture; source marked License Mojang.",
+    "modifications": "Native pixel grid retained using nearest-neighbor scaling. White outline compensated for display at 60% of character sticker size."
+  },
+  {
+    "file": "57.webp",
+    "subject": "Days Gone — Deacon St. John riding his Drifter bike",
+    "source": "https://cdn.akamai.steamstatic.com/steam/apps/1259420/library_hero_2x.jpg",
+    "author": "Bend Studio / Sony Interactive Entertainment",
+    "license": "Copyrighted promotional artwork; no free redistribution license.",
+    "modifications": "Combined rider and motorcycle silhouette cut from official Steam artwork, haze and detached specks removed, edge colors cleaned; resized with an 8px white outline."
+  },
+  {
+    "file": "58.webp",
+    "subject": "Ghost of Tsushima — Jin Sakai",
+    "source": "https://cdn.akamai.steamstatic.com/steam/apps/2215430/library_hero.jpg",
+    "author": "Sucker Punch Productions / Sony Interactive Entertainment",
+    "license": "Copyrighted promotional artwork; no free redistribution license.",
+    "modifications": "Ink key art cut out, background leaf within cape replaced with nearby ink color, edge colors cleaned; resized with an 8px white outline."
+  },
+  {
+    "file": "59.webp",
+    "subject": "Black Myth: Wukong — The Destined One",
+    "source": "https://blackmythwukong.fandom.com/wiki/File:Wukong_6.jpg",
+    "author": "Game Science",
+    "license": "Copyrighted promotional artwork; no free redistribution license.",
+    "modifications": "Foreground segmented from official 2020 artwork, edge colors cleaned; original bust crop retained, resized with an 8px white outline."
+  },
+  {
+    "file": "60.webp",
+    "subject": "Escape from Duckov — Equipped protagonist",
+    "source": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3167020/library_hero_2x.jpg",
+    "author": "Team Soda / bilibili",
+    "license": "Copyrighted promotional artwork; no free redistribution license.",
+    "modifications": "Duck cropped and segmented from official Steam key art, grass rim removed, edge colors cleaned; resized with an 8px white outline."
+  },
+  {
+    "file": "61.webp",
+    "subject": "Mario Kart 7 — Blue Spiny Shell",
+    "source": "https://www.pidgi.net/wiki/File:Spiny_Shell_-_Mario_Kart_7.png",
+    "author": "Nintendo",
+    "license": "Copyrighted Nintendo artwork; not free-licensed.",
+    "modifications": "Native alpha trimmed, fringe cleaned, resized; white outline compensated for display at 60% of character sticker size."
+  },
+  {
+    "file": "62.webp",
+    "subject": "The Legend of Zelda — Ocarina of Time",
+    "source": "https://zeldawiki.wiki/wiki/File:OoT_Ocarina_of_Time_Artwork.png",
+    "author": "Nintendo; Nintendo Official Player's Guide, page 7",
+    "license": "Copyrighted Nintendo artwork; not free-licensed.",
+    "modifications": "Native alpha trimmed, fringe cleaned, resized; white outline compensated for display at 60% of character sticker size."
   }
 ]
