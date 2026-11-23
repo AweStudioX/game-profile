@@ -121,6 +121,7 @@ async function refreshStatus() {
     return;
   }
   const { storage, sources, sync, identities, identityVisibility } = await response.json();
+  $('owner-login').hidden = true;
   if (storage !== 'configured' || !sync) {
     const guide = document.createElement('a');
     guide.href = '/setup.html#platform-storage';

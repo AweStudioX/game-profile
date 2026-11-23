@@ -118,17 +118,14 @@ function unlockRow(unlock) {
   return row;
 }
 
-function renderSources(sources, isDemo) {
+function renderSources(sources) {
   const ids = new Set(['steam', 'psn', 'nintendo', ...Object.keys(sources).filter(id => sources[id]?.status !== 'disabled')]);
   $('sources').replaceChildren(...Array.from(ids, id => {
     const source = sources[id];
     const row = node('li', undefined, 'record-meta');
     row.append(platformTag(id));
     const status = source?.status ?? (id === 'nintendo' ? 'disabled' : null);
-    const canConnect = !isDemo && ['steam', 'psn', 'nintendo'].includes(id)
-      && (!status || ['disabled', 'not-configured', 'reconnect-required'].includes(status));
-    const badge = node(canConnect ? 'a' : 'span', canConnect ? (status === 'reconnect-required' ? '重新连接' : '去连接') : sourceLabel(status), 'badge');
-    if (canConnect) badge.href = `/connect.html#${id}-title`;
+    const badge = node('span', sourceLabel(status), 'badge');
     if (status === 'ready') badge.dataset.tone = 'active';
     row.append(badge);
     const updated = recordDate(source?.lastSuccessAt, '同步于');
@@ -580,14 +577,12 @@ function revealCover(cover, index) {
     requestAnimationFrame(frame);
 }
 
-function showLibrary(payload, isDemo) {
+function showLibrary(payload) {
   model = libraryModel(payload);
-  renderSources(model.sources, isDemo);
+  renderSources(model.sources);
   if (!Array.isArray(payload.games) || payload.status === 'unavailable') {
-    const link = node('a', '检查平台连接');
-    link.href = '/connect.html';
     const hasConnection = Object.values(model.sources).some(source => !['disabled', 'not-configured'].includes(source.status));
-    $('library-status').replaceChildren(hasConnection ? '游戏库暂不可用。 ' : '还没有连接游戏账号。 ', link);
+    $('library-status').textContent = hasConnection ? '游戏库暂不可用。' : '还没有连接游戏账号。';
     return;
   }
   if (model.knownSeconds !== null) $('hours').replaceChildren(ticker(hours.format(model.knownSeconds / 3600)), node('small', model.incomplete ? ' 小时 · 部分' : ' 小时'));
@@ -694,6 +689,17 @@ for (const [control, event] of [['search', 'input'], ['sort', 'change']]) {
 $('more').addEventListener('click', () => { shown += pageSize; renderLibrary(true); });
 $('detail').addEventListener('close', () => modalRequest?.abort());
 
+async function updateOwnerEntry() {
+  try {
+    const { authenticated } = await data('session');
+    const entry = $('owner-entry');
+    entry.textContent = authenticated === true ? '连接平台' : '登录';
+    entry.href = authenticated === true ? '/connect.html' : '/api/profile?resource=connect-login';
+  } catch { /* Keep the login entry when session status is unavailable. */ }
+}
+updateOwnerEntry();
+window.addEventListener('pageshow', event => { if (event.persisted) updateOwnerEntry(); });
+
 async function init() {
   const { mode, issues } = await data('setup');
   const note = $('profile-note');
@@ -733,7 +739,7 @@ async function init() {
     data('identities').then(renderIdentities, () => {}),
     data('library').then(payload => {
       skeleton.remove();
-      showLibrary(payload, mode === 'demo');
+      showLibrary(payload);
       for (const cover of $('games').querySelectorAll('li:nth-child(-n+6) .cover')) {
         if (cover.classList.contains('art-pending')) cover.dataset.reveal = '';
       }

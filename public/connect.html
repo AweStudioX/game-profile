@@ -10,7 +10,7 @@
   <script type="module" src="/dashboard/connect.mjs"></script>
 </head>
 <body>
-  <header class="bar"><div class="frame bar-inner"><a class="wordmark" href="/">GAME<span>.</span> PROFILE</a><nav class="bar-actions" aria-label="站点"><div class="theme-picker"></div><div class="bar-links"><a class="login" href="/api/profile?resource=connect-login">登录</a><a class="private" href="/">返回游戏库</a></div></nav></div></header>
+  <header class="bar"><div class="frame bar-inner"><a class="wordmark" href="/">GAME<span>.</span> PROFILE</a><nav class="bar-actions" aria-label="站点"><div class="theme-picker"></div><div class="bar-links"><a id="owner-login" class="login" href="/api/profile?resource=connect-login">登录</a><a class="private" href="/">返回游戏库</a></div></nav></div></header>
   <main class="frame">
     <section class="intro home-intro">
       <p class="eyebrow">ACCOUNT CONNECTIONS</p>
@@ -30,7 +30,7 @@
     </section>
     <section class="panel setup-guide" id="identity-settings" aria-labelledby="identity-settings-title" hidden>
       <h2 id="identity-settings-title">玩家身份展示</h2>
-      <p class="muted">勾选后，公开看板的「玩家身份」会显示该平台的昵称、账号 ID 和头像。未勾选的平台不会出现在公开看板，默认全部不公开。</p>
+      <p class="muted">勾选后，公开看板会显示该平台的昵称、账号 ID 和头像。默认全部不公开。</p>
       <ul id="identity-options" class="identity-options"></ul>
       <p id="identity-result" role="status" class="profile-note"></p>
     </section>
@@ -94,6 +94,11 @@
         <p id="nintendo-result" role="status" class="profile-note"></p>
       </section>
     </div>
+    <section class="panel setup-guide" aria-labelledby="deployment-title">
+      <h2 id="deployment-title">部署与隐私</h2>
+      <p class="muted">游戏记录公开展示，账号身份由你选择是否公开；平台凭证只保存在服务端。</p>
+      <p><a href="/setup.html">查看部署配置与隐私说明</a></p>
+    </section>
     <p class="connect-note muted">PlayStation 和 Nintendo 为可选的非官方接入，接口可能变动，也可能受账号所在地区的服务条款限制。Nintendo 仅同步游玩记录，不提供成就或实时活动。不要分享授权结果或回调链接。</p>
   </main>
 </body>

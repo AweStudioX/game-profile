@@ -40,6 +40,22 @@ test('accepts a 14-character password with punctuation without weakening the log
   assert.equal((await get(handle, 'login', credentials(value))).status, 303);
 });
 
+test('session lookup reports only verified owner access without challenging visitors', async () => {
+  const handle = createProfile({ env, fetchImpl: () => assert.fail('session must not contact platforms') });
+  for (const authorization of [undefined, 'Basic invalid', `Basic ${Buffer.from('owner:wrong').toString('base64')}`]) {
+    const response = await get(handle, 'session', authorization ? { Authorization: authorization } : {});
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.has('www-authenticate'), false);
+    assert.deepEqual(await response.json(), { authenticated: false });
+  }
+  const signedIn = await get(handle, 'session', { Authorization: auth });
+  assert.match(signedIn.headers.get('cache-control'), /no-store/);
+  assert.deepEqual(await signedIn.json(), { authenticated: true });
+  for (const config of [{}, { PROFILE_PASSWORD: password }]) {
+    assert.deepEqual(await (await get(createProfile({ env: config }), 'session', { Authorization: auth })).json(), { authenticated: false });
+  }
+});
+
 test('real profile is publicly readable while credentials and management stay protected', async () => {
   const calls = [];
   const handle = createProfile({ env, fetchImpl: async (url, options) => {

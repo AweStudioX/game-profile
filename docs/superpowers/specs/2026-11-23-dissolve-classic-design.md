@@ -14,5 +14,8 @@ Keep the `classic` theme ID, existing theme preferences, cover-first catalog and
 - Upstream adaptations live in `public/dashboard/dissolve.mjs`; preserve `dissolve-LICENSE.txt` and serve both assets in the local preview.
 - Show synchronization timestamps directly on all viewport sizes instead of duplicating them in mobile disclosure widgets.
 - Suppress native tap highlighting and text selection on interactive cards, segmented controls, and the theme picker only. Limit hover feedback to fine pointers; retain keyboard focus outlines and persistent selection indicators.
+- Keep public platform identities as a compact, unboxed avatar/name strip without a visible heading or disclosure caption. Visibility remains owner-controlled server-side.
+- Use one home navigation action: sign in for visitors, platform management for verified owners. Keep deployment/privacy documentation in the connection page, not the public footer.
+- End the catalog with a restrained D-pad mark, `KEEP PLAYING.` wordmark, and a keyboard-accessible back-to-top link. Use theme tokens, wrapping layout, and reduced-motion-safe hover feedback.
 
 Classic follows the system color scheme live. Light mode uses white, mist-gray surfaces and an ink primary button; dark mode uses black, graphite surfaces and a light primary button.
