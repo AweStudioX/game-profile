@@ -137,7 +137,7 @@ function renderSources(sources, isDemo) {
       row.append(updated, details);
     }
     const count = model.providerCounts[id];
-    if (count !== undefined) row.append(node('span', `${number.format(count)} 个游戏`));
+    if (count !== undefined) row.append(node('span', `${number.format(count)} 个游戏`, 'source-count'));
     return row;
   }));
 }
@@ -257,6 +257,8 @@ function renderProgress(progress, game) {
   let current = -1;
   function selectPlatform(next) {
     if (next === current) return;
+    const section = switcher.closest('.progress-section');
+    const before = section?.offsetHeight;
     current = next;
     for (const [index, tab] of tabs.entries()) {
       const selected = index === next;
@@ -265,6 +267,7 @@ function renderProgress(progress, game) {
       panels[index].hidden = !selected;
     }
     if (!panels[next].hasChildNodes()) panels[next].append(...renderProvider(...entries[next]));
+    if (section) settleHeight(section, before);
   }
   switcher.addEventListener('keydown', event => {
     let next;
@@ -280,6 +283,15 @@ function renderProgress(progress, game) {
   switcher.append(...tabs);
   selectPlatform(Math.max(0, entries.findIndex(([, sets]) => sets.length)));
   return [heading, switcher, ...panels];
+}
+
+function settleHeight(section, before) {
+  if (document.documentElement.dataset.theme !== 'classic' || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  for (const animation of section.getAnimations()) animation.cancel();
+  const after = section.offsetHeight;
+  if (before !== after) section.animate([
+    {height:`${before}px`, overflow:'clip'}, {height:`${after}px`, overflow:'clip'},
+  ], {duration:210, easing:'cubic-bezier(.2,.75,.25,1)'});
 }
 
 async function showGame(game) {
@@ -311,11 +323,18 @@ async function showGame(game) {
   progress.append(node('p', '正在读取成就…', 'muted loading-lines'));
   $('detail-body').replaceChildren(node('p', `累计 ${playtime(game.seconds)}`), copies, progress);
   if (!$('detail').open) $('detail').showModal();
+  function finishProgress(children) {
+    if (request.signal.aborted) return;
+    const before = progress.offsetHeight;
+    progress.replaceChildren(...children);
+    progress.dataset.ready = '';
+    settleHeight(progress, before);
+  }
   try {
     const result = await data(`games/${encodeURIComponent(game.id)}`, request.signal);
-    if (!request.signal.aborted) progress.replaceChildren(...renderProgress(result.progress, game));
+    if (!request.signal.aborted) finishProgress(renderProgress(result.progress, game));
   } catch {
-    if (!request.signal.aborted) progress.replaceChildren(node('p', '成就详情暂不可用。', 'muted'));
+    finishProgress([node('p', '成就详情暂不可用。', 'muted')]);
   }
 }
 

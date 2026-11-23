@@ -105,14 +105,27 @@ button:hover:not([aria-pressed="true"]){border-color:var(--muted)}
   & .loading-lines::after{width:44%;max-width:12rem}
   & .grain-cover{display:block;position:absolute;inset:0;width:100%;height:100%;color:var(--raised);pointer-events:none;image-rendering:pixelated}
   & body:has(.skeleton-grid) .stats[hidden]{display:grid!important;visibility:hidden}
-  & #library:has(.skeleton-grid) #library-status{height:68px;padding-top:14px}
-  & #sources .loading-lines{height:26px;margin:0;display:flex;align-items:center}
+  & #profile-note[hidden]{display:block!important;visibility:hidden}
+  & #profile-note[hidden]::before{content:"\00a0"}
+  & #activity{display:flow-root;min-block-size:5.1rem}
+  @container (max-width:17rem){& #activity{min-block-size:8.25rem}}
+  & #library:has(.skeleton-grid) .toolbar[hidden]{display:flex!important;visibility:hidden}
+  & #library:has(.skeleton-grid) #library-status{position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden}
+  & #sources{display:grid;gap:6px}
+  & #sources > li{min-block-size:28px;margin:0}
+  & #sources .loading-lines::before{margin:0;align-self:center}
+  & #sources > .loading-lines{display:grid}
+  & #overview section{container-type:inline-size}
+  @container (max-width:32rem){
+    & #sources > li{display:grid;grid-template-columns:auto 1fr auto;grid-template-rows:minmax(28px,auto) minmax(22px,auto);gap:3px 8px;justify-items:start;align-items:center}
+    & #sources .loading-lines::before{grid-column:1/-1;justify-self:stretch}
+    & #sources :is(.sync-date-inline,.sync-date){grid-column:1/-1;grid-row:2}
+    & #sources .source-count{grid-column:3;grid-row:1}
+  }
   & #sources .loading-lines::after{display:none}
   & .catalog-session .catalog-live{display:none}
   & .sync-date summary{cursor:pointer;text-decoration:underline;text-underline-offset:3px}
-  @media (max-width:850px){& #library:has(.skeleton-grid) #library-status{height:128px}}
   @media (max-width:650px){& .sync-date{display:block} & .sync-date-inline{display:none}}
-  @media (max-width:460px){& #library:has(.skeleton-grid) #library-status{height:174px}}
   & .catalog-overview{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:12px}
   & .catalog-overview section{min-width:0;padding:16px 20px;background:var(--surface);border-radius:var(--radius)}
   & .catalog-overview section ~ section{margin-block-start:0}
@@ -168,7 +181,20 @@ button:hover:not([aria-pressed="true"]){border-color:var(--muted)}
   [data-theme="classic"] .loading-lines::before,[data-theme="classic"] .loading-lines::after,[data-theme="classic"] .skeleton-grid .cover,[data-theme="classic"] .cover.art-pending{animation:skeleton-wave 1.8s ease-in-out infinite;animation-delay:var(--wave-offset,0ms)}
   [data-theme="classic"] .game .cover{transition:transform 180ms var(--ease-settle)}
   [data-theme="classic"] .game:active .cover{transform:scale(.975)}
-  [data-theme="classic"] dialog[open],[data-theme="classic"] .theme-options:not([hidden]){animation:surface-enter 180ms var(--ease-settle)}
+  [data-theme="classic"] .theme-options:not([hidden]){animation:surface-enter 180ms var(--ease-settle)}
+  [data-theme="classic"] #detail{
+    opacity:0;transform:translateY(12px) scale(.985);
+    transition:opacity 160ms ease-out,transform 200ms var(--ease-settle),overlay 200ms allow-discrete,display 200ms allow-discrete
+  }
+  [data-theme="classic"] #detail[open]{opacity:1;transform:none}
+  [data-theme="classic"] #detail:not([open]){pointer-events:none}
+  [data-theme="classic"] #detail::backdrop{opacity:0;transition:opacity 180ms ease-out,overlay 200ms allow-discrete,display 200ms allow-discrete}
+  [data-theme="classic"] #detail[open]::backdrop{opacity:1}
+  @starting-style{
+    [data-theme="classic"] #detail[open]{opacity:0;transform:translateY(14px) scale(.98)}
+    [data-theme="classic"] #detail[open]::backdrop{opacity:0}
+  }
+  [data-theme="classic"] .progress-section[data-ready] > :not([hidden]){animation:surface-enter 180ms var(--ease-settle)}
   [data-theme="classic"] .theme-options{transform-origin:top right}
   :root:not([data-theme="classic"]) :is(.filters button,.sort-segments span){transition:color 140ms ease-out,background-color 140ms ease-out}
   /* Keep the selection fill and inverted text on the same frame. */
