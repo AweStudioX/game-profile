@@ -303,7 +303,7 @@ async function showGame(game) {
     copies.append(row);
   }
   const progress = node('section', undefined, 'progress-section');
-  progress.append(node('p', '正在读取成就…', 'muted'));
+  progress.append(node('p', '正在读取成就…', 'muted loading-lines'));
   $('detail-body').replaceChildren(node('p', `累计 ${playtime(game.seconds)}`), copies, progress);
   if (!$('detail').open) $('detail').showModal();
   try {
@@ -327,7 +327,12 @@ function gameCard(game, index) {
     image.alt = '';
     image.loading = index < 6 ? 'eager' : 'lazy';
     image.decoding = 'async';
-    image.addEventListener('error', () => image.remove(), { once: true });
+    cover.classList.add('art-pending');
+    image.addEventListener('load', () => cover.classList.remove('art-pending'), { once: true });
+    image.addEventListener('error', () => {
+      image.remove();
+      cover.classList.remove('art-pending');
+    }, { once: true });
     image.src = url;
     cover.append(image);
   }
@@ -411,6 +416,60 @@ function ticker(formatted) {
   }
   value.append(roll);
   return value;
+}
+
+function librarySkeleton() {
+  const list = node('ul', undefined, 'games skeleton-grid');
+  list.setAttribute('aria-hidden', 'true');
+  for (let i = 0; i < 6; i++) {
+    const item = node('li');
+    item.style.setProperty('--wave-offset', `${-90 * i}ms`);
+    item.append(node('span', undefined, 'cover'), node('span', undefined, 'loading-lines'));
+    list.append(item);
+  }
+  $('games').before(list);
+  return list;
+}
+
+// Each cover uses a small transparent overlay; artwork never enters the canvas.
+function revealFirstCovers() {
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const classic = () => document.documentElement.dataset.theme === 'classic';
+  if (!classic() || reduced.matches) return;
+  const covers = $('games').querySelectorAll('li:nth-child(-n+6) .cover');
+  covers.forEach((cover, index) => {
+    const bounds = cover.getBoundingClientRect();
+    if (!bounds.width || bounds.top >= innerHeight || bounds.bottom <= 0) return;
+    const layer = node('canvas', undefined, 'grain-cover');
+    const width = layer.width = Math.min(64, Math.ceil(bounds.width / 4));
+    const height = layer.height = Math.round(width * bounds.height / bounds.width);
+    const ctx = layer.getContext('2d');
+    if (!ctx) return;
+    cover.append(layer);
+    ctx.fillStyle = getComputedStyle(layer).color;
+    ctx.fillRect(0, 0, width, height);
+
+    // Bucket once in diagonal reading order with a ragged edge. Erase each grain once.
+    const steps = Array.from({length: 32}, () => []);
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const phase = .45 * x / width + .25 * y / height + .3 * Math.random();
+        steps[Math.floor(phase * steps.length)].push(y * width + x);
+      }
+    }
+    const start = performance.now() + index * 55;
+    let next = 0;
+    function frame(now) {
+      if (!layer.isConnected || reduced.matches || !classic()) { layer.remove(); return; }
+      const end = Math.min(steps.length, Math.floor((now - start) / 420 * steps.length));
+      while (next < end) {
+        for (const cell of steps[next++]) ctx.clearRect(cell % width, Math.floor(cell / width), 1, 1);
+      }
+      if (next < steps.length) requestAnimationFrame(frame);
+      else layer.remove();
+    }
+    requestAnimationFrame(frame);
+  });
 }
 
 function showLibrary(payload, isDemo) {
@@ -531,27 +590,33 @@ async function init() {
     $('library').hidden = true;
     return;
   }
-  const [library, activity] = await Promise.allSettled([data('library'), data('now-playing')]);
-  if (library.status === 'rejected' && library.reason.message === 'HTTP 401') {
-    note.replaceChildren(node('span', '这是私人游戏档案。 '));
-    const link = node('a', '登录查看');
-    link.href = '/api/profile?resource=login';
-    note.append(link);
-    note.hidden = false;
-    $('overview').hidden = true;
-    $('library').hidden = true;
-    return;
-  }
-  if (library.status === 'fulfilled') showLibrary(library.value, mode === 'demo');
-  else {
-    $('library-status').textContent = '未能读取游戏库，请刷新页面重试。';
-    $('sources').replaceChildren(node('li', '无法读取平台同步状态。'));
-  }
-  renderActivity(activity.status === 'fulfilled' ? activity.value : { state: 'unknown' });
+  await Promise.all([
+    data('now-playing').then(renderActivity, () => renderActivity({ state: 'unknown' })),
+    data('library').then(payload => {
+      skeleton.remove();
+      showLibrary(payload, mode === 'demo');
+      revealFirstCovers();
+    }, error => {
+      skeleton.remove();
+      if (error.message === 'HTTP 401') {
+        note.replaceChildren(node('span', '这是私人游戏档案。 '));
+        const link = node('a', '登录查看');
+        link.href = '/api/profile?resource=login';
+        note.append(link);
+        note.hidden = false;
+        $('overview').hidden = true;
+        $('library').hidden = true;
+        return;
+      }
+      $('library-status').textContent = '未能读取游戏库，请刷新页面重试。';
+      $('sources').replaceChildren(node('li', '无法读取平台同步状态。'));
+    }),
+  ]);
 }
 
+const skeleton = librarySkeleton();
 init().catch(() => {
   $('library-status').textContent = '未能连接档案服务，请刷新页面重试。';
   renderActivity({ state: 'unknown' });
   $('sources').replaceChildren(node('li', '无法读取平台同步状态。'));
-});
+}).finally(() => skeleton.remove());
