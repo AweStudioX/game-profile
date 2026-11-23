@@ -84,6 +84,7 @@ button:hover:not([aria-pressed="true"]){border-color:var(--muted)}
 .filter-indicator{display:none}
 .search-icon{display:none}
 .skeleton-grid,.grain-cover{display:none}
+.sync-date{display:none}
 :root:not([data-theme="pixel"],[data-theme="neon"]){
   color-scheme:light dark;
   --bg:light-dark(#f8f9fa,#101114);--surface:light-dark(#eff1f3,#1c1e22);--raised:light-dark(#e1e4e8,#2c2f34);
@@ -103,6 +104,15 @@ button:hover:not([aria-pressed="true"]){border-color:var(--muted)}
   & .loading-lines::before,& .loading-lines::after{content:"";display:block;border-radius:6px;height:9px;width:72%;max-width:19rem;margin-block:10px}
   & .loading-lines::after{width:44%;max-width:12rem}
   & .grain-cover{display:block;position:absolute;inset:0;width:100%;height:100%;color:var(--raised);pointer-events:none;image-rendering:pixelated}
+  & body:has(.skeleton-grid) .stats[hidden]{display:grid!important;visibility:hidden}
+  & #library:has(.skeleton-grid) #library-status{height:68px;padding-top:14px}
+  & #sources .loading-lines{height:26px;margin:0;display:flex;align-items:center}
+  & #sources .loading-lines::after{display:none}
+  & .catalog-session .catalog-live{display:none}
+  & .sync-date summary{cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+  @media (max-width:850px){& #library:has(.skeleton-grid) #library-status{height:128px}}
+  @media (max-width:650px){& .sync-date{display:block} & .sync-date-inline{display:none}}
+  @media (max-width:460px){& #library:has(.skeleton-grid) #library-status{height:174px}}
   & .catalog-overview{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:12px}
   & .catalog-overview section{min-width:0;padding:16px 20px;background:var(--surface);border-radius:var(--radius)}
   & .catalog-overview section ~ section{margin-block-start:0}
@@ -161,7 +171,7 @@ button:hover:not([aria-pressed="true"]){border-color:var(--muted)}
   [data-theme="classic"] dialog[open],[data-theme="classic"] .theme-options:not([hidden]){animation:surface-enter 180ms var(--ease-settle)}
   [data-theme="classic"] .theme-options{transform-origin:top right}
   :root:not([data-theme="classic"]) :is(.filters button,.sort-segments span){transition:color 140ms ease-out,background-color 140ms ease-out}
-  [data-theme="classic"] .sort-segments::before{transition:transform 180ms cubic-bezier(.2,.7,.25,1)}
+  /* Keep the selection fill and inverted text on the same frame. */
   :root[data-theme="classic"] .unlock-tab::after{transition:none}
   [data-theme="classic"] .more{transition:transform 160ms ease-out,box-shadow 160ms ease-out}
   [data-theme="classic"] .more:active{transform:scale(.97)}

@@ -130,7 +130,12 @@ function renderSources(sources, isDemo) {
     if (status === 'ready') badge.dataset.tone = 'active';
     row.append(badge);
     const updated = recordDate(source?.lastSuccessAt, '同步于');
-    if (updated) row.append(updated);
+    if (updated) {
+      const details = node('details', undefined, 'sync-date');
+      details.append(node('summary', '同步时间'), updated.cloneNode(true));
+      updated.classList.add('sync-date-inline');
+      row.append(updated, details);
+    }
     const count = model.providerCounts[id];
     if (count !== undefined) row.append(node('span', `${number.format(count)} 个游戏`));
     return row;
@@ -328,7 +333,10 @@ function gameCard(game, index) {
     image.loading = index < 6 ? 'eager' : 'lazy';
     image.decoding = 'async';
     cover.classList.add('art-pending');
-    image.addEventListener('load', () => cover.classList.remove('art-pending'), { once: true });
+    image.addEventListener('load', () => {
+      cover.classList.remove('art-pending');
+      if (cover.dataset.reveal !== undefined) revealCover(cover, index);
+    }, { once: true });
     image.addEventListener('error', () => {
       image.remove();
       cover.classList.remove('art-pending');
@@ -432,12 +440,10 @@ function librarySkeleton() {
 }
 
 // Each cover uses a small transparent overlay; artwork never enters the canvas.
-function revealFirstCovers() {
+function revealCover(cover, index) {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const classic = () => document.documentElement.dataset.theme === 'classic';
   if (!classic() || reduced.matches) return;
-  const covers = $('games').querySelectorAll('li:nth-child(-n+6) .cover');
-  covers.forEach((cover, index) => {
     const bounds = cover.getBoundingClientRect();
     if (!bounds.width || bounds.top >= innerHeight || bounds.bottom <= 0) return;
     const layer = node('canvas', undefined, 'grain-cover');
@@ -469,7 +475,6 @@ function revealFirstCovers() {
       else layer.remove();
     }
     requestAnimationFrame(frame);
-  });
 }
 
 function showLibrary(payload, isDemo) {
@@ -595,7 +600,9 @@ async function init() {
     data('library').then(payload => {
       skeleton.remove();
       showLibrary(payload, mode === 'demo');
-      revealFirstCovers();
+      for (const cover of $('games').querySelectorAll('li:nth-child(-n+6) .cover')) {
+        if (cover.classList.contains('art-pending')) cover.dataset.reveal = '';
+      }
     }, error => {
       skeleton.remove();
       if (error.message === 'HTTP 401') {
