@@ -22,14 +22,29 @@
         <li>新项目：使用 <a href="https://github.com/AweStudioX/game-profile#quick-start">模板的 Deploy with Vercel 按钮</a>，在向导里创建 Neon 数据库。Hobby 用户选择个人 GitHub 账号。</li>
         <li>已有 Vercel 项目：先同步模板代码，在该项目的 <strong>Storage</strong> 中创建并连接一个 Neon 数据库，检查 Production 中已生成 <code>DATABASE_URL</code>。不用重建项目或更换域名。</li>
         <li>在项目 <a href="https://vercel.com/dashboard">Settings → Environment Variables</a> 保留或填写 <code>PROFILE_PASSWORD</code>（12–120 位不含空格的可打印 ASCII 字符），并添加独立的 <code>PROFILE_ENCRYPTION_KEY</code>（用密码管理器或 <code>openssl rand -hex 32</code> 生成）。请长期保留原加密密钥，避免跨项目或 Preview 共享数据库。</li>
-        <li>重新部署 Production，打开 <a href="/connect.html">连接平台</a>并以 <code>owner</code> 登录。Steam、PlayStation、Nintendo Switch 都在这里配置。已有的 Steam 环境变量可以保留，不用重复输入。</li>
+        <li>重新部署 Production，打开 <a href="/connect.html">连接平台</a>并以 <code>owner</code> 登录。Steam、PlayStation、Nintendo Switch、Xbox、Epic 都在这里连接。已有的 Steam 环境变量可以保留，不用重复输入。</li>
       </ol>
       <p class="muted">游戏库默认每天自动同步一次，可以在连接页改成每小时一次。自动同步使用 Vercel Schedules（Beta），与实时游玩状态分开。</p>
+    </section>
+    <section class="panel setup-guide" aria-labelledby="xbox-oauth">
+      <h2 id="xbox-oauth">Xbox · Microsoft 应用配置</h2>
+      <ol>
+        <li>在 <a href="https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade" target="_blank" rel="noreferrer">Microsoft 应用注册</a>创建自己的应用，支持的账号类型选择「仅个人 Microsoft 账户」。公司或学校账号不能代替 Xbox 个人账号。</li>
+        <li>在身份验证中添加 <strong>Web</strong> 平台，回调 URI 填本站的 <code>https://你的域名/connect.html</code>。必须与下面的环境变量完全一致，不要添加查询参数或片段。</li>
+        <li>将 Application (client) ID 填入 Vercel 的 <code>XBOX_CLIENT_ID</code>。创建 client secret，将它的 <strong>Value</strong>（不是 Secret ID）填入 <code>XBOX_CLIENT_SECRET</code>，并记录过期日期。</li>
+        <li>设置 <code>XBOX_REDIRECT_URI</code> 为刚才的完整回调 URI，重新部署后，在连接页点击「用 Microsoft 账号连接」。授权只在 Microsoft 官网进行。开发环境可使用已注册的 <code>http://localhost:3000/connect.html</code>。</li>
+      </ol>
+      <p class="muted">Xbox 同步已玩游戏，不等于完整购买库。部分游戏不返回时长，儿童账号、隐私设置或未开通 Xbox 档案也可能限制读取。缺少 Xbox 配置不影响其他平台。</p>
+    </section>
+    <section class="panel setup-guide" aria-labelledby="epic-connection">
+      <h2 id="epic-connection">Epic · 一次性授权</h2>
+      <p class="muted">无需额外环境变量。在连接页生成 Epic 登录链接，登录 Epic 官网后复制 authorizationCode 或整段 JSON，识别并核对显示名称后绑定。授权码只能用一次；不要提交密码、cookie 或复制别人的登录结果。</p>
+      <p class="muted">同步已领取的 PC 本体游戏与封面，不需要安装游戏或常驻电脑。游玩时长依赖 Epic 上报，缺失时保留未知；不包含 DLC、成就、最近游玩时间或实时活动。Epic 没有已验证的头像字段，因此使用平台图标。</p>
     </section>
     <section class="panel setup-guide" aria-labelledby="privacy-info">
       <h2 id="privacy-info">数据与隐私</h2>
       <p class="muted">游戏库、动态和成就无需登录即可查看。玩家昵称、ID 和头像默认不公开，可登录后按平台开启展示；关闭后不向访客返回该平台身份信息。</p>
-      <p class="muted">平台凭证和同步快照加密存入你的数据库，不写到仓库。请只连接自己的账号；PlayStation 与 Nintendo 使用非官方接口，可能失效并需要重新授权。</p>
+      <p class="muted">平台凭证和同步快照加密存入你的数据库，不写到仓库。Xbox 展示 Gamertag 和可用头像，不公开 XUID；Epic 只展示显示名称，不公开内部账号 ID 或邮箱。请只连接自己的账号；社区接口可能失效并需要重新授权。Epic 断开时先撤销本站会话，撤销失败会保留连接以便重试。</p>
     </section>
   </main>
 </body>

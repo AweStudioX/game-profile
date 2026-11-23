@@ -5,7 +5,7 @@ const { buildProgress } = require('./progress');
 
 const READY = new Set(['ready', 'stale']);
 const ACTIVE = new Set(['ready']);
-const CATALOG_PROVIDERS = new Set(['steam', 'psn', 'nintendo', 'epic']);
+const CATALOG_PROVIDERS = new Set(['steam', 'psn', 'nintendo', 'xbox', 'epic']);
 
 function normalizedTitle(value) {
   return String(value || '').replace(/[™®©℠]/g, '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
@@ -94,7 +94,7 @@ function safeRead(service, method, resource, fallbackStatus) {
 }
 
 function createAggregateService({ steamService, steamStatus = 'disabled', psnService, psnStatus = 'disabled',
-  epicService, epicStatus = 'disabled', playniteService, playniteStatus = 'disabled', nintendoService,
+  epicService, epicStatus = 'disabled', playniteService, playniteStatus = 'disabled', nintendoService, xboxService,
   hasMiscrits = false, trackedUsernames = [], readValorantSnapshot = () => null, now = Date.now, registryEntries } = {}) {
   const registry = buildRegistry(registryEntries);
 
@@ -104,6 +104,7 @@ function createAggregateService({ steamService, steamStatus = 'disabled', psnSer
     const psnLibrary = safeRead(psnService, 'read', 'library', psnStatus);
     const psnPresence = safeRead(psnService, 'read', 'presence', psnStatus);
     const nintendoLibrary = safeRead(nintendoService, 'read', 'library', 'disabled');
+    const xboxLibrary = safeRead(xboxService, 'read', 'library', 'disabled');
     const epicLibrary = safeRead(epicService, 'read', undefined, epicStatus);
     const playniteLibrary = safeRead(playniteService, 'library', undefined, playniteStatus);
     const playnitePresence = safeRead(playniteService, 'presence', undefined, playniteStatus);
@@ -111,7 +112,7 @@ function createAggregateService({ steamService, steamStatus = 'disabled', psnSer
       try { return { username, snapshot: readValorantSnapshot(username) }; }
       catch { return { username, snapshot: null }; }
     }).filter(item => item.snapshot);
-    return { steamLibrary, steamProfile, psnLibrary, psnPresence, epicLibrary, playniteLibrary, playnitePresence, nintendoLibrary, valorant };
+    return { steamLibrary, steamProfile, psnLibrary, psnPresence, epicLibrary, playniteLibrary, playnitePresence, nintendoLibrary, xboxLibrary, valorant };
   }
 
   function identity(provider, id, game) {
@@ -152,7 +153,7 @@ function createAggregateService({ steamService, steamStatus = 'disabled', psnSer
     let copy = edition.copies.get(copyId);
     if (!copy) {
       copy = { id: copyId, platform: provider === 'psn' ? psnPlatform(game)
-        : provider === 'nintendo' ? game.platform
+        : provider === 'nintendo' || provider === 'xbox' ? game.platform
           : provider === 'epic' || provider === 'playnite' ? 'windows' : provider === 'steam' ? 'multi-platform' : 'unknown', observations: [] };
       edition.copies.set(copyId, copy);
     }
@@ -234,6 +235,13 @@ function createAggregateService({ steamService, steamStatus = 'disabled', psnSer
         precision: seconds === null ? null : 'minute', selectedFrom: 'nintendo', rule: 'nintendo-system-lifetime', excluded: [] };
     }
 
+    const xbox = by('xbox')[0];
+    if (xbox) {
+      const seconds = secondsFromMinutes(xbox.data.playtimeMinutes);
+      return { status: seconds === null ? 'unknown' : 'known', seconds,
+        precision: seconds === null ? null : 'minute', selectedFrom: 'xbox', rule: 'xbox-reported-lifetime', excluded: [] };
+    }
+
     const playnite = by('playnite')[0];
     if (playnite) {
       const helperFor = playnite.helperFor || playniteSourceProvider(playnite.data);
@@ -277,6 +285,7 @@ function createAggregateService({ steamService, steamStatus = 'disabled', psnSer
     }
     for (const game of input.psnLibrary.games || []) add('psn', game.providerGameId, game);
     for (const game of input.nintendoLibrary?.games || []) add('nintendo', game.providerGameId, game);
+    for (const game of input.xboxLibrary?.games || []) add('xbox', game.providerGameId, game);
     for (const game of input.epicLibrary.games || []) {
       const added = add('epic', game.providerGameId, game);
       const title = normalizedTitle(game.name);
@@ -339,6 +348,7 @@ function createAggregateService({ steamService, steamStatus = 'disabled', psnSer
     const sources = {
       steam: sourceSummary(input.steamLibrary, steamStatus), psn: sourceSummary(input.psnLibrary, psnStatus),
       nintendo: sourceSummary(input.nintendoLibrary),
+      xbox: sourceSummary(input.xboxLibrary),
       epic: sourceSummary(input.epicLibrary, epicStatus), playnite: sourceSummary(input.playniteLibrary, playniteStatus),
       valorant: { status: input.valorant.length
         ? (input.valorant.every(value => value.snapshot.status === 'stale') ? 'stale' : 'ready')
@@ -433,7 +443,7 @@ function createAggregateService({ steamService, steamStatus = 'disabled', psnSer
       sources: presence.sources,
     };
     const expectedWork = registry.works.get(found.id);
-    const progress = buildProgress(found, { steamService, psnService, expectedWork, providerStatuses: library.sources });
+    const progress = buildProgress(found, { steamService, psnService, xboxService, expectedWork, providerStatuses: library.sources });
     const incompleteProgress = ['partial', 'pending', 'unavailable'].includes(progress.status);
     const relatedProviders = new Set(found.editions.flatMap(edition => edition.copies)
       .flatMap(copy => copy.observations).map(item => item.provider));

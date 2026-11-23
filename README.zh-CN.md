@@ -2,7 +2,7 @@
 
 [English](README.md) · **简体中文**
 
-一个面向个人的公开游戏展示看板，支持 Steam、PlayStation 和 Nintendo Switch，管理操作需要密码登录。部署到 Vercel 后直接在站内绑定账号，不用改代码。
+一个面向个人的公开游戏展示看板，支持 Steam、PlayStation、Nintendo Switch、Xbox 和 Epic Games，管理操作需要密码登录。部署到 Vercel 后直接在站内绑定账号，不用改代码。
 
 ## 快速开始
 
@@ -27,6 +27,13 @@ Vercel Hobby 用户请选择**个人 GitHub 账号**，不要选组织。在部�
 | `PROFILE_ENCRYPTION_KEY` | 运行 `openssl rand -hex 32`，或用密码管理器生成同等强度的随机值。重新部署时保留原值，换值后旧数据库不能解密。不要复用看板密码。 |
 
 部署后点站内 **连接平台**，登录后按各平台指引操作。Steam 需要 [SteamID64](https://store.steampowered.com/account/) 和 [Web API Key](https://steamcommunity.com/dev/apikey)；PlayStation 复制 Sony 的 NPSSO；Nintendo 复制登录后的回调链接。不要把平台密码输入看板。
+
+### Xbox & Epic setup
+
+- Xbox: configure your own personal-account Microsoft Web OAuth app with `XBOX_CLIENT_ID`, `XBOX_CLIENT_SECRET`, and `XBOX_REDIRECT_URI`. Sync covers played games, reported playtime, and supported achievements/Gamerscore, not the purchase library. Missing time stays unknown.
+- Epic: generate the official login link, submit its one-time authorization code, and confirm the display name. Sync covers claimed PC base games, artwork, and reported playtime; no DLC, achievements, live activity, or verified account avatar.
+- Both use encrypted storage and default-private identity controls. See the [complete setup and limitations](README.md#xbox-and-epic), or the in-app setup guide. Microsoft credentials are optional for other platforms.
+
 
 ## 升级现有项目
 

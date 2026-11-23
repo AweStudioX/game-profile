@@ -4,6 +4,7 @@ const names = {
   valorant: 'Valorant', riot: 'Riot', 'multi-platform': 'PC', windows: 'Windows',
   macos: 'macOS', linux: 'Linux', ps4: 'PS4', ps5: 'PS5', 'switch-2': 'Switch 2',
   HAC: 'Nintendo Switch', BEE: 'Nintendo Switch 2', hac: 'Nintendo Switch', bee: 'Nintendo Switch 2',
+  xbox: 'Xbox', 'xbox-one': 'Xbox One', 'xbox-series': 'Xbox Series X|S', 'xbox-360': 'Xbox 360',
 };
 export const label = id => Object.hasOwn(names, id) ? names[id] : String(id).replace(/[-_]/g, ' ');
 const list = value => Array.isArray(value) ? value : [];

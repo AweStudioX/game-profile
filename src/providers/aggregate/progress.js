@@ -1,4 +1,4 @@
-const PROVIDERS_WITH_UNLOCKS = new Set(['steam', 'psn']);
+const PROVIDERS_WITH_UNLOCKS = new Set(['steam', 'psn', 'xbox']);
 const USABLE = new Set(['available', 'stale']);
 const STATUS_RANK = { available: 7, stale: 6, pending: 5, private: 4, unsupported: 3, unavailable: 2, error: 1 };
 
@@ -52,6 +52,25 @@ function steamUnlock(row, appId, setId) {
     kind: 'achievement',
     grade: null,
     source: 'steam',
+    hidden: row.hidden === true,
+  };
+}
+
+function xboxUnlock(row, titleId, setId) {
+  return {
+    id: `xbox:${titleId}:achievement:${encodeURIComponent(row.id)}`,
+    setId,
+    providerUnlockId: row.id,
+    name: row.name || 'Unnamed achievement',
+    description: row.description ?? null,
+    imageUrl: row.iconUrl ?? null,
+    unlocked: typeof row.unlocked === 'boolean' ? row.unlocked : null,
+    unlockedAt: row.unlockedAt ?? null,
+    rarityPercent: row.rarityPercent ?? null,
+    gamerscore: Number.isFinite(row.gamerscore) && row.gamerscore >= 0 ? row.gamerscore : null,
+    kind: 'achievement',
+    grade: null,
+    source: 'xbox',
     hidden: row.hidden === true,
   };
 }
@@ -123,7 +142,7 @@ function progressStatus(sources, sets) {
   return 'unavailable';
 }
 
-function buildProgress(game, { steamService, psnService, expectedWork, providerStatuses = {} } = {}) {
+function buildProgress(game, { steamService, psnService, xboxService, expectedWork, providerStatuses = {} } = {}) {
   const contexts = [];
   for (const edition of game.editions || []) for (const copy of edition.copies || []) {
     for (const observation of copy.observations || []) contexts.push({ edition, copy, observation });
@@ -136,22 +155,24 @@ function buildProgress(game, { steamService, psnService, expectedWork, providerS
   for (const context of contexts) {
     const { observation, edition, copy } = context;
     const id = observation.providerGameId;
-    if (observation.provider === 'steam') {
-      const result = detail(steamService, id);
+    if (observation.provider === 'steam' || observation.provider === 'xbox') {
+      const source = observation.provider;
+      const result = detail(source === 'steam' ? steamService : xboxService, id);
       if (!result.body) {
-        sources.push(sourceRecord(context, 'steam', result.status, result.reason, null));
+        sources.push(sourceRecord(context, source, result.status, result.reason, null));
         continue;
       }
       const status = capabilityStatus(result.body.achievementStatus, result.body);
-      sources.push(sourceRecord(context, 'steam', status, result.body.achievementStatus, result.body));
+      sources.push(sourceRecord(context, source, status, result.body.achievementStatus, result.body));
       if (!USABLE.has(status)) continue;
-      const setId = `steam:${id}:achievements`;
-      const unlocks = (result.body.achievements || []).map(row => steamUnlock(row, id, setId));
+      const setId = `${source}:${id}:achievements`;
+      const unlocks = (result.body.achievements || []).map(row =>
+        source === 'steam' ? steamUnlock(row, id, setId) : xboxUnlock(row, id, setId));
       sets.push({
         id: setId,
-        source: 'steam',
+        source,
         kind: 'achievement',
-        name: 'Steam achievements',
+        name: source === 'steam' ? 'Steam achievements' : 'Xbox achievements',
         editionId: edition.id,
         copyId: copy.id,
         platform: copy.platform,

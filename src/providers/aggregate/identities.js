@@ -2,7 +2,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const DEFAULT_FILE = path.join(process.cwd(), 'config', 'game-identities.json');
-const PROVIDERS = new Set(['steam', 'psn', 'nintendo', 'epic', 'playnite', 'valorant']);
+const PROVIDERS = new Set(['steam', 'psn', 'nintendo', 'xbox', 'epic', 'playnite', 'valorant']);
 const id = value => typeof value === 'string' && /^[a-z0-9][a-z0-9-]{0,127}$/.test(value);
 const text = (value, max = 512) => typeof value === 'string' && value.length > 0 && value.length <= max;
 

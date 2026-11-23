@@ -15,7 +15,7 @@ test('daily runs only at the configured UTC hour; hourly persists across instanc
   const config = createSyncSettings({ store, now: () => now });
   const calls = [];
   const provider = name => ({ async refresh() { calls.push(name); if (name === 'psn') throw new Error('failed'); } });
-  const providers = Object.fromEntries(['steam', 'psn', 'nintendo'].map(name => [name, provider(name)]));
+  const providers = Object.fromEntries(['steam', 'psn', 'nintendo', 'xbox', 'epic'].map(name => [name, provider(name)]));
   async function tick(hour, runner = config) {
     const slot = new Date(Date.UTC(2026, 10, 19, hour));
     now = +slot + 900_000;
@@ -27,15 +27,15 @@ test('daily runs only at the configured UTC hour; hourly persists across instanc
   await tick(2);
   await tick(2);
   await tick(3);
-  assert.deepEqual(calls, ['steam', 'psn', 'nintendo']);
+  assert.deepEqual(calls, ['steam', 'psn', 'nintendo', 'xbox', 'epic']);
   await config.configure({ cadence: 'hourly' });
   const restarted = createSyncSettings({ store, now: () => now });
   await tick(4, restarted);
   await tick(3, restarted);
-  assert.deepEqual(calls, ['steam', 'psn', 'nintendo', 'steam', 'psn', 'nintendo']);
+  assert.deepEqual(calls, ['steam', 'psn', 'nintendo', 'xbox', 'epic', 'steam', 'psn', 'nintendo', 'xbox', 'epic']);
   assert.deepEqual(await restarted.status(), {
     cadence: 'hourly', lastScheduledAt: '2026-11-19T04:00:00.000Z',
-    identityVisibility: { steam: false, psn: false, nintendo: false },
+    identityVisibility: { steam: false, psn: false, nintendo: false, xbox: false, epic: false },
   });
 });
 

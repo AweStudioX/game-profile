@@ -27,7 +27,7 @@ test('a Steam-only deployment cannot start a platform connection', async () => {
   const status = await handle(request('platforms', { headers: auth }));
   assert.deepEqual(await status.json(), {
     storage: 'not-configured', sources: {}, identities: {},
-    identityVisibility: { steam: false, psn: false, nintendo: false },
+    identityVisibility: { steam: false, psn: false, nintendo: false, xbox: false, epic: false },
   });
   assert.equal((await handle(request('platform-action', {
     method: 'POST', headers: { ...auth, Origin: origin, 'Content-Type': 'application/json' },

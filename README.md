@@ -2,7 +2,7 @@
 
 **English** · [简体中文](README.zh-CN.md)
 
-A public, single-owner game showcase for Steam, PlayStation, and Nintendo Switch, with password-protected management. Deploy on Vercel, then connect your accounts without editing code.
+A public, single-owner game showcase for Steam, PlayStation, Nintendo Switch, Xbox, and Epic Games, with password-protected management. Deploy on Vercel, then connect your accounts without editing code.
 
 ## Quick start
 
@@ -15,7 +15,7 @@ On Vercel Hobby, select your **personal GitHub account**, not an organization. C
 - Browse and search the cover-first game library. The overview preserves playing, idle, and unknown activity states, activity sources and timestamps, and per-platform sync status, timestamps, and game counts.
 - Classic follows the system light/dark setting, with [Dissolve](https://dissolve.rselmi.com/)-inspired segmented filters, rolling totals and a glossy pagination button. Motion respects the reduced-motion preference. Pixel and Neon City remain selectable in the header; the theme preference is per browser.
 - See a game once even when multiple platform records match. Progress remains separate per platform.
-- Steam and PlayStation achievements stay separate; Nintendo contributes play history.
+- Steam achievements, PlayStation trophies, and Xbox achievements/Gamerscore stay separate. Nintendo contributes play history; Epic contributes claimed PC base games and reported playtime, not achievements.
 - Visitors can browse the dashboard without signing in. Use **登录** (Sign in) to manage connections and choose which platforms' player names, IDs, and available avatars are public. Identity cards default to hidden.
 - Schedule daily or hourly library sync with [Vercel Schedules (Beta)](https://vercel.com/docs/schedules/limits). Daily is the default (02:00 UTC). The dashboard does not need to stay open.
 
@@ -27,6 +27,24 @@ On Vercel Hobby, select your **personal GitHub account**, not an organization. C
 | `PROFILE_ENCRYPTION_KEY` | Run `openssl rand -hex 32` or generate an equivalent random key with a password manager. Keep the same key across redeploys; a new key cannot decrypt the existing database. Do not reuse your dashboard password. |
 
 After deployment, open **连接平台** (Connect platforms), sign in, and expand **连接设置与帮助** (Connection settings and help) on a platform card for its credentials and instructions. Sync and disconnect actions stay outside the disclosure. Steam requires a [SteamID64](https://store.steampowered.com/account/) and a [Web API key](https://steamcommunity.com/dev/apikey). PlayStation uses an NPSSO copied from Sony; Nintendo uses a copied callback link. Never enter a platform password on the dashboard.
+
+### Xbox and Epic
+
+Xbox requires your own confidential Microsoft **Web** application:
+
+1. Register an application in the [Microsoft portal](https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade), with **Personal Microsoft accounts only**.
+2. Add a Web redirect URI matching `https://your-domain/connect.html` exactly. No query or fragment; production requires HTTPS. Registered loopback HTTP redirects are supported for development.
+3. Set `XBOX_CLIENT_ID`, `XBOX_CLIENT_SECRET` (the secret **value**, not its ID), and `XBOX_REDIRECT_URI` in Vercel. Track the secret's expiry and redeploy after configuration changes.
+4. Sign into the dashboard, expand the Xbox connection settings, and authorize on Microsoft's website. The request sends an S256 PKCE challenge; the server validates the callback state, exchanges the code with its verifier, and the page removes the callback from the address bar before submission.
+
+Xbox reads played-title history, not the complete purchase library; titles marked hidden on Xbox are excluded. Playtime is included only when the title reports `MinutesPlayed`; missing time remains unknown. Supported titles expose achievements and Gamerscore. Older titles may report unsupported achievement data; child accounts, privacy restrictions, and accounts without an Xbox profile can prevent access. Xbox configuration is optional and does not block other providers.
+
+Epic needs no additional environment variables or always-on helper. Generate the official Epic login link in its connection card, sign in on Epic's website, then paste the one-time `authorizationCode` (or the returned JSON). Verify the display name before confirming. Never paste a password or browser cookie.
+
+Epic synchronizes claimed PC base games, including uninstalled games, catalog artwork, and Epic-reported playtime. DLC, Unreal assets, private entries, achievements, recent-play timestamps, and live presence are excluded. Missing or ambiguous time is not converted to zero. The Launcher interface is unofficial and may change. Disconnect first revokes this session; if revocation fails, the local connection is kept so you can retry.
+
+Both providers use the existing encrypted database, scheduled sync, and per-platform identity visibility controls. Xbox exposes Gamertag and an available avatar, never XUID; Epic exposes display name, never account ID or email. No verified Epic avatar is available, so its platform mark is used. Incomplete pagination never replaces a complete saved library.
+
 
 ## Upgrade an existing fork
 
@@ -59,9 +77,9 @@ Open <http://127.0.0.1:3000> for the bundled demo. For real records, copy [`.env
 ## Privacy
 
 - Real game libraries, activity, and achievements are publicly readable. Owner sign-in is required for platform settings and changes; personal API responses are not cached by browsers or CDNs.
-- Player identity disclosure is independently controlled per platform and defaults off. Disabled identities are omitted server-side, including avatars. Steam uses SteamID64 and nickname; PlayStation uses Online ID; Nintendo uses the account nickname, not an internal ID, email, or Switch friend code. Available avatars are refreshed with platform sync; missing images use a platform icon.
+- Player identity disclosure is independently controlled per platform and defaults off. Disabled identities are omitted server-side, including avatars. Steam uses SteamID64 and nickname; PlayStation uses Online ID; Nintendo uses the account nickname, not an internal ID, email, or Switch friend code; Xbox uses Gamertag; Epic uses display name only. Available avatars are refreshed with platform sync; missing images use a platform icon.
 - Platform credentials and snapshots are encrypted in PostgreSQL. Use a dedicated database per deployment. Artwork loads directly from platform CDNs.
-- PlayStation and Nintendo use unofficial interfaces that can break or require reauthorization. The operator is responsible for compliance with platform terms, including the [Steam Web API Terms](https://steamcommunity.com/dev/apiterms). This project is not affiliated with the platforms.
+- PlayStation, Nintendo, Xbox, and Epic game data use community integrations that can break or require reauthorization. The operator is responsible for compliance with platform terms, including the [Steam Web API Terms](https://steamcommunity.com/dev/apiterms). This project is not affiliated with the platforms.
 
 ## Contributing
 
@@ -69,4 +87,4 @@ Issues and pull requests are welcome. Include reproduction steps with bug report
 
 ## License
 
-MIT; see [LICENSE](LICENSE). The Steam client, normalization, and aggregation modules are derived from [AniketRaj314/gaming-stats-api](https://github.com/AniketRaj314/gaming-stats-api). The original copyright and permission notice are retained.
+MIT; see [LICENSE](LICENSE). The Steam and Epic client/normalization code and aggregation modules are derived from [AniketRaj314/gaming-stats-api](https://github.com/AniketRaj314/gaming-stats-api). The original copyright and permission notice are retained. Xbox protocol references include [OpenXbox/xbox-webapi-python](https://github.com/OpenXbox/xbox-webapi-python) and [Microsoft's achievement API documentation](https://learn.microsoft.com/en-us/gaming/gdk/docs/reference/live/rest/uri/achievements/uri-achievementsusersxuidachievementsgetv2).

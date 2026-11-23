@@ -156,7 +156,7 @@ function selectArtwork(observations) {
     else if (observation.provider === 'steam') steam(game, observation);
     else if (observation.provider === 'epic') epic(game, observation);
     else if (observation.provider === 'psn') psn(game, observation);
-    else if (observation.provider === 'nintendo') {
+    else if (observation.provider === 'nintendo' || observation.provider === 'xbox') {
       add({ url: game.imageUrl, type: 'primary', roles: ['square'], preference: 90 }, observation);
     }
   }

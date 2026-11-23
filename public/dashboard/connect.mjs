@@ -1,6 +1,14 @@
 const $ = id => document.getElementById(id);
 const endpoint = resource => `/api/profile?resource=${resource}`;
 const dateFormat = new Intl.DateTimeFormat('zh-CN', { dateStyle: 'medium', timeStyle: 'short' });
+let xboxCallback;
+{
+  const callbackUrl = new URL(location.href);
+  if (callbackUrl.searchParams.has('state') && (callbackUrl.searchParams.has('code') || callbackUrl.searchParams.has('error'))) {
+    xboxCallback = callbackUrl.searchParams.has('error') ? 'cancelled' : callbackUrl.href;
+    history.replaceState(null, '', location.pathname);
+  }
+}
 const statuses = {
   ready: '已同步', stale: '待刷新', connected: '已连接', 'not-configured': '未连接',
   'reconnect-required': '需要重连', private: '隐私受限', unavailable: '暂不可用',
@@ -10,7 +18,7 @@ const errors = {
   'invalid-steam-key': 'Steam Web API Key 必须是 32 位十六进制字符。',
   'steam-library-validation-failed': 'Steam 未返回游戏库。请核对 SteamID64、Key 和游戏详情隐私设置。',
   'invalid-npsso-format': '授权结果格式不正确，请从 Sony 页面重新复制。',
-  'invalid-callback': '请复制 Nintendo 页面上的完整链接，不要只复制其中一段。',
+  'invalid-callback': '回调链接无效，请重新从平台官网授权。',
   'state-mismatch': '链接不属于本次登录，请重新生成链接。',
   'confirmation-expired': '确认已过期，请重新识别账号。',
   'reconnect-required': '平台需要重新授权。',
@@ -21,10 +29,23 @@ const errors = {
   'disconnect-before-reconnecting': '账号仍处于连接状态。如需切换，请先断开连接。',
   'credential-integrity-failed': '无法读取已保存的会话，请确认部署使用原来的加密密钥。',
   'invalid-visibility': '展示设置无效，请刷新后重试。',
+  'xbox-oauth-not-configured': '请先按配置说明设置 XBOX_CLIENT_ID、XBOX_CLIENT_SECRET 和 XBOX_REDIRECT_URI。',
+  'invalid-authorization-code': 'Epic 授权码无效或已使用，请重新打开 Epic 登录链接。',
+  'invalid-code': '授权码无效或已使用，请重新授权。',
+  'authorization-expired': '授权已过期，请重新生成登录链接。',
+  'invalid-session': '平台会话无效，请重新授权。',
+  'sync-timeout': '平台响应超时，已保留上次完整记录。',
+  'authorization-not-pending': 'Xbox 授权已过期或已使用，请重新发起 Microsoft 登录。',
+  'authorization-denied': 'Microsoft 授权未完成，请重新连接。',
+  'authorization-failed': 'Microsoft 授权失败，请核对应用配置并重新连接。',
+  'account-ineligible': 'Microsoft 账号暂不能访问 Xbox 服务，请检查 Xbox 档案、年龄和隐私设置。',
+  'rotation-interrupted-reconnect': '授权刷新被中断，请重新连接此平台。',
+  timeout: '平台响应超时，已保留上次完整记录。',
 };
 let confirmationId;
-const identityPlatforms = [['steam', 'Steam'], ['psn', 'PlayStation'], ['nintendo', 'Nintendo Switch']];
-const noIdentities = { identities: {}, visibility: { steam: false, psn: false, nintendo: false } };
+let epicConfirmationId;
+const identityPlatforms = [['steam', 'Steam'], ['psn', 'PlayStation'], ['nintendo', 'Nintendo Switch'], ['xbox', 'Xbox'], ['epic', 'Epic Games']];
+const noIdentities = { identities: {}, visibility: { steam: false, psn: false, nintendo: false, xbox: false, epic: false } };
 let identityState = noIdentities;
 let visibilitySaving = false;
 
@@ -143,7 +164,7 @@ async function refreshStatus() {
   $('schedule-form').elements.cadence.value = sync.cadence;
   $('sync-last').textContent = sync.lastScheduledAt
     ? `最近一次定时同步触发：${new Date(sync.lastScheduledAt).toLocaleString()}` : '尚未触发定时同步。';
-  for (const id of ['steam', 'psn', 'nintendo']) {
+  for (const [id] of identityPlatforms) {
     const source = sources[id];
     const status = source?.status ?? 'not-configured';
     const state = $(`${id}-status`);
@@ -157,8 +178,10 @@ async function refreshStatus() {
       synced.textContent = dateFormat.format(timestamp);
     }
     if (id === 'psn') $('psn-form').hidden = ['connected', 'ready', 'stale'].includes(status);
+    if (id === 'xbox' || id === 'epic') $(`${id}-start`).hidden = ['connected', 'ready', 'stale'].includes(status);
     $(`${id}-actions`).hidden = status === 'not-configured';
   }
+  return true;
 }
 
 async function perform(provider, action, body = {}, done) {
@@ -237,6 +260,50 @@ $('nintendo-form').addEventListener('submit', event => {
   $('nintendo-auth').removeAttribute('href');
   void perform('nintendo', 'confirm', { callback });
 });
+$('xbox-start').addEventListener('click', () => {
+  void perform('xbox', 'start', {}, ({ url }) => {
+    const target = new URL(url);
+    if (target.protocol !== 'https:' || target.username || target.password
+      || !['login.live.com', 'login.microsoftonline.com'].includes(target.hostname)) throw new Error('invalid-login-url');
+    location.assign(target.href);
+    return '正在打开 Microsoft 登录…';
+  });
+});
+$('epic-start').addEventListener('click', () => {
+  void perform('epic', 'start', {}, ({ url }) => {
+    const target = new URL(url);
+    if (target.protocol !== 'https:' || target.hostname !== 'www.epicgames.com' || target.username || target.password) {
+      throw new Error('invalid-login-url');
+    }
+    $('epic-auth').href = target.href;
+    $('epic-auth').hidden = false;
+    $('epic-form').hidden = false;
+    $('epic-review').hidden = true;
+    epicConfirmationId = undefined;
+    return '打开 Epic 官网，将结果页中的授权码粘贴到下方。';
+  });
+});
+$('epic-form').addEventListener('submit', event => {
+  event.preventDefault();
+  const authorizationCode = new FormData(event.currentTarget).get('authorizationCode');
+  event.currentTarget.reset();
+  epicConfirmationId = undefined;
+  $('epic-review').hidden = true;
+  void perform('epic', 'identify', { authorizationCode }, data => {
+    epicConfirmationId = data.confirmationId;
+    $('epic-owner').textContent = data.displayName;
+    $('epic-review').hidden = false;
+    return '请核对显示名称后确认绑定。';
+  });
+});
+$('epic-confirm').addEventListener('click', () => {
+  const confirmationId = epicConfirmationId;
+  epicConfirmationId = undefined;
+  $('epic-review').hidden = true;
+  $('epic-form').hidden = true;
+  $('epic-auth').hidden = true;
+  void perform('epic', 'confirm', { confirmationId });
+});
 $('owner-platforms').addEventListener('click', event => {
   const button = event.target.closest('button[data-action]');
   if (!button) return;
@@ -251,10 +318,28 @@ $('owner-platforms').addEventListener('click', event => {
     confirmationId = undefined;
     $('psn-review').hidden = true;
   }
+  if (action === 'disconnect' && provider === 'epic') {
+    epicConfirmationId = undefined;
+    $('epic-review').hidden = true;
+    $('epic-form').hidden = true;
+    $('epic-auth').hidden = true;
+    $('epic-auth').removeAttribute('href');
+  }
   void perform(provider, action);
 });
 $('identity-options').addEventListener('change', event => {
   const input = event.target.closest('input[data-platform]');
   if (input) void saveVisibility(input);
 });
-refreshStatus().catch(() => { $('connect-status').textContent = '无法读取状态，请刷新页面。'; });
+refreshStatus().then(async authenticated => {
+  const callback = xboxCallback;
+  xboxCallback = undefined;
+  if (!callback) return;
+  if (!authenticated) {
+    $('connect-status').append(' Microsoft 回调已从地址栏清除；完成看板登录和配置后，请重新发起 Xbox 授权。');
+  } else if (callback === 'cancelled') {
+    $('xbox-result').textContent = 'Microsoft 授权已取消或未完成，可以重新连接。';
+  } else {
+    await perform('xbox', 'confirm', { callback });
+  }
+}).catch(() => { xboxCallback = undefined; $('connect-status').textContent = '无法读取状态，请刷新页面；Xbox 授权请重新发起。'; });
