@@ -20,10 +20,76 @@
   const offsets = new Map();
   let geom = new WeakMap();
 
-  // Once-only viewport entrance: arm, wait for every sticker image, then reveal.
+  // Vary the middle of the path, never delay a sticker's start or finish.
+  const revealItems = stickers.map((sticker, index) => {
+    const phase = clamp01((parseFloat(getComputedStyle(sticker).getPropertyValue('--d')) || 0) / 240);
+    sticker.style.setProperty('--reveal-travel', `${32 + phase * 24}px`);
+    sticker.style.setProperty('--reveal-twist', `${(index % 2 ? -1 : 1) * (2 + phase * 2)}deg`);
+    return { sticker, curve: (phase - .5) * .64, value: -1 };
+  });
+
+  // Native transform/opacity animations follow compositor scrolling without
+  // waiting for scroll events or per-frame JavaScript style writes.
+  const revealTimeline = typeof ViewTimeline === 'function'
+    ? new ViewTimeline({ subject: collage, axis: 'block', inset: '0px' })
+    : null;
+  let revealAnimations = [];
+  function buildNativeReveal() {
+    for (const animation of revealAnimations) animation.cancel();
+    revealAnimations = [];
+    if (reduced.matches) return;
+    const distance = Math.min(320, window.innerHeight * .4, collage.clientHeight);
+    const edge = distance / (window.innerHeight + collage.clientHeight);
+    for (const { sticker, curve } of revealItems) {
+      const style = getComputedStyle(sticker);
+      const rotation = parseFloat(style.getPropertyValue('--r')) || 0;
+      const scale = parseFloat(style.getPropertyValue('--s')) || 1;
+      const travel = parseFloat(style.getPropertyValue('--reveal-travel'));
+      const twist = parseFloat(style.getPropertyValue('--reveal-twist'));
+      const hidden = {
+        opacity: 0,
+        transform: `translate(-50%, calc(-50% + ${travel}px)) rotate(${rotation - twist}deg) scale(${.94 * scale})`,
+      };
+      const visible = {
+        opacity: 1,
+        transform: `translate(-50%, -50%) rotate(${rotation}deg) scale(${scale})`,
+      };
+      // Linear time with quadratic spatial variation, matching the fallback.
+      const easing = c => `cubic-bezier(${1 / 3}, ${(1 + c) / 3}, ${2 / 3}, ${(2 + c) / 3})`;
+      revealAnimations.push(sticker.animate([
+        { ...hidden, offset: 0, easing: easing(curve) },
+        { ...visible, offset: edge },
+        { ...visible, offset: 1 - edge, easing: easing(-curve) },
+        { ...hidden, offset: 1 },
+      ], { timeline: revealTimeline, duration: 'auto', fill: 'both' }));
+    }
+  }
+
+  // Scroll distance controls both translation and opacity; no timed exit.
+  let scrollRevealFrame = 0;
+  let lastRevealProgress = -1;
+  function updateReveal() {
+    scrollRevealFrame = 0;
+    const rect = collage.getBoundingClientRect();
+    const distance = Math.min(320, window.innerHeight * .4, collage.clientHeight);
+    const progress = reduced.matches ? 1 : clamp01(Math.min(window.innerHeight - rect.top, rect.bottom) / distance);
+    if (progress === lastRevealProgress) return;
+    lastRevealProgress = progress;
+    for (const item of revealItems) {
+      const value = progress + item.curve * progress * (1 - progress);
+      if (value === item.value) continue;
+      item.value = value;
+      item.sticker.style.setProperty('--float', String(value));
+    }
+    collage.classList.toggle('is-visible', progress > 0);
+  }
+  function scheduleReveal() {
+    if (!scrollRevealFrame) scrollRevealFrame = requestAnimationFrame(updateReveal);
+  }
   const reveal = () => {
     for (const sticker of stickers) sticker.classList.add('is-loaded');
-    collage.classList.add('is-visible');
+    if (revealTimeline) buildNativeReveal();
+    else updateReveal();
   };
   const settled = () => Promise.all(stickers.map(sticker => {
     const image = imageOf(sticker);
@@ -33,17 +99,22 @@
       image.addEventListener('error', resolve, { once: true });
     });
   }));
-  if (reduced.matches || !('IntersectionObserver' in window)) {
-    reveal();
+  collage.classList.add('is-armed');
+  if (revealTimeline) {
+    buildNativeReveal();
+    new ResizeObserver(buildNativeReveal).observe(collage);
+    new IntersectionObserver(([entry]) => {
+      collage.classList.toggle('is-visible', entry.isIntersecting);
+    }).observe(collage);
+    window.addEventListener('resize', buildNativeReveal);
+    reduced.addEventListener('change', buildNativeReveal);
   } else {
-    collage.classList.add('is-armed');
-    const observer = new IntersectionObserver(entries => {
-      if (!entries.some(entry => entry.isIntersecting)) return;
-      observer.disconnect();
-      settled().then(reveal);
-    }, { rootMargin: '200px 0px' });
-    observer.observe(collage);
+    updateReveal();
+    window.addEventListener('scroll', scheduleReveal, { passive: true });
+    window.addEventListener('resize', scheduleReveal);
+    reduced.addEventListener('change', scheduleReveal);
   }
+  settled().then(reveal);
 
   // Shared renderer: one canvas, one WebGL context, lazily loaded on first hover.
   let canvas = null;
@@ -300,6 +371,7 @@
     offsets.set(wrapper, { x: px, y: py });
     wrapper.style.setProperty('--drag-x', `${px}px`);
     wrapper.style.setProperty('--drag-y', `${py}px`);
+    wrapper.classList.toggle('is-displaced', px !== 0 || py !== 0);
   }
 
   function measureBounds(wrapper, x, y) {
@@ -522,9 +594,7 @@
   function onPageShow(event) {
     if (!event.persisted) return;
     geom = new WeakMap();
-    collage.classList.remove('is-armed');
-    collage.classList.add('is-visible');
-    for (const wrapper of stickers) wrapper.classList.add('is-loaded');
+    reveal();
   }
 
   for (const wrapper of stickers) {

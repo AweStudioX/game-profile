@@ -14,6 +14,7 @@ On Vercel Hobby, select your **personal GitHub account**, not an organization. C
 
 - Browse and search the cover-first game library. The overview preserves playing, idle, and unknown activity states, activity sources and timestamps, and per-platform sync status, timestamps, and game counts.
 - Classic follows the system light/dark setting, with [Dissolve](https://dissolve.rselmi.com/)-inspired segmented filters, rolling totals and a glossy pagination button. Motion respects the reduced-motion preference. Pixel and Neon City remain selectable in the header; the theme preference is per browser.
+- Footer stickers use native scroll-driven transform and opacity animations when `ViewTimeline` is available, with a JavaScript fallback for older browsers. Dragged stickers remain independent of the reveal; reduced motion disables it.
 - See a game once even when multiple platform records match. Progress remains separate per platform.
 - Steam achievements, PlayStation trophies, and Xbox achievements/Gamerscore stay separate. Nintendo contributes play history; Epic contributes claimed PC base games and reported playtime, not achievements.
 - Visitors can browse the dashboard without signing in. Use **登录** (Sign in) to manage connections and choose which platforms' player names, IDs, and available avatars are public. Identity cards default to hidden.

@@ -274,10 +274,12 @@ h2{font-size:clamp(1.25rem,2.5vw,1.7rem);line-height:1.2;letter-spacing:-.025em}
 .footer-sticker:nth-child(6){--x:69%;--y:44%;--r:14deg;--s:.76;--d:150ms;z-index:2}
 .footer-sticker:nth-child(7){--x:79%;--y:60%;--r:17deg;--s:.72;--d:210ms;z-index:3}
 .footer-sticker:nth-child(8){--x:90%;--y:46%;--r:-15deg;--s:1.1;--d:270ms}
+@property --float{syntax:"<number>";inherits:false;initial-value:1}
 @media(prefers-reduced-motion:no-preference){
-  .footer-collage.is-armed .footer-sticker{opacity:0;transform:translate(calc(-50% + var(--drag-x,0px)),calc(-50% + var(--drag-y,0px) + 22px)) rotate(calc(var(--r,0deg) - 5deg)) scale(calc(var(--s,1) * .92))}
-  .footer-collage.is-armed .footer-sticker.is-loaded{transition:opacity 420ms ease-out var(--d,0ms),transform 680ms cubic-bezier(.16,1,.3,1) var(--d,0ms),filter 220ms ease}
-  .footer-collage.is-visible .footer-sticker{opacity:1;transform:translate(calc(-50% + var(--drag-x,0px)),calc(-50% + var(--drag-y,0px))) rotate(var(--r,0deg)) scale(var(--s,1))}
+  .footer-collage.is-armed .footer-sticker{opacity:var(--float);transform:translate(calc(-50% + var(--drag-x,0px)),calc(-50% + var(--drag-y,0px) + var(--reveal-travel,64px) * (1 - var(--float)))) rotate(calc(var(--r,0deg) - var(--reveal-twist,5deg) * (1 - var(--float)))) scale(calc(var(--s,1) * (.94 + .06 * var(--float))))}
+  .footer-collage.is-armed .footer-sticker.is-loaded{transition:filter 220ms ease}
+  .footer-collage.is-armed:not(.is-visible) .footer-sticker:not(.is-displaced):not(.is-dragging):not(:focus-visible){pointer-events:none}
+  .footer-collage.is-armed .footer-sticker:is(.is-displaced,.is-dragging,:focus-visible){opacity:1!important;transform:translate(calc(-50% + var(--drag-x,0px)),calc(-50% + var(--drag-y,0px))) rotate(var(--r,0deg)) scale(var(--s,1))!important}
 }
 .footer-meta{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:12px;padding-top:14px;border-top:1px solid var(--border)}
 .footer-mark{display:flex;align-items:center;gap:16px}

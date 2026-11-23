@@ -14,6 +14,7 @@ Vercel Hobby 用户请选择**个人 GitHub 账号**，不要选组织。在部�
 
 - 浏览和搜索以封面为主的游戏库。首页保留游玩中、未检测到游玩和状态未知的展示，以及活动来源与观测时间、各平台同步状态、同步时间和游戏数量。
 - 默认「经典」跟随系统明暗，采用 [Dissolve](https://dissolve.rselmi.com/) 风格的平台分段筛选、滚动数字和带按压反馈的「显示更多」按钮。开启「减少动态效果」时不播放动效。顶栏仍可切换像素和霓虹都市，偏好按浏览器保存。
+- Footer stickers use native scroll-driven transform and opacity animations when `ViewTimeline` is available, with a JavaScript fallback for older browsers. Dragged stickers remain independent of the reveal; reduced motion disables it.
 - 同款游戏的多平台记录匹配后只显示一张卡片，成就进度仍按平台独立统计。
 - Steam 成就和 PlayStation 奖杯分开显示；Nintendo 提供游玩记录。
 - 未登录也能浏览面板。通过顶栏「登录」进入管理页，可按平台选择是否公开玩家昵称、ID 和可用头像；默认不公开身份信息。
