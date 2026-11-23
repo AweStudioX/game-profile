@@ -311,10 +311,14 @@ h2{font-size:clamp(1.25rem,2.5vw,1.7rem);line-height:1.2;letter-spacing:-.025em}
 .sr-only{position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden;white-space:nowrap}
 dialog{color:var(--text);background:var(--surface);width:min(100% - 24px,590px);max-height:calc(100dvh - 24px);border:1px solid var(--border);border-radius:var(--radius);padding:22px;overscroll-behavior:contain}dialog::backdrop{background:#000b}
 .dialog-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px}.dialog-header button{white-space:nowrap}.record-list{margin:15px 0 0;padding:0;list-style:none}.record-list li{padding:9px 0;border-top:1px solid var(--border);overflow-wrap:anywhere}
-.connect-panels{grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))}
+.connect-panels{grid-template-columns:repeat(3,minmax(0,1fr));align-items:start;margin-block:24px}
+.connect-panels .panel-head{align-items:flex-start;flex-wrap:wrap;gap:8px}
+.connect-panels h2{font-size:1.25rem;line-height:1.4;letter-spacing:-.035em}
 .connect-panels .connection-state,.connect-panels .connection-time{font-size:.8125rem;color:var(--muted)}
+.connect-panels .connection-state{padding:3px 9px;border:1px solid var(--border);border-radius:999px;background:var(--raised);white-space:nowrap}
+.connect-panels .connection-state:empty{display:none}
 .connect-panels .connection-state[data-tone="active"]{color:var(--accent)}
-.connect-panels .connection-time{margin-block:5px 10px;font-variant-numeric:tabular-nums}
+.connect-panels .connection-time{margin-block:10px 18px;font-variant-numeric:tabular-nums}
 .connect-panels ol{padding-left:1.35rem;color:var(--muted)}
 .connect-panels li+li{margin-top:6px}
 .connect-form{display:grid;gap:14px;margin-top:16px}
@@ -325,6 +329,40 @@ dialog{color:var(--text);background:var(--surface);width:min(100% - 24px,590px);
 .connect-actions{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
 .connect-note{margin:18px 0 35px}
 .connect-panels [role=status]:not(:empty){margin:8px 0 0}
+.connection-settings{margin-top:18px;border-top:1px solid var(--border)}
+.connection-settings summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px;list-style:none;cursor:pointer;color:var(--muted);font-size:.875rem}
+.connection-settings summary::-webkit-details-marker{display:none}
+.connection-settings summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.connection-settings summary:hover,.connection-settings[open] summary{color:var(--text)}
+.connection-settings summary svg{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.connection-settings[open] summary svg{transform:rotate(180deg)}
+.connection-settings>p,.connection-settings>ol{font-size:.875rem;line-height:1.7}
+.connection-settings>ol{margin-block:0 16px}
+.connect-page .connect-form input,.connect-page .connect-form select{width:100%;min-width:0}
+.connect-page .connect-form label{min-width:0;font-size:.875rem}
+.connect-page .connect-form :is(input,select){font-size:1rem}
+.connect-page .connect-form button,.connect-page .connect-actions button{border-radius:min(10px,var(--radius));font-size:.875rem}
+.connect-page .connect-actions button[data-action="disconnect"]{background:transparent;color:var(--muted)}
+.connect-page .connect-form button:hover,.connect-page .connect-actions button:hover{border-color:var(--muted)}
+.connect-page .profile-note:empty{display:none}
+.connect-page #schedule-form{grid-template-columns:minmax(180px,260px) auto;align-items:end;justify-content:start;gap:12px}
+.connect-page #sync-last{margin-top:12px;font-size:.8125rem}
+.connect-page .identity-options{grid-template-columns:repeat(3,minmax(0,1fr))}
+.connect-page .identity-options>li{margin:0}
+.connect-page .identity-option-label{height:100%}
+.connection-privacy{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.connection-privacy h2{font-size:1rem;margin-bottom:6px}
+.connection-privacy p,.connection-privacy>a,.connect-page .connect-note{font-size:.8125rem;line-height:1.7}
+.connection-privacy>a{flex:none;display:inline-flex;align-items:center;gap:8px;min-height:44px}
+@media(prefers-reduced-motion:no-preference){.connection-settings summary svg{transition:transform 180ms ease}}
+@media(max-width:1000px){
+  .connect-panels{grid-template-columns:1fr}
+  .connect-page .identity-options{grid-template-columns:1fr}
+}
+@media(max-width:650px){
+  .connection-privacy{align-items:flex-start;flex-direction:column;gap:8px}
+  .connect-page #schedule-form{grid-template-columns:minmax(0,1fr) auto}
+}
 @media(max-width:650px){.frame{width:calc(100% - 28px)}.panels{grid-template-columns:1fr}.panel{padding:15px}}
 @media(max-width:460px){
   .stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 12px}

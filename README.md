@@ -26,7 +26,7 @@ On Vercel Hobby, select your **personal GitHub account**, not an organization. C
 | `PROFILE_PASSWORD` | Generate a unique password in your password manager: 12–120 printable ASCII characters with no spaces (16 or more recommended). The dashboard username is `owner`. |
 | `PROFILE_ENCRYPTION_KEY` | Run `openssl rand -hex 32` or generate an equivalent random key with a password manager. Keep the same key across redeploys; a new key cannot decrypt the existing database. Do not reuse your dashboard password. |
 
-After deployment, open **连接平台** (Connect platforms), sign in, and follow the platform instructions. Steam requires a [SteamID64](https://store.steampowered.com/account/) and a [Web API key](https://steamcommunity.com/dev/apikey). PlayStation uses an NPSSO copied from Sony; Nintendo uses a copied callback link. Never enter a platform password on the dashboard.
+After deployment, open **连接平台** (Connect platforms), sign in, and expand **连接设置与帮助** (Connection settings and help) on a platform card for its credentials and instructions. Sync and disconnect actions stay outside the disclosure. Steam requires a [SteamID64](https://store.steampowered.com/account/) and a [Web API key](https://steamcommunity.com/dev/apikey). PlayStation uses an NPSSO copied from Sony; Nintendo uses a copied callback link. Never enter a platform password on the dashboard.
 
 ## Upgrade an existing fork
 
