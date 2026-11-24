@@ -30,6 +30,10 @@ function artwork(value) {
 function safeAvatarUrl(value) {
   try {
     const url = new URL(value);
+    // Sony's legacy avatar endpoint still emits HTTP URLs for its HTTPS-capable CDN.
+    if (url.protocol === 'http:' && url.hostname === 'static-resource.np.community.playstation.net' && !url.port) {
+      url.protocol = 'https:';
+    }
     return url.protocol === 'https:' && avatarHosts.has(url.hostname) && !url.username && !url.password && !url.port && !url.hash ? url.href : null;
   } catch { return null; }
 }

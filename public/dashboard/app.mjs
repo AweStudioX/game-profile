@@ -121,60 +121,28 @@ function unlockRow(unlock) {
   return row;
 }
 
+let sourcePayload = {};
+
 function renderSources(sources) {
-  const ids = new Set(['steam', 'psn', 'nintendo', 'xbox', 'epic', ...Object.keys(sources).filter(id => sources[id]?.status !== 'disabled')]);
-  $('sources').replaceChildren(...Array.from(ids, id => {
-    const source = sources[id];
-    const row = node('li', undefined, 'record-meta');
-    row.append(platformTag(id));
-    const status = source?.status ?? 'disabled';
-    const badge = node('span', sourceLabel(status), 'badge');
-    if (status === 'ready') badge.dataset.tone = 'active';
-    row.append(badge);
-    const updated = recordDate(source?.lastSuccessAt, '同步于');
-    if (updated) {
-      updated.classList.add('sync-date');
-      row.append(updated);
-    }
-    const count = model.providerCounts[id];
-    if (count !== undefined) row.append(node('span', `${number.format(count)} 个游戏`, 'source-count'));
-    return row;
-  }));
+  sourcePayload = sources;
+  renderIdentities(identityPayload);
 }
 
+let identityPayload = {};
+let activityPayload = {};
+
 function renderActivity(payload) {
-  const activity = $('activity');
-  const sessions = payload.state === 'playing' && Array.isArray(payload.sessions) ? payload.sessions : [];
-  const live = sessions.length > 0;
-  $('activity-status').textContent = live ? '游玩中' : payload.state === 'offline' ? '未检测到游玩' : '状态未知';
-  $('activity-status').dataset.tone = live ? 'active' : '';
-  activity.replaceChildren(...sessions.map(session => {
-    const item = node('div', undefined, 'catalog-session');
-    item.append(node('span', '正在游玩', 'catalog-live'), node('strong', session.game?.name ?? '未命名游戏'));
-    const origins = new Set([session.primarySource, session.platform].filter(id => id && id !== 'unknown'));
-    for (const id of origins) item.append(platformTag(id));
-    return item;
-  }));
-  if (!live) activity.append(node('p', payload.state === 'offline'
-    ? '已检查的平台未报告正在游玩的游戏。' : '暂无可用的活动快照。', 'muted'));
-  const sources = node('ul', undefined, 'activity-sources');
-  sources.setAttribute('aria-label', '活动快照来源与时间');
-  for (const [provider, source] of Object.entries(payload.sources ?? {})) {
-    if (source.status === 'disabled') continue;
-    const row = node('li', undefined, 'record-meta');
-    row.append(platformTag(provider));
-    const updated = recordDate(source.lastSuccessAt, '观测于');
-    if (updated) row.append(updated);
-    if (source.status !== 'ready') row.append(node('span', sourceLabel(source.status)));
-    sources.append(row);
-  }
-  if (sources.childElementCount) activity.append(sources);
+  activityPayload = payload;
+  renderIdentities(identityPayload);
 }
 
 function identityAvatar(provider, value) {
   const avatar = node('span', undefined, 'identity-avatar');
-  avatar.setAttribute('aria-hidden', 'true');
-  const fallback = platformTag(provider, '');
+  avatar.setAttribute('role', 'img');
+  avatar.setAttribute('aria-label', `${label(provider)} 账号头像`);
+  avatar.setAttribute('title', `${label(provider)} 账号头像`);
+  const fallback = node('span', undefined, 'avatar-placeholder');
+  fallback.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20v-1a7 7 0 0 1 14 0v1"/></svg>';
   avatar.append(fallback);
   const url = imageUrl(value);
   if (!url) return avatar;
@@ -183,34 +151,57 @@ function identityAvatar(provider, value) {
   image.loading = 'lazy';
   image.decoding = 'async';
   image.referrerPolicy = 'no-referrer';
-  image.addEventListener('load', () => fallback.remove(), { once: true });
-  image.addEventListener('error', () => image.remove(), { once: true });
+  image.addEventListener('load', () => { avatar.dataset.hasImage = 'true'; }, { once: true });
+  image.addEventListener('error', () => {
+    delete avatar.dataset.hasImage;
+    image.remove();
+  }, { once: true });
   image.src = url;
   avatar.append(image);
   return avatar;
 }
 
 function renderIdentities(payload) {
-  const entries = ['steam', 'psn', 'nintendo', 'xbox', 'epic']
-    .map(id => [id, payload?.identities?.[id]])
-    .filter(([, identity]) => identity && (identity.displayName || identity.id));
-  if (!entries.length) return;
-  $('identity-list').replaceChildren(...entries.map(([id, identity], index) => {
+  identityPayload = payload;
+  const sessions = activityPayload.state === 'playing' && Array.isArray(activityPayload.sessions) ? activityPayload.sessions : [];
+  const ids = new Set([...Object.keys(payload?.identities ?? {}), ...Object.keys(sourcePayload), ...sessions.map(session => session.primarySource || session.platform).filter(Boolean)]);
+  for (const id of ids) {
+    if (['disabled', 'not-configured'].includes(sourcePayload[id]?.status)) ids.delete(id);
+  }
+  $('identity-list').replaceChildren(...Array.from(ids, (id, index) => {
+    const identity = payload?.identities?.[id] ?? {};
     const item = node('li', undefined, 'identity');
+    item.dataset.platform = id;
     item.style.setProperty('--i', String(index));
+    const backdrop = platformTag(id, '');
+    backdrop.classList.add('identity-backdrop');
+    backdrop.setAttribute('aria-hidden', 'true');
+    item.append(backdrop);
     item.append(identityAvatar(id, identity.avatarUrl));
     const copy = node('span', undefined, 'identity-copy');
-    copy.append(node('strong', identity.displayName || identity.id, 'identity-name'));
-    const meta = node('span', undefined, 'identity-meta muted');
-    meta.append(platformTag(id));
-    if (identity.id && identity.displayName && identity.id !== identity.displayName) {
-      meta.append(node('span', identity.id));
+    const name = identity.displayName || identity.id;
+    if (name) copy.append(node('strong', name, 'identity-name'));
+    for (const session of sessions.filter(session => (session.primarySource || session.platform) === id)) {
+      const status = node('span', undefined, 'identity-activity');
+      status.append(node('span', '正在游玩', 'catalog-live'), node('strong', session.game?.name ?? '未命名游戏'));
+      copy.append(status);
     }
-    copy.append(meta);
     item.append(copy);
+    const sync = node('span', undefined, 'identity-sync');
+    const source = sourcePayload[id];
+    const count = model?.providerCounts[id];
+    if (count !== undefined) {
+      const total = node('span', `${number.format(count)} 个游戏`, 'identity-count');
+      total.title = '该平台游戏数，跨平台游戏可重复';
+      sync.append(total);
+    }
+    if (source && source.status !== 'ready') sync.append(node('span', sourceLabel(source.status), 'identity-sync-error'));
+    const updated = recordDate(source?.lastSuccessAt, '同步于');
+    if (updated) sync.append(updated);
+    item.append(sync);
     return item;
   }));
-  $('identities').hidden = false;
+  $('identities').hidden = ids.size === 0;
 }
 
 function renderUnlockSet(set, game, showSetName) {
@@ -697,7 +688,9 @@ async function updateOwnerEntry() {
   try {
     const { authenticated } = await data('session');
     const entry = $('owner-entry');
-    entry.textContent = authenticated === true ? '连接平台' : '登录';
+    const label = authenticated === true ? '连接平台' : '登录';
+    entry.setAttribute('aria-label', label);
+    entry.title = label;
     entry.href = authenticated === true ? '/connect.html' : '/api/profile?resource=connect-login';
   } catch { /* Keep the login entry when session status is unavailable. */ }
 }
@@ -750,7 +743,7 @@ async function init() {
     }, () => {
       skeleton.remove();
       $('library-status').textContent = '未能读取游戏库，请刷新页面重试。';
-      $('sources').replaceChildren(node('li', '无法读取平台同步状态。'));
+      $('overview-note').textContent = '无法读取平台同步状态。';
     }),
   ]);
 }
@@ -759,5 +752,5 @@ const skeleton = librarySkeleton();
 init().catch(() => {
   $('library-status').textContent = '未能连接档案服务，请刷新页面重试。';
   renderActivity({ state: 'unknown' });
-  $('sources').replaceChildren(node('li', '无法读取平台同步状态。'));
+  $('overview-note').textContent = '无法读取平台同步状态。';
 }).finally(() => skeleton.remove());

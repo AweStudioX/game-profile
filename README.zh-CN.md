@@ -12,13 +12,14 @@ Vercel Hobby 用户请选择**个人 GitHub 账号**，不要选组织。在部�
 
 ## 功能
 
-- 浏览和搜索以封面为主的游戏库。首页保留游玩中、未检测到游玩和状态未知的展示，以及活动来源与观测时间、各平台同步状态、同步时间和游戏数量。
-- 默认「经典」跟随系统明暗，采用 [Dissolve](https://dissolve.rselmi.com/) 风格的平台分段筛选、滚动数字和带按压反馈的「显示更多」按钮。开启「减少动态效果」时不播放动效。顶栏仍可切换像素和霓虹都市，偏好按浏览器保存。
+- Browse and search the cover-first game library. Unified platform rows combine player identity, activity, game counts, and sync status without a separate header.
+- Classic follows the system light/dark setting until an explicit choice is saved. Footer controls switch color schemes and Classic, Pixel, or Neon City themes; preferences persist per browser. The [Dissolve](https://dissolve.rselmi.com/)-inspired filters, rolling totals, and pagination respect reduced motion.
 - Footer stickers use native scroll-driven transform and opacity animations when `ViewTimeline` is available, with a JavaScript fallback for older browsers. Dragged stickers remain independent of the reveal; reduced motion disables it.
 - The footer includes 62 hardware, character, and item stickers in a layered desktop/mobile collage. Artwork credits and rights information are listed in [`credits.json`](public/dashboard/stickers/credits.json).
+- Drag stickers anywhere on the page with lift, tilt, and edge auto-scroll. Keyboard controls also move stickers; Enter resets their position.
 - 同款游戏的多平台记录匹配后只显示一张卡片，成就进度仍按平台独立统计。
 - Steam 成就和 PlayStation 奖杯分开显示；Nintendo 提供游玩记录。
-- 未登录也能浏览面板。通过顶栏「登录」进入管理页，可按平台选择是否公开玩家昵称、ID 和可用头像；默认不公开身份信息。
+- Visitors can browse without signing in. The footer sign-in control opens connection management, where player names, IDs, and avatars can be made public per platform. Identity disclosure defaults off.
 - 游戏库默认每天自动同步一次（北京时间 10:00 开始），可在站内改成每小时一次。使用 [Vercel Schedules（Beta）](https://vercel.com/docs/schedules/limits)，无需开着网页。
 
 ## 部署清单
@@ -68,7 +69,7 @@ npm run dev
 ## 隐私
 
 - 真实游戏库、游玩动态和成就可公开查看；平台设置和修改操作需要登录。浏览器和 CDN 不缓存个人数据响应。
-- 玩家身份按平台独立控制，默认关闭。关闭后服务端不返回该平台的昵称、ID 或头像。Steam 展示 SteamID64 和昵称，PlayStation 展示 Online ID，Nintendo 展示账号昵称，不使用内部 ID、邮箱或 Switch 好友码。头像随平台同步更新，缺失时使用平台图标。
+- Player identity disclosure is independently controlled per platform and defaults off. Disabled identities are omitted server-side, including avatars. Steam uses SteamID64 and nickname; PlayStation uses Online ID; Nintendo uses the account nickname, not an internal ID, email, or Switch friend code; Xbox uses Gamertag; Epic uses display name only. Missing Steam, PlayStation, and Nintendo avatars are recovered and cached with retry throttling; unavailable images use a neutral person placeholder. Identity error codes remain owner-only.
 - 平台凭证和同步快照加密写入 PostgreSQL。不同部署请使用独立数据库。封面和成就图标从各平台 CDN 加载。
 - PlayStation 和 Nintendo 使用非官方接口，可能失效或需要重新授权。部署者负责遵守各平台条款，包括 [Steam Web API 条款](https://steamcommunity.com/dev/apiterms)。本项目与各平台无隶属关系。
 

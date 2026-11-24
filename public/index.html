@@ -12,13 +12,10 @@
 </head>
 <body>
   <a class="skip" href="#library">跳到游戏库</a>
-  <header class="bar" id="top">
-    <div class="frame bar-inner"><a class="wordmark" href="/">GAME<span>.</span> PROFILE</a><nav class="bar-actions" aria-label="站点"><div class="theme-picker"></div><div class="bar-links"><a id="owner-entry" class="login" href="/api/profile?resource=connect-login">登录</a></div></nav></div>
-  </header>
-  <main class="frame">
+  <main class="frame" id="top">
     <div class="catalog-heading">
       <section class="intro home-intro catalog-intro" aria-labelledby="title">
-        <h1 id="title" lang="en">Game Log<span>.</span></h1>
+        <h1 id="title" lang="en">My Gaming Life</h1>
         <div id="profile-note" class="profile-note" role="status" hidden></div>
       </section>
       <dl class="stats" aria-label="游戏概览" hidden>
@@ -28,19 +25,11 @@
         <div><dt>数据来源</dt><dd id="source-count">—</dd></div>
       </dl>
     </div>
-    <section id="identities" class="identities" aria-label="平台账号" hidden>
-      <ul id="identity-list" class="identity-list"></ul>
-    </section>
     <div id="overview" class="catalog-overview">
-      <section aria-labelledby="live-title">
-        <div class="panel-head"><h2 id="live-title">正在游玩</h2><span id="activity-status" class="badge">读取中</span></div>
-        <div id="activity" class="catalog-activity" role="status"><p class="loading-lines">正在读取当前活动…</p></div>
+      <section id="identities" class="identities" aria-label="平台账号、活动与同步" hidden>
+        <ul id="identity-list" class="identity-list" aria-live="polite"></ul>
       </section>
-      <section aria-labelledby="source-title">
-        <h2 id="source-title">游戏库同步</h2>
-        <ul id="sources" class="sources" aria-live="polite"><li class="loading-lines">正在读取平台状态…</li><li class="loading-lines" aria-hidden="true"></li><li class="loading-lines" aria-hidden="true"></li></ul>
-        <p class="muted">按平台计数，跨平台游戏可重复。</p>
-      </section>
+      <p id="overview-note" class="muted" role="status"></p>
     </div>
     <section id="library" class="library" aria-labelledby="library-title">
       <div class="panel-head library-head"><h2 id="library-title">游戏库</h2><p id="results" class="muted" role="status"></p></div>
@@ -63,7 +52,7 @@
     </section>
   </main>
   <footer class="frame footer">
-    <p id="sticker-help" class="sr-only">可拖动贴纸。键盘方向键移动，回车归位，Escape 取消当前拖动。</p>
+    <p id="sticker-help" class="sr-only">贴纸可拖到整页任意位置，靠近屏幕上下边缘自动滚动。键盘方向键移动，回车归位，Escape 取消当前拖动。</p>
     <div class="footer-collage" data-footer-collage role="group" aria-label="游戏贴纸" aria-describedby="sticker-help">
       <button class="footer-sticker" type="button" aria-label="DualSense 手柄贴纸"><img src="/dashboard/stickers/01.webp" alt="" width="512" height="512" loading="lazy" decoding="async" draggable="false"></button>
       <button class="footer-sticker" type="button" aria-label="Xbox Series X 贴纸"><img src="/dashboard/stickers/02.webp" alt="" width="512" height="512" loading="lazy" decoding="async" draggable="false"></button>
@@ -129,13 +118,11 @@
       <button class="footer-sticker footer-sticker--accent" type="button" aria-label="塞尔达传说：时之笛贴纸"><img src="/dashboard/stickers/62.webp" alt="" width="512" height="512" loading="lazy" decoding="async" draggable="false"></button>
     </div>
     <div class="footer-meta">
-      <div class="footer-mark">
-        <div><p class="footer-title" lang="en">KEEP PLAYING<span>.</span></p><span class="footer-caption">GAME PROFILE</span></div>
-      </div>
-      <div class="footer-end">
-        <a class="footer-return" href="#top"><span>回到顶部</span><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></a>
-        <a class="footer-credit" href="/dashboard/stickers/credits.json">素材来源</a>
-      </div>
+      <button id="scheme-toggle" type="button" aria-label="切换深浅模式" title="切换深浅模式"></button>
+      <div class="theme-picker"></div>
+      <a id="owner-entry" class="footer-login" href="/api/profile?resource=connect-login" aria-label="登录" title="登录"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M5 21v-1a7 7 0 0 1 7-7h0a7 7 0 0 1 7 7v1"/></svg></a>
+      <a class="footer-return" href="#top" aria-label="回到顶部" title="回到顶部"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></a>
+      <a class="footer-credit" href="/dashboard/stickers/credits.json" aria-label="素材来源与许可" title="素材来源与许可"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5m0-8v.01"/></svg></a>
     </div>
   </footer>
   <dialog id="detail" aria-labelledby="detail-title">

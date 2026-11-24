@@ -1,5 +1,6 @@
 (() => {
   const key = 'game-profile-theme';
+  const schemeKey = 'game-profile-scheme';
   const root = document.documentElement;
   const themes = { classic: '经典', pixel: '像素', neon: '霓虹都市' };
   const savedTheme = () => {
@@ -8,28 +9,41 @@
       return Object.hasOwn(themes, value) ? value : 'classic';
     } catch { return 'classic'; }
   };
+  const readScheme = () => {
+    try {
+      const value = localStorage.getItem(schemeKey);
+      return value === 'light' || value === 'dark' ? value : null;
+    } catch { return null; }
+  };
   root.dataset.theme = savedTheme();
+  const savedScheme = readScheme();
+  if (savedScheme) root.dataset.scheme = savedScheme;
+
+  function icon(name) {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.setAttribute('focusable', 'false');
+    const shapes = {
+      theme: '<path d="M4 7h10M18 7h2M4 12h2.5M10.5 12H20M4 17h10M18 17h2"/><circle cx="15.5" cy="7" r="2.2"/><circle cx="7.5" cy="12" r="2.2"/><circle cx="15.5" cy="17" r="2.2"/>',
+      sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/>',
+      moon: '<path d="M20.5 14.2A8.5 8.5 0 1 1 9.8 3.5a7 7 0 0 0 10.7 10.7Z"/>',
+    };
+    svg.innerHTML = shapes[name].replace(/fill="[^"]*"/g, '')
+      .replace(/<path /g, '<path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" ')
+      .replace(/<circle /g, '<circle fill="none" stroke="currentColor" stroke-width="1.5" ');
+    return svg;
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     const picker = document.querySelector('.theme-picker');
     const trigger = document.createElement('button');
     trigger.className = 'theme-toggle';
     trigger.type = 'button';
     trigger.setAttribute('aria-controls', 'theme-options');
-    const triggerLabel = document.createElement('span');
-    const chevron = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    chevron.classList.add('theme-chevron');
-    chevron.setAttribute('viewBox', '0 0 20 20');
-    chevron.setAttribute('aria-hidden', 'true');
-    chevron.setAttribute('focusable', 'false');
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    path.setAttribute('d', 'M5.5 7.75 10 12.25 14.5 7.75');
-    path.setAttribute('fill', 'none');
-    path.setAttribute('stroke', 'currentColor');
-    path.setAttribute('stroke-width', '1.75');
-    path.setAttribute('stroke-linecap', 'round');
-    path.setAttribute('stroke-linejoin', 'round');
-    chevron.append(path);
-    trigger.append(triggerLabel, chevron);
+    trigger.setAttribute('aria-label', '主题');
+    trigger.setAttribute('title', '主题');
+    trigger.append(icon('theme'));
     const menu = document.createElement('div');
     menu.id = 'theme-options';
     menu.className = 'theme-options';
@@ -39,13 +53,22 @@
       const option = document.createElement('button');
       option.type = 'button';
       option.textContent = name;
-      const check = chevron.cloneNode(true);
+      const check = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       check.setAttribute('class', 'theme-check');
-      check.querySelector('path').setAttribute('d', 'M5 10.25 8.25 13.5 15 6.75');
+      check.setAttribute('viewBox', '0 0 20 20');
+      check.setAttribute('aria-hidden', 'true');
+      const checkPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      checkPath.setAttribute('d', 'M5 10.25 8.25 13.5 15 6.75');
+      checkPath.setAttribute('fill', 'none');
+      checkPath.setAttribute('stroke', 'currentColor');
+      checkPath.setAttribute('stroke-width', '1.75');
+      checkPath.setAttribute('stroke-linecap', 'round');
+      checkPath.setAttribute('stroke-linejoin', 'round');
+      check.append(checkPath);
       option.append(check);
       option.addEventListener('click', () => {
         apply(theme);
-        try { localStorage.setItem(key, theme); } catch { /* The current page still switches themes. */ }
+        try { localStorage.setItem(key, theme); } catch { /* The page still switches themes. */ }
         setOpen(false);
         trigger.focus();
       });
@@ -53,7 +76,6 @@
     });
     function apply(theme) {
       root.dataset.theme = theme;
-      triggerLabel.textContent = `主题：${themes[theme]}`;
       for (const [value, option] of options) option.setAttribute('aria-pressed', String(theme === value));
     }
     function setOpen(open) {
@@ -87,5 +109,36 @@
     window.addEventListener('storage', event => {
       if (event.key === key || event.key === null) apply(savedTheme());
     });
+
+    const schemeBtn = document.getElementById('scheme-toggle');
+    if (schemeBtn) {
+      const darkMedia = matchMedia('(prefers-color-scheme: dark)');
+      const currentScheme = () => (
+        root.dataset.scheme === 'light' || root.dataset.scheme === 'dark'
+          ? root.dataset.scheme
+          : (darkMedia.matches ? 'dark' : 'light')
+      );
+      function renderScheme() {
+        const scheme = currentScheme();
+        const next = scheme === 'dark' ? '浅色' : '深色';
+        schemeBtn.setAttribute('aria-label', `切换到${next}模式`);
+        schemeBtn.title = `切换到${next}模式`;
+        schemeBtn.replaceChildren(icon(scheme === 'dark' ? 'sun' : 'moon'));
+      }
+      schemeBtn.addEventListener('click', () => {
+        const scheme = currentScheme() === 'dark' ? 'light' : 'dark';
+        root.dataset.scheme = scheme;
+        renderScheme();
+        try { localStorage.setItem(schemeKey, scheme); } catch { /* The page still switches schemes. */ }
+      });
+      renderScheme();
+      window.addEventListener('storage', event => {
+        if (event.key !== schemeKey && event.key !== null) return;
+        const saved = readScheme();
+        if (saved) root.dataset.scheme = saved; else delete root.dataset.scheme;
+        renderScheme();
+      });
+      window.addEventListener('pageshow', event => { if (event.persisted) renderScheme(); });
+    }
   });
 })();

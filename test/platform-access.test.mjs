@@ -41,11 +41,11 @@ test('identity disclosure defaults off and only owner changes survive a new hand
     read: async () => structuredClone(state),
     locked: action => action(structuredClone(state), async value => { state = structuredClone(value); }),
   };
-  const identity = { id: '76561198000000000', displayName: 'Example Player', avatarUrl: null };
+  const identity = { id: '76561198000000000', displayName: 'Example Player', avatarUrl: 'https://avatars.steamstatic.com/example.jpg' };
   const platforms = {
     steam: {
       snapshots: async () => ({ library: { status: 'ready', games: [] } }),
-      identity: async () => ({ ...identity, apiKey: 'never-public' }),
+      identity: async () => ({ ...identity, apiKey: 'never-public', identityErrorCode: 'IDENTITY_UNAVAILABLE' }),
     },
     psn: {
       snapshots: async () => ({ library: { status: 'connected' } }),
@@ -66,7 +66,7 @@ test('identity disclosure defaults off and only owner changes survive a new hand
   assert.equal((await change(handle, true, auth, '__proto__')).status, 422);
   assert.deepEqual(await visible(handle), { identities: {} });
   const owner = await (await handle(request('platforms', { headers: auth }))).json();
-  assert.deepEqual(owner.identities.steam, identity);
+  assert.deepEqual(owner.identities.steam, { ...identity, identityErrorCode: 'IDENTITY_UNAVAILABLE' });
   assert.equal(owner.identityVisibility.steam, false);
   assert.equal((await change(handle, true)).status, 200);
   assert.deepEqual(await visible(make()), { identities: { steam: identity } });

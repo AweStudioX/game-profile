@@ -12,10 +12,11 @@ On Vercel Hobby, select your **personal GitHub account**, not an organization. C
 
 ## Features
 
-- Browse and search the cover-first game library. The overview preserves playing, idle, and unknown activity states, activity sources and timestamps, and per-platform sync status, timestamps, and game counts.
-- Classic follows the system light/dark setting, with [Dissolve](https://dissolve.rselmi.com/)-inspired segmented filters, rolling totals and a glossy pagination button. Motion respects the reduced-motion preference. Pixel and Neon City remain selectable in the header; the theme preference is per browser.
+- Browse and search the cover-first game library. Unified platform rows combine player identity, activity, game counts, and sync status without a separate header.
+- Classic follows the system light/dark setting until an explicit choice is saved. Footer controls switch color schemes and Classic, Pixel, or Neon City themes; preferences persist per browser. The [Dissolve](https://dissolve.rselmi.com/)-inspired filters, rolling totals, and pagination respect reduced motion.
 - Footer stickers use native scroll-driven transform and opacity animations when `ViewTimeline` is available, with a JavaScript fallback for older browsers. Dragged stickers remain independent of the reveal; reduced motion disables it.
 - The footer includes 62 hardware, character, and item stickers in a layered desktop/mobile collage. Artwork credits and rights information are listed in [`credits.json`](public/dashboard/stickers/credits.json).
+- Drag stickers anywhere on the page with lift, tilt, and edge auto-scroll. Keyboard controls also move stickers; Enter resets their position.
 - See a game once even when multiple platform records match. Progress remains separate per platform.
 - Steam achievements, PlayStation trophies, and Xbox achievements/Gamerscore stay separate. Nintendo contributes play history; Epic contributes claimed PC base games and reported playtime, not achievements.
 - Visitors can browse the dashboard without signing in. Use **登录** (Sign in) to manage connections and choose which platforms' player names, IDs, and available avatars are public. Identity cards default to hidden.
@@ -79,7 +80,7 @@ Open <http://127.0.0.1:3000> for the bundled demo. For real records, copy [`.env
 ## Privacy
 
 - Real game libraries, activity, and achievements are publicly readable. Owner sign-in is required for platform settings and changes; personal API responses are not cached by browsers or CDNs.
-- Player identity disclosure is independently controlled per platform and defaults off. Disabled identities are omitted server-side, including avatars. Steam uses SteamID64 and nickname; PlayStation uses Online ID; Nintendo uses the account nickname, not an internal ID, email, or Switch friend code; Xbox uses Gamertag; Epic uses display name only. Available avatars are refreshed with platform sync; missing images use a platform icon.
+- Player identity disclosure is independently controlled per platform and defaults off. Disabled identities are omitted server-side, including avatars. Steam uses SteamID64 and nickname; PlayStation uses Online ID; Nintendo uses the account nickname, not an internal ID, email, or Switch friend code; Xbox uses Gamertag; Epic uses display name only. Missing Steam, PlayStation, and Nintendo avatars are recovered and cached with retry throttling; unavailable images use a neutral person placeholder. Identity error codes remain owner-only.
 - Platform credentials and snapshots are encrypted in PostgreSQL. Use a dedicated database per deployment. Artwork loads directly from platform CDNs.
 - PlayStation, Nintendo, Xbox, and Epic game data use community integrations that can break or require reauthorization. The operator is responsible for compliance with platform terms, including the [Steam Web API Terms](https://steamcommunity.com/dev/apiterms). This project is not affiliated with the platforms.
 

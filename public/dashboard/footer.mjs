@@ -38,21 +38,20 @@
     for (const animation of revealAnimations) animation.cancel();
     revealAnimations = [];
     if (reduced.matches) return;
-    const distance = Math.min(320, window.innerHeight * .4, collage.clientHeight);
+    const distance = Math.min(320, window.innerHeight * .4);
     const edge = distance / (window.innerHeight + collage.clientHeight);
     for (const { sticker, curve } of revealItems) {
       const style = getComputedStyle(sticker);
       const rotation = parseFloat(style.getPropertyValue('--r')) || 0;
-      const scale = parseFloat(style.getPropertyValue('--s')) || 1;
       const travel = parseFloat(style.getPropertyValue('--reveal-travel'));
       const twist = parseFloat(style.getPropertyValue('--reveal-twist'));
       const hidden = {
         opacity: 0,
-        transform: `translate(-50%, calc(-50% + ${travel}px)) rotate(${rotation - twist}deg) scale(${.94 * scale})`,
+        transform: `translate(-50%, calc(-50% + ${travel}px)) rotate(${rotation - twist}deg) scale(.94)`,
       };
       const visible = {
         opacity: 1,
-        transform: `translate(-50%, -50%) rotate(${rotation}deg) scale(${scale})`,
+        transform: `translate(-50%, -50%) rotate(${rotation}deg) scale(1)`,
       };
       // Linear time with quadratic spatial variation, matching the fallback.
       const easing = c => `cubic-bezier(${1 / 3}, ${(1 + c) / 3}, ${2 / 3}, ${(2 + c) / 3})`;
@@ -71,7 +70,7 @@
   function updateReveal() {
     scrollRevealFrame = 0;
     const rect = collage.getBoundingClientRect();
-    const distance = Math.min(320, window.innerHeight * .4, collage.clientHeight);
+    const distance = Math.min(320, window.innerHeight * .4);
     const progress = reduced.matches ? 1 : clamp01(Math.min(window.innerHeight - rect.top, rect.bottom) / distance);
     if (progress === lastRevealProgress) return;
     lastRevealProgress = progress;
@@ -131,6 +130,9 @@
 
   let drag = null;
   let suppressClick = false;
+  let scrollFrame = 0;
+  let scrollTime = 0;
+  let topLayer = 20;
   let suppressUntil = 0;
   let lastPointerUpAt = -Infinity;
 
@@ -375,19 +377,48 @@
   }
 
   function measureBounds(wrapper, x, y) {
-    const board = collage.getBoundingClientRect();
+    const pageHeight = document.documentElement.scrollHeight;
     const rect = wrapper.getBoundingClientRect();
+    const inset = reduced.matches ? 0 : 10;
     return {
-      minX: x + (board.left - rect.left),
-      maxX: x + (board.right - rect.right),
-      minY: y + (board.top - rect.top),
-      maxY: y + (board.bottom - rect.bottom),
+      minX: x + inset - rect.left,
+      maxX: x + document.documentElement.clientWidth - inset - rect.right,
+      minY: y + inset - rect.top - window.scrollY,
+      maxY: y + pageHeight - inset - rect.bottom - window.scrollY,
     };
   }
 
   function clampRange(value, min, max) {
     if (min > max) return (min + max) / 2;
     return Math.min(max, Math.max(min, value));
+  }
+
+  function placeDrag() {
+    const current = drag;
+    if (!current?.moved) return;
+    const dx = current.lastX - current.startX;
+    const dy = current.lastY - current.startY + window.scrollY - current.startScrollY;
+    setOffset(
+      current.wrapper,
+      clampRange(current.baseX + dx, current.bounds.minX, current.bounds.maxX),
+      clampRange(current.baseY + dy, current.bounds.minY, current.bounds.maxY),
+    );
+  }
+
+  function scrollWhileDragging(now) {
+    scrollFrame = 0;
+    if (!drag?.moved) return;
+    const elapsed = Math.min(32, now - scrollTime);
+    scrollTime = now;
+    const edge = 64;
+    const speed = drag.lastY < edge
+      ? -clamp01((edge - drag.lastY) / edge)
+      : clamp01((drag.lastY - innerHeight + edge) / edge);
+    if (speed) {
+      window.scrollBy({ top: speed * elapsed * .75, behavior: 'instant' });
+      placeDrag();
+    }
+    scrollFrame = requestAnimationFrame(scrollWhileDragging);
   }
 
   function onPointerEnter(event) {
@@ -423,6 +454,11 @@
   function dragMove(event) {
     const current = drag;
     if (!current) return;
+    const now = performance.now();
+    const elapsed = Math.max(8, now - current.lastTime);
+    const velocityX = (event.clientX - current.lastX) / elapsed;
+    const velocityY = (event.clientY - current.lastY) / elapsed;
+    current.lastTime = now;
     current.lastX = event.clientX;
     current.lastY = event.clientY;
     const dx = event.clientX - current.startX;
@@ -430,12 +466,21 @@
     if (!current.moved) {
       if (Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
       current.moved = true;
-      current.wrapper.classList.add('is-dragging');
       current.bounds = measureBounds(current.wrapper, current.baseX, current.baseY);
+      current.wrapper.classList.add('is-dragging');
+      current.wrapper.style.zIndex = String(++topLayer);
+      scrollTime = now;
+      scrollFrame = requestAnimationFrame(scrollWhileDragging);
+      if (!reduced.matches) {
+        current.wrapper.style.setProperty('--drag-lift', '-4px');
+        current.wrapper.style.setProperty('--drag-scale', '1.06');
+      }
     }
-    const x = clampRange(current.baseX + dx, current.bounds.minX, current.bounds.maxX);
-    const y = clampRange(current.baseY + dy, current.bounds.minY, current.bounds.maxY);
-    setOffset(current.wrapper, x, y);
+    placeDrag();
+    if (!reduced.matches) {
+      const tilt = clampRange(velocityX * 6 - velocityY * current.gripX * 4, -8, 8);
+      current.wrapper.style.setProperty('--drag-tilt', `${tilt.toFixed(2)}deg`);
+    }
     if (state.active && state.wrapper === current.wrapper) {
       updatePreview(current.wrapper, { x: event.clientX, y: event.clientY });
     }
@@ -449,13 +494,18 @@
     suppressClick = false;
     suppressUntil = 0;
     const offset = offsets.get(wrapper) || { x: 0, y: 0 };
+    const rect = wrapper.getBoundingClientRect();
     drag = {
       wrapper,
       id: event.pointerId,
       startX: event.clientX,
       startY: event.clientY,
+      startScrollY: window.scrollY,
+      startZ: wrapper.style.zIndex,
       lastX: event.clientX,
       lastY: event.clientY,
+      lastTime: performance.now(),
+      gripX: clampRange((event.clientX - rect.left) / rect.width * 2 - 1, -1, 1),
       baseX: offset.x,
       baseY: offset.y,
       moved: false,
@@ -467,20 +517,30 @@
   function finishDrag() {
     const current = drag;
     drag = null;
+    if (scrollFrame) { cancelAnimationFrame(scrollFrame); scrollFrame = 0; }
     current.wrapper.classList.remove('is-dragging');
+    clearDragPose(current.wrapper);
     return current;
+  }
+
+  function clearDragPose(wrapper) {
+    wrapper.style.removeProperty('--drag-lift');
+    wrapper.style.removeProperty('--drag-scale');
+    wrapper.style.removeProperty('--drag-tilt');
   }
 
   function abortDrag() {
     if (!drag) return;
     const current = finishDrag();
     setOffset(current.wrapper, current.baseX, current.baseY);
+    current.wrapper.style.zIndex = current.startZ;
     try { current.wrapper.releasePointerCapture(current.id); } catch {}
     settleDown();
   }
 
   function onPointerUp(event) {
     if (!drag || event.pointerId !== drag.id) return;
+    if (drag.moved) dragMove(event);
     const current = finishDrag();
     lastPointerUpAt = performance.now();
     if (current.moved) {
@@ -502,6 +562,7 @@
   function nudge(wrapper, dx, dy) {
     const offset = offsets.get(wrapper) || { x: 0, y: 0 };
     const bounds = measureBounds(wrapper, offset.x, offset.y);
+    wrapper.style.zIndex = String(++topLayer);
     setOffset(
       wrapper,
       clampRange(offset.x + dx, bounds.minX, bounds.maxX),
@@ -511,6 +572,7 @@
 
   function resetPosition(wrapper) {
     setOffset(wrapper, 0, 0);
+    wrapper.style.removeProperty('z-index');
     if (state.active && state.wrapper === wrapper) settleDown();
   }
 
@@ -567,7 +629,10 @@
 
   function onReducedChange() {
     geom = new WeakMap();
-    if (reduced.matches) finalizeNow();
+    if (reduced.matches) {
+      if (drag) clearDragPose(drag.wrapper);
+      finalizeNow();
+    }
   }
 
   function onHoverMediaChange() {
@@ -580,10 +645,14 @@
     pendingWrapper = null;
     hoverPoint = null;
     drag = null;
+    if (scrollFrame) { cancelAnimationFrame(scrollFrame); scrollFrame = 0; }
     suppressClick = false;
     if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
     anim = null;
-    for (const wrapper of stickers) wrapper.classList.remove('is-peeling', 'is-dragging');
+    for (const wrapper of stickers) {
+      wrapper.classList.remove('is-peeling', 'is-dragging');
+      clearDragPose(wrapper);
+    }
     state = inactiveState();
     hideCanvas();
     if (renderer) { try { renderer.destroy(); } catch {} renderer = null; }
@@ -614,6 +683,7 @@
     if (event.key === 'Escape' && drag) abortDrag();
   });
   window.addEventListener('resize', onResize);
+  window.addEventListener('scroll', placeDrag, { passive: true });
   window.addEventListener('pagehide', teardown);
   window.addEventListener('pageshow', onPageShow);
   reduced.addEventListener('change', onReducedChange);
