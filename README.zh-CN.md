@@ -15,7 +15,7 @@ Vercel Hobby 用户请选择**个人 GitHub 账号**，不要选组织。在部�
 - Browse and search the cover-first game library. Unified platform rows combine player identity, activity, game counts, and sync status without a separate header.
 - Classic follows the system light/dark setting until an explicit choice is saved. Footer controls switch color schemes and Classic, Pixel, or Neon City themes; preferences persist per browser. The [Dissolve](https://dissolve.rselmi.com/)-inspired filters, rolling totals, and pagination respect reduced motion.
 - Footer stickers use native scroll-driven transform and opacity animations when `ViewTimeline` is available, with a JavaScript fallback for older browsers. Dragged stickers remain independent of the reveal; reduced motion disables it.
-- The footer includes 62 hardware, character, and item stickers in a layered desktop/mobile collage. Artwork credits and rights information are listed in [`credits.json`](public/dashboard/stickers/credits.json).
+- The footer includes 72 hardware, character, and item stickers in a layered desktop/mobile collage, including clearer Alexander and Deacon-with-motorcycle cutouts. Artwork credits and rights information are listed in [`credits.json`](public/dashboard/stickers/credits.json).
 - Drag stickers anywhere on the page with lift, tilt, and edge auto-scroll. Keyboard controls also move stickers; Enter resets their position.
 - 同款游戏的多平台记录匹配后只显示一张卡片，成就进度仍按平台独立统计。
 - Steam 成就和 PlayStation 奖杯分开显示；Nintendo 提供游玩记录。

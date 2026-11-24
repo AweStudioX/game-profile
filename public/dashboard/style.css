@@ -294,6 +294,16 @@ h2{font-size:clamp(1.25rem,2.5vw,1.7rem);line-height:1.2;letter-spacing:-.025em}
 .footer-sticker:nth-child(60){--x:72%;--y:56%;--mx:84%;--my:52%;--r:-15deg;--d:96ms;z-index:9}
 .footer-sticker:nth-child(61){--x:20%;--y:85%;--mx:62%;--my:13%;--r:18deg;--d:216ms;z-index:9}
 .footer-sticker:nth-child(62){--x:97%;--y:83%;--mx:86%;--my:86%;--r:-24deg;--d:144ms;z-index:9}
+.footer-sticker:nth-child(63){--x:35%;--y:12%;--mx:35%;--my:35%;--r:12deg;--d:72ms;z-index:9}
+.footer-sticker:nth-child(64){--x:58%;--y:57%;--mx:87%;--my:40%;--r:-19deg;--d:168ms;z-index:9}
+.footer-sticker:nth-child(65){--x:79%;--y:91%;--mx:38%;--my:67%;--r:9deg;--d:24ms;z-index:9}
+.footer-sticker:nth-child(66){--x:21%;--y:57%;--mx:17%;--my:68%;--r:-12deg;--d:144ms;z-index:9}
+.footer-sticker:nth-child(67){--x:7%;--y:11%;--mx:12%;--my:23%;--r:23deg;--d:216ms;z-index:8}
+.footer-sticker:nth-child(68){--x:85%;--y:11%;--mx:60%;--my:53%;--r:-8deg;--d:48ms;z-index:9}
+.footer-sticker:nth-child(69){--x:97%;--y:43%;--mx:73%;--my:96%;--r:16deg;--d:192ms;z-index:9}
+.footer-sticker:nth-child(70){--x:47%;--y:93%;--mx:58%;--my:84%;--r:-17deg;--d:96ms;z-index:8}
+.footer-sticker:nth-child(71){--x:63%;--y:8%;--mx:46%;--my:4%;--r:14deg;--d:120ms;z-index:3}
+.footer-sticker:nth-child(72){--x:2%;--y:65%;--mx:9%;--my:76%;--r:-23deg;--d:240ms;z-index:4}
 @property --float{syntax:"<number>";inherits:false;initial-value:1}
 @media(prefers-reduced-motion:no-preference){
   .footer-collage.is-armed .footer-sticker{opacity:var(--float);transform:translate(calc(-50% + var(--drag-x,0px)),calc(-50% + var(--drag-y,0px) + var(--reveal-travel,64px) * (1 - var(--float)))) rotate(calc(var(--r,0deg) - var(--reveal-twist,5deg) * (1 - var(--float)))) scale(calc(.94 + .06 * var(--float)))}

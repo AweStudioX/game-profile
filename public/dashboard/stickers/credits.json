@@ -506,11 +506,11 @@
   },
   {
     "file": "57.webp",
-    "subject": "Days Gone — Deacon St. John riding his Drifter bike",
-    "source": "https://cdn.akamai.steamstatic.com/steam/apps/1259420/library_hero_2x.jpg",
-    "author": "Bend Studio / Sony Interactive Entertainment",
-    "license": "Copyrighted promotional artwork; no free redistribution license.",
-    "modifications": "Combined rider and motorcycle silhouette cut from official Steam artwork, haze and detached specks removed, edge colors cleaned; resized with an 8px white outline."
+    "subject": "Days Gone — Deacon St. John with his Drifter bike",
+    "source": "https://blog.playstation.com/2019/05/10/share-of-the-week-days-gone-deacons-bike/",
+    "author": "ADJ_Playz (in-game capture), published by PlayStation Blog; Bend Studio / Sony Interactive Entertainment",
+    "license": "All rights reserved; copyrighted gameplay capture and game artwork with no free redistribution license.",
+    "modifications": "Isolated Deacon and the near-full motorcycle from the featured capture, removed surrounding scenery, gently enhanced shadow detail and color, and resized to 512px with a smooth 6px white outline."
   },
   {
     "file": "58.webp",
@@ -551,5 +551,95 @@
     "author": "Nintendo; Nintendo Official Player's Guide, page 7",
     "license": "Copyrighted Nintendo artwork; not free-licensed.",
     "modifications": "Native alpha trimmed, fringe cleaned, resized; white outline compensated for display at 60% of character sticker size."
+  },
+  {
+    "file": "63.webp",
+    "subject": "Hollow Knight — the Knight",
+    "source": "https://hollowknight.wiki/w/File:The_Knight.png",
+    "author": "Team Cherry",
+    "license": "Copyright Team Cherry. Official press-kit character artwork; not covered by this project's MIT license.",
+    "licenseURL": "https://hollowknight.wiki/w/File:The_Knight.png",
+    "modifications": "Cropped from the native transparent promotional artwork, resized within a 512 px canvas, and added a 6 px Euclidean-offset white outline with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "64.webp",
+    "subject": "Splatoon 2 — Inkling in squid form",
+    "source": "https://splatoonwiki.org/wiki/File:Splatoon_2_-_key_art_Inkling_squid_form_pink.png",
+    "author": "Nintendo; official artwork from the Nintendo E3 2017 press kit",
+    "license": "Copyrighted Nintendo artwork; no free license stated on the source page.",
+    "licenseURL": "https://splatoonwiki.org/wiki/File:Splatoon_2_-_key_art_Inkling_squid_form_pink.png",
+    "modifications": "Native transparent artwork alpha-trimmed, resized and centered on a 512 px transparent canvas. Added a smooth supersampled 6 px white contour and converted to WebP."
+  },
+  {
+    "file": "65.webp",
+    "subject": "Pikmin 4 — Blue, Yellow, and Red Pikmin group",
+    "source": "https://www.pikminwiki.com/File:P4_Blue_Yellow_Red_Pikmin.png",
+    "author": "Nintendo; official artwork from the Nintendo online store page for Pikmin 4",
+    "license": "Copyrighted Nintendo artwork; Pikipedia identifies the source file as fair-use media and does not state a free redistribution license.",
+    "licenseURL": "https://www.pikminwiki.com/File:P4_Blue_Yellow_Red_Pikmin.png",
+    "modifications": "Native transparent artwork alpha-trimmed, resized and centered on a 512 px transparent canvas. Added a smooth supersampled 6 px white contour and converted to WebP."
+  },
+  {
+    "file": "66.webp",
+    "subject": "Persona 5 — Morgana",
+    "source": "https://www.ssbwiki.com/File:SSBU_spirit_Morgana.png",
+    "author": "Atlus / Sega; character design by Shigenori Soejima",
+    "license": "Copyright Atlus / Sega. In-game artwork rip; not covered by this project's MIT license.",
+    "licenseURL": "https://www.ssbwiki.com/File:SSBU_spirit_Morgana.png",
+    "modifications": "Cropped from the native transparent Persona 5 character artwork used by the Super Smash Bros. Ultimate spirit, resized within a 512 px canvas, and added a 6 px Euclidean-offset white outline with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "67.webp",
+    "subject": "Portal — Weighted Companion Cube",
+    "source": "https://theportalwiki.com/wiki/File:Portal_Companion_Cube.png",
+    "author": "Valve Corporation",
+    "license": "Copyright Valve Corporation. Media extracted from Portal; not covered by this project's MIT license.",
+    "licenseURL": "https://theportalwiki.com/wiki/File:Portal_Companion_Cube.png#Licensing",
+    "modifications": "Cropped from the native transparent game render, resized within a 512 px canvas, and added a 6 px Euclidean-offset white outline with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "68.webp",
+    "subject": "The Legend of Zelda: Tears of the Kingdom — Korok",
+    "source": "https://zeldawiki.wiki/wiki/File:TotK_Korok_Artwork.png",
+    "author": "Nintendo; official artwork published via Nintendo Today!",
+    "license": "Copyrighted Nintendo artwork; not free-licensed.",
+    "licenseURL": "https://zeldawiki.wiki/wiki/File:TotK_Korok_Artwork.png",
+    "modifications": "Native transparent artwork alpha-trimmed, resized and centered on a 512 px transparent canvas. Added a smooth supersampled 6 px white contour and converted to WebP."
+  },
+  {
+    "file": "69.webp",
+    "subject": "Pokémon — Gengar",
+    "source": "https://pokemondb.net/artwork/gengar",
+    "author": "Game Freak / The Pokémon Company; Pokémon Global Link artwork",
+    "license": "Copyrighted Pokémon artwork; no free redistribution license stated on the source page.",
+    "licenseURL": "https://pokemondb.net/artwork/gengar",
+    "modifications": "Transparent Pokémon Global Link artwork alpha-trimmed, resized and centered on a 512 px transparent canvas. Added a smooth supersampled 6 px white contour and converted to WebP."
+  },
+  {
+    "file": "70.webp",
+    "subject": "Elden Ring — Iron Fist Alexander, Warrior Jar",
+    "source": "https://youtooz.com/products/iron-fist-alexander",
+    "author": "Youtooz Collectibles / FromSoftware / Bandai Namco Entertainment",
+    "license": "Copyrighted officially licensed product artwork; no free redistribution license.",
+    "licenseURL": "https://youtooz.com/products/iron-fist-alexander",
+    "modifications": "Used the publisher-supplied transparent full-body front artwork, gently adjusted brightness and contrast for small-size readability, and resized to 512px with a smooth 6px white contour."
+  },
+  {
+    "file": "71.webp",
+    "subject": "Original Sony PlayStation console (SCPH-5501)",
+    "source": "https://commons.wikimedia.org/wiki/File:Sony-PlayStation-5501-Console-FL.png",
+    "author": "Evan-Amos; cropped by Gunnar.offel",
+    "license": "Public domain",
+    "licenseURL": "https://commons.wikimedia.org/wiki/Commons:Copyright_tags#Public_domain",
+    "modifications": "Cropped from the unbordered transparent public-domain photograph, resized within a 512 px canvas, and added a 6 px Euclidean-offset white outline with supersampled antialiasing. Converted to WebP."
+  },
+  {
+    "file": "72.webp",
+    "subject": "Nintendo Game Boy Color",
+    "source": "https://commons.wikimedia.org/wiki/File:Nintendo-Game-Boy-Color-FL.png",
+    "author": "Evan-Amos, modified by Gunnar.offel",
+    "license": "Public domain",
+    "licenseURL": "https://commons.wikimedia.org/wiki/Commons:Copyright_tags#Public_domain",
+    "modifications": "Downloaded the transparent 960 px Wikimedia derivative of the public-domain original, alpha-trimmed, resized and centered on a 512 px transparent canvas. Added a smooth supersampled 6 px white contour and converted to WebP."
   }
 ]
