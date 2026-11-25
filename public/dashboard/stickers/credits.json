@@ -174,7 +174,7 @@
     "license": "Copyright Bethesda Softworks / ZeniMax Media. StickPNG states free personal use; no commercial license granted. Not covered by this project's MIT license.",
     "awardYear": 2011,
     "awardGame": "The Elder Scrolls V: Skyrim",
-    "modifications": "Edge color repaired and alpha eroded/feathered to remove the source's light outline, trimmed. Added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP."
+    "modifications": "Edge color repaired and alpha eroded/feathered to remove the source's light outline, trimmed. Added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP. Selectively lifted midtones while preserving white contour and alpha."
   },
   {
     "file": "20.webp",
@@ -234,7 +234,7 @@
     "license": "© FromSoftware, Inc. / Activision Publishing, Inc. All rights reserved. Not licensed for redistribution; not covered by this project's MIT license.",
     "awardYear": 2019,
     "awardGame": "Sekiro: Shadows Die Twice",
-    "modifications": "Official artwork shipped on a flat grey field; background removed with Apple Vision foreground segmentation (VNGenerateForegroundInstanceMaskRequest), matte eroded 1px and edge colours un-premultiplied against the measured 212-grey field to kill the light rim. Trimmed, padded, alpha noise cleared. Added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP."
+    "modifications": "Official artwork shipped on a flat grey field; background removed with Apple Vision foreground segmentation (VNGenerateForegroundInstanceMaskRequest), matte eroded 1px and edge colours un-premultiplied against the measured 212-grey field to kill the light rim. Trimmed, padded, alpha noise cleared. Added an 8 px Euclidean-offset white outline on a 512 px canvas, with supersampled antialiasing. Converted to WebP. Selectively lifted midtones while preserving white contour and alpha."
   },
   {
     "file": "26.webp",
@@ -510,7 +510,7 @@
     "source": "https://blog.playstation.com/2019/05/10/share-of-the-week-days-gone-deacons-bike/",
     "author": "ADJ_Playz (in-game capture), published by PlayStation Blog; Bend Studio / Sony Interactive Entertainment",
     "license": "All rights reserved; copyrighted gameplay capture and game artwork with no free redistribution license.",
-    "modifications": "Isolated Deacon and the near-full motorcycle from the featured capture, removed surrounding scenery, gently enhanced shadow detail and color, and resized to 512px with a smooth 6px white outline."
+    "modifications": "Isolated Deacon and the near-full motorcycle from the featured capture, removed surrounding scenery, gently enhanced shadow detail and color, and resized to 512px with a smooth 6px white outline. Reduced excessive saturation without altering alpha or white edging."
   },
   {
     "file": "58.webp",
@@ -518,7 +518,7 @@
     "source": "https://cdn.akamai.steamstatic.com/steam/apps/2215430/library_hero.jpg",
     "author": "Sucker Punch Productions / Sony Interactive Entertainment",
     "license": "Copyrighted promotional artwork; no free redistribution license.",
-    "modifications": "Ink key art cut out, background leaf within cape replaced with nearby ink color, edge colors cleaned; resized with an 8px white outline."
+    "modifications": "Ink key art cut out, background leaf within cape replaced with nearby ink color, edge colors cleaned; resized with an 8px white outline. Gently lifted midtones without changing the ink-art style or alpha."
   },
   {
     "file": "59.webp",
@@ -641,5 +641,122 @@
     "license": "Public domain",
     "licenseURL": "https://commons.wikimedia.org/wiki/Commons:Copyright_tags#Public_domain",
     "modifications": "Downloaded the transparent 960 px Wikimedia derivative of the public-domain original, alpha-trimmed, resized and centered on a 512 px transparent canvas. Added a smooth supersampled 6 px white contour and converted to WebP."
+  },
+  {
+    "file": "73.webp",
+    "subject": "Marvel — Peter Parker / Spider-Man in a classic red-and-blue crouch",
+    "source": "https://pngimg.com/image/28978",
+    "author": "Marvel Comics; original artist not identified by PNGimg",
+    "license": "PNGimg labels its copy CC BY-NC 4.0; the underlying Marvel character artwork remains copyrighted and is not covered by this project's MIT license.",
+    "licenseURL": "https://creativecommons.org/licenses/by-nc/4.0/",
+    "modifications": "Used the transparent crouching character artwork supplied by PNGimg, alpha-trimmed and enlarged within a 512 px transparent canvas. Added a smooth supersampled 6 px white contour and converted to WebP."
+  },
+  {
+    "file": "74.webp",
+    "subject": "Horizon Zero Dawn — Aloy drawing her bow",
+    "source": "https://horizon.fandom.com/wiki/File:Aloy_drawing_her_bow.png",
+    "author": "Guerrilla Games / Sony Interactive Entertainment",
+    "license": "Copyrighted official Horizon Zero Dawn game screenshot; no free redistribution license is stated on the source page and it is not covered by this project's MIT license.",
+    "licenseURL": "https://horizon.fandom.com/wiki/File:Aloy_drawing_her_bow.png",
+    "modifications": "Aloy and her bow were segmented from the official Horizon Zero Dawn screenshot, with fine alpha cleanup around the hair, bow, string and arrow. Brightness and local contrast were gently raised for small-size readability. The cutout was alpha-trimmed, resized and centered on a 512 px transparent canvas, then given a smooth supersampled 6 px white contour and converted to WebP."
+  },
+  {
+    "file": "75.webp",
+    "subject": "BlazBlue Entropy Effect — Ragna the Bloodedge with Aramasa",
+    "source": "https://blazblue.fandom.com/wiki/File:Ragna_the_Bloodedge_(Calamity_Trigger,_Character_Select_Artwork).png",
+    "author": "Arc System Works; character design by Yuuki Kato",
+    "license": "Copyrighted official BlazBlue character artwork; no free redistribution license is stated on the source page and it is not covered by this project's MIT license.",
+    "licenseURL": "https://blazblue.fandom.com/wiki/File:Ragna_the_Bloodedge_(Calamity_Trigger,_Character_Select_Artwork).png",
+    "modifications": "Used the native transparent official Ragna character-select artwork for the BlazBlue character playable in Entropy Effect, alpha-trimmed and resized within a 512 px transparent canvas. Added a smooth supersampled 6 px white contour and converted to WebP."
+  },
+  {
+    "file": "76.webp",
+    "subject": "Dynasty Warriors 9 (真·三国无双 8) — Lu Bu in black and gold armor",
+    "source": "https://koei.fandom.com/wiki/File:Lu_Bu_(DW9).png",
+    "author": "Koei Tecmo Games / Omega Force",
+    "license": "Copyrighted proprietary game artwork; no open redistribution license stated. Not covered by this project's MIT license.",
+    "licenseURL": "https://koei.fandom.com/wiki/Lu_Bu",
+    "modifications": "Removed the studio background and floor shadow from the official character render, preserving the neutral black-and-gold armor, twin plumes and halberd. Fitted the cutout onto a transparent 512 px canvas with a smooth 4.6 px white contour for its 30% larger display size and converted to WebP."
+  },
+  {
+    "file": "77.webp",
+    "subject": "The Ironclad — Slay the Spire 2",
+    "source": "https://slaythespire.wiki.gg/wiki/File:StS2_Ironclad.png",
+    "author": "Mega Crit Games",
+    "license": "In copyright. Game artwork owned by the applicable game studio and/or its licensors; not covered by this project's MIT license.",
+    "licenseURL": "https://rightsstatements.org/page/InC/1.0/",
+    "modifications": "Used the authentic Slay the Spire 2 combat sprite. Cropped to the upper-body combat pose so the Ironclad's red scarf-mask remains legible at 100 px, added a smooth 6 px Euclidean-offset white contour on a transparent 512 px canvas with 4x supersampling, and converted to WebP."
+  },
+  {
+    "file": "78.webp",
+    "subject": "Stellar Blade — EVE in the green Planet Diving Suit with Blood Edge sword",
+    "source": "https://www.deviantart.com/vigoord/art/Stellar-Blade-Eve-Key-Art-Render-PNG-1057492569",
+    "author": "SHIFT UP / Sony Interactive Entertainment; transparent key-art extraction by VigoorD",
+    "license": "Copyrighted Stellar Blade promotional artwork and third-party extraction; no free redistribution license stated on the source page.",
+    "licenseURL": "https://www.deviantart.com/vigoord/art/Stellar-Blade-Eve-Key-Art-Render-PNG-1057492569",
+    "modifications": "Used the authentic official key-art character image rather than an AI stand-in. Removed the disconnected credit mark and drone while retaining EVE, her long ponytail, green suit, and sword; rotated the original dynamic pose upright, alpha-trimmed, resized on a 512 px transparent canvas, added a smooth supersampled 6 px white contour, and converted to WebP."
+  },
+  {
+    "file": "79.webp",
+    "subject": "Yakuza: Like a Dragon — Ichiban Kasuga in his red suit",
+    "source": "https://yakuza.fandom.com/wiki/File:YLAD_-_Character_Render_-_Ichiban_Kasuga_(2019).png",
+    "author": "Ryu Ga Gotoku Studio / Sega",
+    "license": "Copyrighted Sega character render; no free redistribution license stated on the source page.",
+    "licenseURL": "https://yakuza.fandom.com/wiki/File:YLAD_-_Character_Render_-_Ichiban_Kasuga_(2019).png",
+    "modifications": "Used the native transparent official character render, alpha-trimmed, resized on a 512 px transparent canvas, added a smooth supersampled 6 px white contour, and converted to WebP."
+  },
+  {
+    "file": "80.webp",
+    "subject": "BB (Bridge Baby) pod — Death Stranding",
+    "source": "https://uk.kojimaproductions-store.com/products/death-stranding-bbpod",
+    "author": "Kojima Productions",
+    "license": "Copyright Kojima Productions. Official product photography; not covered by this project's MIT license.",
+    "licenseURL": "https://uk.kojimaproductions-store.com/products/death-stranding-bbpod",
+    "modifications": "Used the official front product photograph of the 1/1 Scale BB Pod, visibly containing the BB. Removed the connected black studio background while preserving the translucent yellow-orange capsule and dark hardware, added a smooth 10 px Euclidean-offset white accent contour on a transparent 512 px canvas with 4x supersampling, and converted to WebP."
+  },
+  {
+    "file": "81.webp",
+    "subject": "NieR:Automata — 2B in her classic black YoRHa dress with Virtuous Contract sword",
+    "source": "https://www.deviantart.com/vigoord/art/Nier-Automata-2B-Key-Art-Render-PNG-791461887",
+    "author": "Square Enix / PlatinumGames; character design by Akihiko Yoshida; transparent key-art extraction by VigoorD",
+    "license": "Copyrighted NieR:Automata promotional artwork and third-party extraction; the uploader permits use of the extracted image, but no free license is stated for the underlying proprietary artwork and it is not covered by this project's MIT license.",
+    "licenseURL": "https://www.deviantart.com/vigoord/art/Nier-Automata-2B-Key-Art-Render-PNG-791461887",
+    "modifications": "Used the authentic transparent key-art extraction showing 2B in her classic black dress with white hair, blindfold and swords. Alpha-trimmed, resized and centered on a 512 px transparent canvas, added a smooth supersampled 6 px white contour, and converted to WebP."
+  },
+  {
+    "file": "82.webp",
+    "subject": "Cyberpunk 2077 — Johnny Silverhand with cybernetic arm, pistol and guitar",
+    "source": "https://www.citypng.com/photo/7528/hd-cyberpunk-2077-game-johnny-silverhand-male-character-png",
+    "author": "CD Projekt Red; transparent-image listing by CityPNG (individual extractor not identified)",
+    "license": "Copyrighted Cyberpunk 2077 character artwork. CityPNG labels its copy free for personal use only and prohibits commercial use; no open redistribution license is stated, and the artwork is not covered by this project's MIT license.",
+    "licenseURL": "https://www.citypng.com/page/personal-use-license",
+    "modifications": "Used the authentic Cyberpunk 2077 character render rather than generated artwork. Removed the checkerboard preview background with portrait segmentation and alpha matting while preserving Johnny's hair, pistol, guitar and cybernetic arm; alpha-trimmed, resized and centered on a 512 px transparent canvas, added a smooth supersampled 6 px white contour, and converted to WebP."
+  },
+  {
+    "file": "83.webp",
+    "subject": "Devil May Cry 3 — Dante in his red coat with Ebony & Ivory and Rebellion",
+    "source": "https://devilmaycry.fandom.com/wiki/File:Dante_DMC3.png",
+    "author": "Capcom",
+    "license": "Copyrighted proprietary Devil May Cry 3 character artwork; no open redistribution license is stated on the source page, and it is not covered by this project's MIT license.",
+    "licenseURL": "https://rightsstatements.org/page/InC/1.0/",
+    "modifications": "Used the native transparent authentic Devil May Cry 3 character render, retaining Dante's bright red coat, white hair, Ebony & Ivory and the Rebellion sword on his back. Alpha-trimmed, resized and centered on a 512 px transparent canvas, added a smooth supersampled 6 px white contour, and converted to WebP."
+  },
+  {
+    "file": "84.webp",
+    "subject": "Cuphead — Cuphead character in his classic red shorts and striped straw",
+    "source": "https://cuphead.fandom.com/wiki/File:Cuphead.png",
+    "author": "Studio MDHR",
+    "license": "Copyrighted Cuphead character artwork; no free redistribution license is stated on the source page, and it is not covered by this project's MIT license.",
+    "licenseURL": "https://rightsstatements.org/page/InC/1.0/",
+    "modifications": "Used the native transparent authentic Cuphead character artwork (Cuphead himself, not Mugman), alpha-trimmed and resized within a 512 px transparent canvas. Added a smooth supersampled 6 px white contour and converted to WebP."
+  },
+  {
+    "file": "85.webp",
+    "subject": "Metal Gear Rising: Revengeance — Raiden in his black cyborg body with high-frequency blade",
+    "source": "https://metalgear.fandom.com/wiki/File:Metal_gear_rising_revengeance_raiden.png",
+    "author": "PlatinumGames / Kojima Productions / Konami Digital Entertainment",
+    "license": "Copyrighted official Metal Gear Rising: Revengeance character artwork; despite the fan-wiki file page applying a public-domain template, no credible release of the underlying proprietary artwork into the public domain was identified. It is treated as in-copyright and is not covered by this project's MIT license.",
+    "licenseURL": "https://rightsstatements.org/page/InC/1.0/",
+    "modifications": "Used the authentic transparent official Raiden render in his Metal Gear Rising cyborg design, preserving his white hair, red cybernetic eye, black armor and high-frequency blade. Alpha-trimmed, resized and centered on a 512 px transparent canvas, added a smooth supersampled 6 px white contour, and converted to WebP."
   }
 ]

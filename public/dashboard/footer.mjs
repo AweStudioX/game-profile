@@ -17,6 +17,68 @@
 
   const clamp01 = value => Math.max(0, Math.min(1, value));
   const imageOf = sticker => sticker.querySelector('img');
+
+  const SLOT_POSITION_PROPERTIES = ['--x', '--y', '--mx', '--my'];
+  const shuffle = values => {
+    for (let index = values.length - 1; index > 0; index--) {
+      const swapIndex = Math.floor(Math.random() * (index + 1));
+      [values[index], values[swapIndex]] = [values[swapIndex], values[index]];
+    }
+    return values;
+  };
+  const assignPositions = (items, keys, featured) => {
+    const positions = items.map(item => keys.map(key => item.slot[key]));
+    const recipients = items.slice();
+    if (featured) {
+      const inset = keys[0] === '--mx' ? 17 : 6;
+      const edgePositions = positions.flatMap((position, index) => {
+        const [x, y] = position.map(parseFloat);
+        return x >= inset && x <= 100 - inset && y >= 20 && y <= 80
+          && (x <= 25 || x >= 75) ? [index] : [];
+      });
+      const chosen = edgePositions.length
+        ? edgePositions[Math.floor(Math.random() * edgePositions.length)]
+        : items.indexOf(featured);
+      featured.next[keys[0]] = positions[chosen][0];
+      featured.next[keys[1]] = positions[chosen][1];
+      positions.splice(chosen, 1);
+      recipients.splice(recipients.indexOf(featured), 1);
+    }
+    shuffle(positions);
+    recipients.forEach((item, index) => {
+      item.next[keys[0]] = positions[index][0];
+      item.next[keys[1]] = positions[index][1];
+    });
+  };
+
+  // Read every authored slot before writing any inline overrides. Desktop and
+  // mobile coordinates are shuffled independently so each layout keeps its
+  // own hand-tuned density without causing a read/write layout loop.
+  const layoutItems = stickers.map(sticker => {
+    const style = getComputedStyle(sticker);
+    const slot = Object.fromEntries([
+      ...SLOT_POSITION_PROPERTIES.map(property => [property, style.getPropertyValue(property)]),
+      ['--r', style.getPropertyValue('--r')],
+      ['--d', style.getPropertyValue('--d')],
+    ]);
+    return { sticker, slot, next: {}, accent: sticker.classList.contains('footer-sticker--accent') };
+  });
+  const featured = layoutItems.find(item => imageOf(item.sticker)?.src.endsWith('/76.webp'));
+  for (const accent of [false, true]) {
+    const group = layoutItems.filter(item => item.accent === accent);
+    const groupFeatured = featured?.accent === accent ? featured : null;
+    assignPositions(group, ['--x', '--y'], groupFeatured);
+    assignPositions(group, ['--mx', '--my'], groupFeatured);
+    const phases = shuffle(group.map(item => item.slot['--d']));
+    group.forEach((item, index) => { item.next['--d'] = phases[index]; });
+  }
+  for (const item of layoutItems) {
+    const rotation = parseFloat(item.slot['--r']) || 0;
+    item.next['--r'] = `${Math.max(-35, Math.min(35, rotation + Math.random() * 8 - 4)).toFixed(1)}deg`;
+    for (const [property, value] of Object.entries(item.next)) {
+      item.sticker.style.setProperty(property, value);
+    }
+  }
   const offsets = new Map();
   let geom = new WeakMap();
 

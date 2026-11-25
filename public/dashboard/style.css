@@ -304,6 +304,19 @@ h2{font-size:clamp(1.25rem,2.5vw,1.7rem);line-height:1.2;letter-spacing:-.025em}
 .footer-sticker:nth-child(70){--x:47%;--y:93%;--mx:58%;--my:84%;--r:-17deg;--d:96ms;z-index:8}
 .footer-sticker:nth-child(71){--x:63%;--y:8%;--mx:46%;--my:4%;--r:14deg;--d:120ms;z-index:3}
 .footer-sticker:nth-child(72){--x:2%;--y:65%;--mx:9%;--my:76%;--r:-23deg;--d:240ms;z-index:4}
+.footer-sticker:nth-child(73){--x:18%;--y:12%;--mx:29%;--my:17%;--r:-12deg;--d:0ms;z-index:8}
+.footer-sticker:nth-child(74){--x:91%;--y:89%;--mx:83%;--my:82%;--r:16deg;--d:24ms;z-index:9}
+.footer-sticker:nth-child(75){--x:49%;--y:38%;--mx:39%;--my:45%;--r:-17deg;--d:48ms;z-index:9}
+.footer-sticker:nth-child(76){--x:5%;--y:55%;--mx:17%;--my:58%;--r:12deg;--d:72ms;width:clamp(109.2px,12.35vw,156px);z-index:9}
+.footer-sticker:nth-child(77){--x:68%;--y:32%;--mx:67%;--my:33%;--r:21deg;--d:96ms;z-index:9}
+.footer-sticker:nth-child(78){--x:80%;--y:70%;--mx:70%;--my:73%;--r:-9deg;--d:120ms;z-index:8}
+.footer-sticker:nth-child(79){--x:35%;--y:82%;--mx:36%;--my:90%;--r:16deg;--d:144ms;z-index:9}
+.footer-sticker:nth-child(80){--x:96%;--y:11%;--mx:86%;--my:12%;--r:-13deg;--d:168ms;z-index:9}
+.footer-sticker:nth-child(81){--x:23%;--y:46%;--mx:51%;--my:36%;--r:-14deg;--d:192ms;z-index:8}
+.footer-sticker:nth-child(82){--x:40%;--y:68%;--mx:68%;--my:52%;--r:11deg;--d:216ms;z-index:9}
+.footer-sticker:nth-child(83){--x:64%;--y:63%;--mx:30%;--my:40%;--r:-18deg;--d:240ms;z-index:8}
+.footer-sticker:nth-child(84){--x:73%;--y:39%;--mx:57%;--my:90%;--r:17deg;--d:0ms;z-index:9}
+.footer-sticker:nth-child(85){--x:89%;--y:51%;--mx:72%;--my:18%;--r:-11deg;--d:24ms;z-index:9}
 @property --float{syntax:"<number>";inherits:false;initial-value:1}
 @media(prefers-reduced-motion:no-preference){
   .footer-collage.is-armed .footer-sticker{opacity:var(--float);transform:translate(calc(-50% + var(--drag-x,0px)),calc(-50% + var(--drag-y,0px) + var(--reveal-travel,64px) * (1 - var(--float)))) rotate(calc(var(--r,0deg) - var(--reveal-twist,5deg) * (1 - var(--float)))) scale(calc(.94 + .06 * var(--float)))}
@@ -324,8 +337,9 @@ h2{font-size:clamp(1.25rem,2.5vw,1.7rem);line-height:1.2;letter-spacing:-.025em}
 [data-theme="pixel"] .footer-return{border-radius:0}
 @media(max-width:650px){
   .footer-collage{height:580px;margin-block:8px 0}
-  .footer-sticker{left:var(--mx);top:var(--my);width:clamp(72px,23vw,100px)}
-  .footer-sticker--accent{width:clamp(43.2px,13.8vw,60px)}
+  .footer-sticker{left:clamp(58px,var(--mx),calc(100% - 58px));top:var(--my);width:clamp(72px,23vw,100px)}
+  .footer-sticker--accent{left:clamp(30px,var(--mx),calc(100% - 30px));width:clamp(43.2px,13.8vw,60px)}
+  .footer-sticker:nth-child(76){width:clamp(93.6px,29.9vw,130px)}
 }
 .skip{position:absolute;left:12px;top:8px;background:var(--surface);padding:7px 10px;z-index:1}.skip:not(:focus){clip-path:inset(50%)}
 .sr-only{position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden;white-space:nowrap}
